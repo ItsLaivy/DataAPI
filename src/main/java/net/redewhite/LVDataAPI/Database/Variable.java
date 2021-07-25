@@ -1,6 +1,6 @@
-package net.redewhite.LVDataAPI.Database;
+package net.redewhite.LVDataAPI.database;
 
-import net.redewhite.LVDataAPI.Main;
+import net.redewhite.LVDataAPI.LvDataPlugin;
 import org.bukkit.plugin.Plugin;
 
 import java.sql.PreparedStatement;
@@ -20,7 +20,7 @@ public class Variable {
         this.varname = plugin.getName() + "_" + name;
 
         if (name.contains("-")) {
-            Main.broadcastWarn("Variable '" + name + "' couldn't be created because it has illegal characters ('-')");
+            LvDataPlugin.broadcastWarn("Variable '" + name + "' couldn't be created because it has illegal characters ('-')");
             return;
         }
 
@@ -33,11 +33,11 @@ public class Variable {
 
         int trycreate = tryCreateColumn();
         if (trycreate == 1 || trycreate == 2) {
-            Main.dataapi.put(this, varname);
+            LvDataPlugin.dataapi.put(this, varname);
             if (trycreate == 1) {
-                Main.broadcastInfo("Successfully loaded variable '" + name + "' of the plugin '" + plugin.getName() + "'.");
+                LvDataPlugin.broadcastInfo("Successfully loaded variable '" + name + "' of the plugin '" + plugin.getName() + "'.");
             } else {
-                Main.broadcastInfo("Successfully created variable '" + name + "' of the plugin '" + plugin.getName() + "'.");
+                LvDataPlugin.broadcastInfo("Successfully created variable '" + name + "' of the plugin '" + plugin.getName() + "'.");
             }
         }
     }
@@ -50,7 +50,7 @@ public class Variable {
         } catch (SQLException e) {
             if (!e.getMessage().contains("duplicate column name:")) {
                 e.printStackTrace();
-                Main.broadcastWarn("SQLite variable named '" + name + "' couldn't be created.");
+                LvDataPlugin.broadcastWarn("SQLite variable named '" + name + "' couldn't be created.");
                 return 0;
             } else {
                 return 1;

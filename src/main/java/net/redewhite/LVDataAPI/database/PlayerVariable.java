@@ -1,10 +1,10 @@
-package net.redewhite.LVDataAPI.Database;
+package net.redewhite.LVDataAPI.database;
 
-import net.redewhite.LVDataAPI.Main;
+import net.redewhite.LVDataAPI.LvDataPlugin;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-public class Players {
+public class PlayerVariable {
 
     private final Player player;
     private final String name;
@@ -12,14 +12,14 @@ public class Players {
     private Object value;
     private final Plugin plugin;
 
-    public Players(Player player, Plugin plugin, String name, Object value) {
+    public PlayerVariable(Player player, Plugin plugin, String name, Object value) {
         this.player = player;
         this.name = name;
         this.value = value;
         this.plugin = plugin;
         this.varname = plugin.getName() + "_" + getName();
 
-        Main.playerapi.put(this, player);
+        LvDataPlugin.playerapi.put(this, player);
     }
 
     public Player getPlayer() {

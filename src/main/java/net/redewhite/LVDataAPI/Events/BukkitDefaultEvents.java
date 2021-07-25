@@ -1,11 +1,11 @@
-package net.redewhite.LVDataAPI.Events;
+package net.redewhite.LVDataAPI.events;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import static net.redewhite.LVDataAPI.API.*;
+import static net.redewhite.LVDataAPI.LvDataPluginAPI.*;
 
 public class BukkitDefaultEvents implements Listener {
 

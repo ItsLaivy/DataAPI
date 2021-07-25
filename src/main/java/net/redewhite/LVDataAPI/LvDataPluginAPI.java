@@ -1,8 +1,8 @@
 package net.redewhite.LVDataAPI;
 
-import net.redewhite.LVDataAPI.Database.Players;
-import net.redewhite.LVDataAPI.Database.SQLiteConnection;
-import net.redewhite.LVDataAPI.Database.Variable;
+import net.redewhite.LVDataAPI.database.PlayerVariable;
+import net.redewhite.LVDataAPI.database.SQLiteConnection;
+import net.redewhite.LVDataAPI.database.Variable;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -13,11 +13,11 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Map;
 
-import static net.redewhite.LVDataAPI.Database.SQLiteConnection.createStatement;
+import static net.redewhite.LVDataAPI.database.SQLiteConnection.createStatement;
 
-public class API {
+public class LvDataPluginAPI {
 
-        public static void registerPlayer(Player player) {
+    public static void registerPlayer(Player player) {
         PreparedStatement pstmt;
         Statement statement = createStatement();
         ResultSet result;
@@ -31,19 +31,19 @@ public class API {
         }
 
         try {
-            pstmt = SQLiteConnection.conn.prepareStatement("INSERT INTO `wn_data` (uuid, nickname, last_update) VALUES ('" + player.getUniqueId() + "', '" + player.getName() + "', '" + Main.now + "');");
+            pstmt = SQLiteConnection.conn.prepareStatement("INSERT INTO `wn_data` (uuid, nickname, last_update) VALUES ('" + player.getUniqueId() + "', '" + player.getName() + "', '" + LvDataPlugin.now + "');");
             pstmt.execute();
             pstmt.close();
-            Main.broadcastInfo("Successfully registered player '" + player.getName() + "'.");
+            LvDataPlugin.broadcastInfo("Successfully registered player '" + player.getName() + "'.");
             loadPlayer(player);
         } catch (SQLException e) {
             e.printStackTrace();
-            Main.broadcastWarn("Internal error when trying to register player '" + player.getName() + "'. Aborting...");
+            LvDataPlugin.broadcastWarn("Internal error when trying to register player '" + player.getName() + "'. Aborting...");
         }
     }
 
     public static Boolean isLoaded(Player player) {
-        for (Map.Entry<Players, Player> api : Main.playerapi.entrySet()) {
+        for (Map.Entry<PlayerVariable, Player> api : LvDataPlugin.playerapi.entrySet()) {
             if (api.getValue().getPlayer() == player) {
                 return true;
             }
@@ -52,13 +52,13 @@ public class API {
     }
 
     public static Boolean setVariable(Plugin plugin, Player player, String name, Object value) {
-        for (Players api : Main.playerapi.keySet()) {
+        for (PlayerVariable api : LvDataPlugin.playerapi.keySet()) {
             if (api.getPlugin() == plugin) {
                 if (api.getPlayer() == player) {
                     if (api.getName().equalsIgnoreCase(name)) {
 
                         String type = null;
-                        for (Variable var : Main.dataapi.keySet()) {
+                        for (Variable var : LvDataPlugin.dataapi.keySet()) {
                             if (api.getVariableName().equals(var.getVariableName())) {
                                 type = var.getType();
                             }
@@ -86,7 +86,7 @@ public class API {
     }
 
     public static Object getVariable(Plugin plugin, Player player, String name) {
-        for (Players i : Main.playerapi.keySet()) {
+        for (PlayerVariable i : LvDataPlugin.playerapi.keySet()) {
             if (i.getPlugin() == plugin) {
                 if (i.getPlayer() == player) {
                     if (i.getName().equalsIgnoreCase(name)) {
@@ -103,29 +103,29 @@ public class API {
             PreparedStatement pst;
             String query = "";
 
-            ArrayList<Players> array = new ArrayList<>();
-            for (Players api : Main.playerapi.keySet()) {
+            ArrayList<PlayerVariable> array = new ArrayList<>();
+            for (PlayerVariable api : LvDataPlugin.playerapi.keySet()) {
                 if (api.getPlayer() == player) {
                     query = query + api.getVariableName() + " = '" + api.getValue() + "', ";
                     array.add(api);
                 }
             }
-            for (Players api : array) {
-                Main.playerapi.remove(api);
+            for (PlayerVariable api : array) {
+                LvDataPlugin.playerapi.remove(api);
             }
 
-            query = "UPDATE `wn_data` SET " + query + "last_update = '" + Main.now + "' WHERE uuid = '" + player.getUniqueId() + "';";
+            query = "UPDATE `wn_data` SET " + query + "last_update = '" + LvDataPlugin.now + "' WHERE uuid = '" + player.getUniqueId() + "';";
             try {
                 pst = SQLiteConnection.conn.prepareStatement(query);
                 pst.execute();
                 pst.close();
             } catch (SQLException e) {
                 e.printStackTrace();
-                Main.broadcastWarn("SQLite failed when tried save variables of the player '" + player.getName() + "'.");
+                LvDataPlugin.broadcastWarn("SQLite failed when tried save variables of the player '" + player.getName() + "'.");
             }
 
         } else {
-            Main.broadcastWarn("The player '" + player.getName() + "' is not loaded!");
+            LvDataPlugin.broadcastWarn("The player '" + player.getName() + "' is not loaded!");
         }
     }
 
@@ -139,9 +139,9 @@ public class API {
                 assert statement != null;
                 result = statement.executeQuery("SELECT * FROM `wn_data` WHERE uuid = '" + player.getUniqueId() + "';");
                 while (result.next()) {
-                    for (Variable api : Main.dataapi.keySet()) {
+                    for (Variable api : LvDataPlugin.dataapi.keySet()) {
                         try {
-                            new Players(player, Main.getInstance(), api.getName(), result.getObject(api.getVariableName()));
+                            new PlayerVariable(player, LvDataPlugin.getInstance(), api.getName(), result.getObject(api.getVariableName()));
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }
@@ -149,11 +149,11 @@ public class API {
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
-                Main.broadcastWarn("Variables of player '" + player.getName() + "' couldn't be loaded, aborting...");
+                LvDataPlugin.broadcastWarn("Variables of player '" + player.getName() + "' couldn't be loaded, aborting...");
             }
 
         } else {
-            Main.broadcastWarn("The player '" + player.getName() + "' is already loaded!");
+            LvDataPlugin.broadcastWarn("The player '" + player.getName() + "' is already loaded!");
         }
     }
 
@@ -162,18 +162,18 @@ public class API {
             PreparedStatement pst;
             String query = "";
 
-            for (Players api : Main.playerapi.keySet()) {
+            for (PlayerVariable api : LvDataPlugin.playerapi.keySet()) {
                 if (api.getPlayer() == player) { query = query + api.getVariableName() + " = '" + api.getValue() + "', "; }
             }
 
-            query = "UPDATE `wn_data` SET " + query + "last_update = '" + Main.now + "' WHERE uuid = '" + player.getUniqueId() + "';";
+            query = "UPDATE `wn_data` SET " + query + "last_update = '" + LvDataPlugin.now + "' WHERE uuid = '" + player.getUniqueId() + "';";
             try {
                 pst = SQLiteConnection.conn.prepareStatement(query);
                 pst.execute();
                 pst.close();
             } catch (SQLException e) {
                 e.printStackTrace();
-                Main.broadcastWarn("SQLite attempted save player '" + player.getName() + "' without success.");
+                LvDataPlugin.broadcastWarn("SQLite attempted save player '" + player.getName() + "' without success.");
             }
 
         }

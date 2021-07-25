@@ -1,13 +1,13 @@
-package net.redewhite.LVDataAPI.Database;
+package net.redewhite.LVDataAPI.database;
 
-import net.redewhite.LVDataAPI.Main;
+import net.redewhite.LVDataAPI.LvDataPlugin;
 
 import java.io.File;
 import java.sql.*;
 
 public class SQLiteConnection {
 
-    private static final Main inst = Main.getInstance();
+    private static final LvDataPlugin inst = LvDataPlugin.getInstance();
     public static Connection conn;
 
     public static void connect() {
@@ -16,10 +16,10 @@ public class SQLiteConnection {
             File file = new File(inst.getDataFolder() + File.separator + "database.db");
 
             conn = DriverManager.getConnection("jdbc:sqlite:" + file);
-            Main.broadcastInfo("SQLite connection has been successfully established.");
+            LvDataPlugin.broadcastInfo("SQLite connection has been successfully established.");
             createDatabase();
         } catch (Exception e) {
-            Main.broadcastWarn("SQLite connection failed. Deactivating plugin...");
+            LvDataPlugin.broadcastWarn("SQLite connection failed. Deactivating plugin...");
             inst.getPluginLoader().disablePlugin(inst);
         }
     }
@@ -27,10 +27,10 @@ public class SQLiteConnection {
     public static void close() {
         try {
             conn.close();
-            Main.broadcastInfo("SQLite database has been closed.");
+            LvDataPlugin.broadcastInfo("SQLite database has been closed.");
         } catch (SQLException e) {
             e.printStackTrace();
-            Main.broadcastWarn("SQLite closing process could not be established.");
+            LvDataPlugin.broadcastWarn("SQLite closing process could not be established.");
         }
     }
 
@@ -39,7 +39,7 @@ public class SQLiteConnection {
             return conn.createStatement();
         } catch (SQLException e) {
             e.printStackTrace();
-            Main.broadcastWarn("SQLite's statement creation process failed.");
+            LvDataPlugin.broadcastWarn("SQLite's statement creation process failed.");
         }
         return null;
     }
@@ -51,7 +51,7 @@ public class SQLiteConnection {
             pstmt.execute();
             pstmt.close();
         } catch (SQLException e) {
-            Main.broadcastWarn("SQLite database create process failed. Deactivating plugin...");
+            LvDataPlugin.broadcastWarn("SQLite database create process failed. Deactivating plugin...");
             inst.getPluginLoader().disablePlugin(inst);
         }
     }

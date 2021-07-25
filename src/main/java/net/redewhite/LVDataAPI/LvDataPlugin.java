@@ -1,9 +1,9 @@
 package net.redewhite.LVDataAPI;
 
-import net.redewhite.LVDataAPI.Database.Players;
-import net.redewhite.LVDataAPI.Database.SQLiteConnection;
-import net.redewhite.LVDataAPI.Database.Variable;
-import net.redewhite.LVDataAPI.Events.BukkitDefaultEvents;
+import net.redewhite.LVDataAPI.database.PlayerVariable;
+import net.redewhite.LVDataAPI.database.SQLiteConnection;
+import net.redewhite.LVDataAPI.database.Variable;
+import net.redewhite.LVDataAPI.events.BukkitDefaultEvents;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -13,12 +13,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 
-import static net.redewhite.LVDataAPI.API.*;
+import static net.redewhite.LVDataAPI.LvDataPluginAPI.*;
 
-public class Main extends JavaPlugin {
+public class LvDataPlugin extends JavaPlugin {
 
     public static HashMap<Variable, String> dataapi = new HashMap<>();
-    public static HashMap<Players, Player> playerapi = new HashMap<>();
+    public static HashMap<PlayerVariable, Player> playerapi = new HashMap<>();
 
     private static BukkitRunnable task = null;
 
@@ -27,7 +27,7 @@ public class Main extends JavaPlugin {
 
     public static String now = new SimpleDateFormat("dd/MM/yyyy - hh:mm").format(new Date());
 
-    public static Main instance;
+    public static LvDataPlugin instance;
 
     @Override
     public void onEnable() {
@@ -61,7 +61,7 @@ public class Main extends JavaPlugin {
 
     }
 
-    public static Main getInstance() {
+    public static LvDataPlugin getInstance() {
         return instance;
     }
 
@@ -78,18 +78,18 @@ public class Main extends JavaPlugin {
             public void run() {
                 task = this;
                 saved = false;
-                Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
-                    for (Player player : Main.getInstance().getServer().getOnlinePlayers()) {
+                Bukkit.getScheduler().runTaskAsynchronously(LvDataPlugin.getInstance(), () -> {
+                    for (Player player : LvDataPlugin.getInstance().getServer().getOnlinePlayers()) {
                         if (isLoaded(player)) {
                             Bukkit.broadcastMessage("aaaaa");
                             saved = true;
                             savePlayer(player);
                         }
                     }
-                    if (saved) Main.broadcastInfo("Successfully saved all players data.");
+                    if (saved) LvDataPlugin.broadcastInfo("Successfully saved all players data.");
                 });
             }
-        }.runTaskTimer(Main.getInstance(), 0, seconds * 20);
+        }.runTaskTimer(LvDataPlugin.getInstance(), 0, seconds * 20);
     }
 
     public static void stopAutoSave() {
