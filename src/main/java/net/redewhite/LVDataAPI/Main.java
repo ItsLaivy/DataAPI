@@ -9,6 +9,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 
 import static net.redewhite.LVDataAPI.API.*;
@@ -18,10 +20,12 @@ public class Main extends JavaPlugin {
     public static HashMap<Variable, String> dataapi = new HashMap<>();
     public static HashMap<Players, Player> playerapi = new HashMap<>();
 
-    private static BukkitRunnable task;
+    private static BukkitRunnable task = null;
 
     private static Boolean saved;
     public static String gitlink;
+
+    public static String now = new SimpleDateFormat("dd/MM/yyyy - hh:mm").format(new Date());
 
     public static Main instance;
 
@@ -33,10 +37,16 @@ public class Main extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new BukkitDefaultEvents(), this);
         SQLiteConnection.connect();
 
+        new Variable(this, "examplevar", "example-value");
         gitlink = "https://github.com/LaivyTLife/DataAPI";
 
-        startAutoSave(getConfig().getInt("AutoSaver"));
-        for (Player player : getServer().getOnlinePlayers()) { loadPlayer(player); }
+        if (!(getConfig().getInt("AutoSaver") == 0)) {
+            startAutoSave(getConfig().getInt("AutoSaver"));
+        }
+
+        for (Player player : getServer().getOnlinePlayers()) {
+            loadPlayer(player);
+        }
 
     }
 
@@ -44,7 +54,10 @@ public class Main extends JavaPlugin {
     public void onDisable() {
         SQLiteConnection.close();
         stopAutoSave();
-        for (Player player : getServer().getOnlinePlayers()) { unloadPlayer(player); }
+
+        for (Player player : getServer().getOnlinePlayers()) {
+            unloadPlayer(player);
+        }
 
     }
 
@@ -68,6 +81,7 @@ public class Main extends JavaPlugin {
                 Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
                     for (Player player : Main.getInstance().getServer().getOnlinePlayers()) {
                         if (isLoaded(player)) {
+                            Bukkit.broadcastMessage("aaaaa");
                             saved = true;
                             savePlayer(player);
                         }
@@ -79,7 +93,9 @@ public class Main extends JavaPlugin {
     }
 
     public static void stopAutoSave() {
-        task.cancel();
+        if (!(task == null)) {
+            task.cancel();
+        }
     }
 
 }

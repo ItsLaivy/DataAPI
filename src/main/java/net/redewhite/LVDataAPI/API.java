@@ -17,7 +17,7 @@ import static net.redewhite.LVDataAPI.Database.SQLiteConnection.createStatement;
 
 public class API {
 
-    public static void registerPlayer(Player player) {
+        public static void registerPlayer(Player player) {
         PreparedStatement pstmt;
         Statement statement = createStatement();
         ResultSet result;
@@ -31,7 +31,7 @@ public class API {
         }
 
         try {
-            pstmt = SQLiteConnection.conn.prepareStatement("INSERT INTO `wn_data` (uuid, nickname, last_update) VALUES ('" + player.getUniqueId() + "', '" + player.getName() + "', 'now');");
+            pstmt = SQLiteConnection.conn.prepareStatement("INSERT INTO `wn_data` (uuid, nickname, last_update) VALUES ('" + player.getUniqueId() + "', '" + player.getName() + "', '" + Main.now + "');");
             pstmt.execute();
             pstmt.close();
             Main.broadcastInfo("Successfully registered player '" + player.getName() + "'.");
@@ -50,7 +50,7 @@ public class API {
         }
         return false;
     }
-    
+
     public static Boolean setVariable(Plugin plugin, Player player, String name, Object value) {
         for (Players api : Main.playerapi.keySet()) {
             if (api.getPlugin() == plugin) {
@@ -114,7 +114,7 @@ public class API {
                 Main.playerapi.remove(api);
             }
 
-            query = "UPDATE `wn_data` SET " + query + "last_update = 'now' WHERE uuid = '" + player.getUniqueId() + "';";
+            query = "UPDATE `wn_data` SET " + query + "last_update = '" + Main.now + "' WHERE uuid = '" + player.getUniqueId() + "';";
             try {
                 pst = SQLiteConnection.conn.prepareStatement(query);
                 pst.execute();
@@ -142,8 +142,8 @@ public class API {
                     for (Variable api : Main.dataapi.keySet()) {
                         try {
                             new Players(player, Main.getInstance(), api.getName(), result.getObject(api.getVariableName()));
-                        } catch (SQLException throwables) {
-                            throwables.printStackTrace();
+                        } catch (SQLException e) {
+                            e.printStackTrace();
                         }
                     }
                 }
@@ -166,7 +166,7 @@ public class API {
                 if (api.getPlayer() == player) { query = query + api.getVariableName() + " = '" + api.getValue() + "', "; }
             }
 
-            query = "UPDATE `wn_data` SET " + query + "last_update = 'now' WHERE uuid = '" + player.getUniqueId() + "';";
+            query = "UPDATE `wn_data` SET " + query + "last_update = '" + Main.now + "' WHERE uuid = '" + player.getUniqueId() + "';";
             try {
                 pst = SQLiteConnection.conn.prepareStatement(query);
                 pst.execute();

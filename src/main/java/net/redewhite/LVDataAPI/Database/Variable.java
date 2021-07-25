@@ -14,9 +14,15 @@ public class Variable {
     private String type;
 
     public Variable(Plugin plugin, String name, Object value) {
+
         this.name = name;
         this.value = value;
         this.varname = plugin.getName() + "_" + name;
+
+        if (name.contains("-")) {
+            Main.broadcastWarn("Variable '" + name + "' couldn't be created because it has illegal characters ('-')");
+            return;
+        }
 
         try {
             Integer.parseInt(String.valueOf(value));

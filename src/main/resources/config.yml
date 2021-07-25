@@ -1,2 +1,3 @@
 # Auto save time
+# To not auto-save, just insert 0.
 AutoSaver: 600 # seconds
