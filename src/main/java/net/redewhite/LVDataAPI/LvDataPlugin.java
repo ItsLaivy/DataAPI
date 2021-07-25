@@ -1,9 +1,9 @@
-package net.redewhite.LVDataAPI;
+package net.redewhite.lvdataapi;
 
-import net.redewhite.LVDataAPI.database.PlayerVariable;
-import net.redewhite.LVDataAPI.database.SQLiteConnection;
-import net.redewhite.LVDataAPI.database.Variable;
-import net.redewhite.LVDataAPI.events.BukkitDefaultEvents;
+import net.redewhite.lvdataapi.database.PlayerVariable;
+import net.redewhite.lvdataapi.database.SQLiteConnection;
+import net.redewhite.lvdataapi.database.Variable;
+import net.redewhite.lvdataapi.events.BukkitDefaultEvents;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -13,7 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 
-import static net.redewhite.LVDataAPI.LvDataPluginAPI.*;
+import static net.redewhite.lvdataapi.LvDataPluginAPI.*;
 
 public class LvDataPlugin extends JavaPlugin {
 

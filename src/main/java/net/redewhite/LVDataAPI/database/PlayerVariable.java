@@ -1,6 +1,6 @@
-package net.redewhite.LVDataAPI.database;
+package net.redewhite.lvdataapi.database;
 
-import net.redewhite.LVDataAPI.LvDataPlugin;
+import net.redewhite.lvdataapi.LvDataPlugin;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 

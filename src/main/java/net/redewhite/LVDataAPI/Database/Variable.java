@@ -1,6 +1,6 @@
-package net.redewhite.LVDataAPI.database;
+package net.redewhite.lvdataapi.database;
 
-import net.redewhite.LVDataAPI.LvDataPlugin;
+import net.redewhite.lvdataapi.LvDataPlugin;
 import org.bukkit.plugin.Plugin;
 
 import java.sql.PreparedStatement;
@@ -43,10 +43,8 @@ public class Variable {
     }
 
     private Integer tryCreateColumn() {
-        try {
-            PreparedStatement pst = SQLiteConnection.conn.prepareStatement("ALTER TABLE `wn_data` ADD COLUMN " + varname + " " + type + " DEFAULT '" + value + "';");
+        try (PreparedStatement pst = SQLiteConnection.conn.prepareStatement("ALTER TABLE `wn_data` ADD COLUMN " + varname + " " + type + " DEFAULT '" + value + "';")) {
             pst.execute();
-            pst.close();
         } catch (SQLException e) {
             if (!e.getMessage().contains("duplicate column name:")) {
                 e.printStackTrace();
