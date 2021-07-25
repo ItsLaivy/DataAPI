@@ -1,3 +1,5 @@
 # Auto save time
 # To not auto-save, just insert 0.
+
+# Values more than 600 seconds is not recommended.
 AutoSaver: 600 # seconds

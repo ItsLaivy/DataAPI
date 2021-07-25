@@ -3,6 +3,7 @@ package net.redewhite.LVDataAPI;
 import net.redewhite.LVDataAPI.database.PlayerVariable;
 import net.redewhite.LVDataAPI.database.SQLiteConnection;
 import net.redewhite.LVDataAPI.database.Variable;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -18,28 +19,26 @@ import static net.redewhite.LVDataAPI.database.SQLiteConnection.createStatement;
 public class LvDataPluginAPI {
 
     public static void registerPlayer(Player player) {
-        PreparedStatement pstmt;
-        Statement statement = createStatement();
-        ResultSet result;
+        Bukkit.getScheduler().runTaskAsynchronously(LvDataPlugin.getInstance(), () -> {
+            try {
+                Statement statement = createStatement();
+                ResultSet result = statement.executeQuery("SELECT * FROM `wn_data` WHERE uuid = '" + player.getUniqueId() + "';");
+                while (result.next()) { return; }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
 
-        try {
-            assert statement != null;
-            result = statement.executeQuery("SELECT * FROM `wn_data` WHERE uuid = '" + player.getUniqueId() + "';");
-            while (result.next()) { return; }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            pstmt = SQLiteConnection.conn.prepareStatement("INSERT INTO `wn_data` (uuid, nickname, last_update) VALUES ('" + player.getUniqueId() + "', '" + player.getName() + "', '" + LvDataPlugin.now + "');");
-            pstmt.execute();
-            pstmt.close();
-            LvDataPlugin.broadcastInfo("Successfully registered player '" + player.getName() + "'.");
-            loadPlayer(player);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            LvDataPlugin.broadcastWarn("Internal error when trying to register player '" + player.getName() + "'. Aborting...");
-        }
+            try {
+                PreparedStatement pstmt = SQLiteConnection.conn.prepareStatement("INSERT INTO `wn_data` (uuid, nickname, last_update) VALUES ('" + player.getUniqueId() + "', '" + player.getName() + "', '" + LvDataPlugin.now + "');");
+                pstmt.execute();
+                pstmt.close();
+                LvDataPlugin.broadcastInfo("Successfully registered player '" + player.getName() + "'.");
+                loadPlayer(player);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                LvDataPlugin.broadcastWarn("Internal error when trying to register player '" + player.getName() + "'. Aborting...");
+            }
+        });
     }
 
     public static Boolean isLoaded(Player player) {
@@ -76,6 +75,7 @@ public class LvDataPluginAPI {
                         }
 
                         api.setValue(value);
+                        Bukkit.broadcastMessage("uhu");
                         return true;
 
                     }
@@ -100,7 +100,6 @@ public class LvDataPluginAPI {
 
     public static void unloadPlayer(Player player) {
         if (isLoaded(player)) {
-            PreparedStatement pst;
             String query = "";
 
             ArrayList<PlayerVariable> array = new ArrayList<>();
@@ -116,14 +115,13 @@ public class LvDataPluginAPI {
 
             query = "UPDATE `wn_data` SET " + query + "last_update = '" + LvDataPlugin.now + "' WHERE uuid = '" + player.getUniqueId() + "';";
             try {
-                pst = SQLiteConnection.conn.prepareStatement(query);
+                PreparedStatement pst = SQLiteConnection.conn.prepareStatement(query);
                 pst.execute();
                 pst.close();
             } catch (SQLException e) {
                 e.printStackTrace();
                 LvDataPlugin.broadcastWarn("SQLite failed when tried save variables of the player '" + player.getName() + "'.");
             }
-
         } else {
             LvDataPlugin.broadcastWarn("The player '" + player.getName() + "' is not loaded!");
         }
@@ -159,23 +157,24 @@ public class LvDataPluginAPI {
 
     public static void savePlayer(Player player) {
         if (isLoaded(player)) {
-            PreparedStatement pst;
-            String query = "";
+            Bukkit.getScheduler().runTaskAsynchronously(LvDataPlugin.getInstance(), () -> {
+                PreparedStatement pst;
+                String query = "";
 
-            for (PlayerVariable api : LvDataPlugin.playerapi.keySet()) {
-                if (api.getPlayer() == player) { query = query + api.getVariableName() + " = '" + api.getValue() + "', "; }
-            }
+                for (PlayerVariable api : LvDataPlugin.playerapi.keySet()) {
+                    if (api.getPlayer() == player) { query = query + api.getVariableName() + " = '" + api.getValue() + "', "; }
+                }
 
-            query = "UPDATE `wn_data` SET " + query + "last_update = '" + LvDataPlugin.now + "' WHERE uuid = '" + player.getUniqueId() + "';";
-            try {
-                pst = SQLiteConnection.conn.prepareStatement(query);
-                pst.execute();
-                pst.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-                LvDataPlugin.broadcastWarn("SQLite attempted save player '" + player.getName() + "' without success.");
-            }
-
+                query = "UPDATE `wn_data` SET " + query + "last_update = '" + LvDataPlugin.now + "' WHERE uuid = '" + player.getUniqueId() + "';";
+                try {
+                    pst = SQLiteConnection.conn.prepareStatement(query);
+                    pst.execute();
+                    pst.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    LvDataPlugin.broadcastWarn("SQLite attempted save player '" + player.getName() + "' without success.");
+                }
+            });
         }
     }
 

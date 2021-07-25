@@ -32,10 +32,10 @@ public class LvDataPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-
         saveDefaultConfig();
-        Bukkit.getPluginManager().registerEvents(new BukkitDefaultEvents(), this);
+
         SQLiteConnection.connect();
+        Bukkit.getPluginManager().registerEvents(new BukkitDefaultEvents(), this);
 
         new Variable(this, "examplevar", "example-value");
         gitlink = "https://github.com/LaivyTLife/DataAPI";
@@ -52,13 +52,13 @@ public class LvDataPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        SQLiteConnection.close();
         stopAutoSave();
 
         for (Player player : getServer().getOnlinePlayers()) {
             unloadPlayer(player);
         }
 
+        SQLiteConnection.close();
     }
 
     public static LvDataPlugin getInstance() {
@@ -81,7 +81,6 @@ public class LvDataPlugin extends JavaPlugin {
                 Bukkit.getScheduler().runTaskAsynchronously(LvDataPlugin.getInstance(), () -> {
                     for (Player player : LvDataPlugin.getInstance().getServer().getOnlinePlayers()) {
                         if (isLoaded(player)) {
-                            Bukkit.broadcastMessage("aaaaa");
                             saved = true;
                             savePlayer(player);
                         }
