@@ -1,0 +1,5 @@
+name: LvDataAPI
+version: 1.0-SNAPSHOT
+main: net.redewhite.LVDataAPI.Main
+author: DanielZinh#7616
+description: "API criada para armazenamento de dados dos jogadores."
