@@ -1,6 +1,3 @@
-# Debug (for expert users)
-debug: true
-
 # Auto save time
 # To not auto-save, just insert 0.
 

@@ -23,8 +23,7 @@ public class LvDataPlugin extends JavaPlugin {
     private static BukkitRunnable task = null;
 
     private static Boolean saved;
-    public static String gitlink = "https://github.com/LaivyTLife/DataAPI";
-    public static Boolean debug = LvDataPlugin.getInstance().getConfig().getBoolean("debug");
+    public static String gitlink;
 
     public static String now = new SimpleDateFormat("dd/MM/yyyy - hh:mm").format(new Date());
 
@@ -34,11 +33,12 @@ public class LvDataPlugin extends JavaPlugin {
     public void onEnable() {
         instance = this;
         saveDefaultConfig();
-        SQLiteConnection.connect();
 
+        SQLiteConnection.connect();
         Bukkit.getPluginManager().registerEvents(new BukkitDefaultEvents(), this);
 
         new Variable(this, "examplevar", "example-value");
+        gitlink = "https://github.com/LaivyTLife/DataAPI";
 
         if (!(getConfig().getInt("AutoSaver") == 0)) {
             startAutoSave(getConfig().getInt("AutoSaver"));

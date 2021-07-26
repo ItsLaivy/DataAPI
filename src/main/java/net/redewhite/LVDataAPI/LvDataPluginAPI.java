@@ -24,14 +24,14 @@ public class LvDataPluginAPI {
             try (ResultSet result = statement.executeQuery("SELECT * FROM `wn_data` WHERE uuid = '" + player.getUniqueId() + "';")) {
                 while (result.next()) { return; }
             } catch (SQLException e) {
-                if (LvDataPlugin.debug) e.printStackTrace();
+                e.printStackTrace();
             }
 
             try (PreparedStatement pstmt = SQLiteConnection.conn.prepareStatement("INSERT INTO `wn_data` (uuid, nickname, last_update) VALUES ('" + player.getUniqueId() + "', '" + player.getName() + "', '" + LvDataPlugin.now + "');")) {
                 pstmt.execute();
                 LvDataPlugin.broadcastInfo("Successfully registered player '" + player.getName() + "'.");
             } catch (SQLException e) {
-                if (LvDataPlugin.debug) e.printStackTrace();
+                e.printStackTrace();
                 LvDataPlugin.broadcastWarn("Internal error when trying to register player '" + player.getName() + "'. Aborting...");
             }
             loadPlayer(player);
@@ -114,7 +114,7 @@ public class LvDataPluginAPI {
             try (PreparedStatement pst = SQLiteConnection.conn.prepareStatement(query)) {
                 pst.execute();
             } catch (SQLException e) {
-                if (LvDataPlugin.debug) e.printStackTrace();
+                e.printStackTrace();
                 LvDataPlugin.broadcastWarn("SQLite failed when tried save variables of the player '" + player.getName() + "'.");
             }
         } else {
@@ -130,11 +130,15 @@ public class LvDataPluginAPI {
             try (ResultSet result = statement.executeQuery("SELECT * FROM `wn_data` WHERE uuid = '" + player.getUniqueId() + "';")) {
                 while (result.next()) {
                     for (Variable api : LvDataPlugin.dataapi.keySet()) {
-                        new PlayerVariable(player, LvDataPlugin.getInstance(), api.getName(), result.getObject(api.getVariableName()));
+                        try {
+                            new PlayerVariable(player, LvDataPlugin.getInstance(), api.getName(), result.getObject(api.getVariableName()));
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             } catch (SQLException e) {
-                if (LvDataPlugin.debug) e.printStackTrace();
+                e.printStackTrace();
                 LvDataPlugin.broadcastWarn("Variables of player '" + player.getName() + "' couldn't be loaded, aborting...");
             }
 
@@ -149,16 +153,14 @@ public class LvDataPluginAPI {
                 String query = "";
 
                 for (PlayerVariable api : LvDataPlugin.playerapi.keySet()) {
-                    if (api.getPlayer() == player) {
-                        query = query + api.getVariableName() + " = '" + api.getValue() + "', ";
-                    }
+                    if (api.getPlayer() == player) { query = query + api.getVariableName() + " = '" + api.getValue() + "', "; }
                 }
 
                 query = "UPDATE `wn_data` SET " + query + "last_update = '" + LvDataPlugin.now + "' WHERE uuid = '" + player.getUniqueId() + "';";
                 try (PreparedStatement pst = SQLiteConnection.conn.prepareStatement(query)) {
                     pst.execute();
                 } catch (SQLException e) {
-                    if (LvDataPlugin.debug) e.printStackTrace();
+                    e.printStackTrace();
                     LvDataPlugin.broadcastWarn("SQLite attempted save player '" + player.getName() + "' without success.");
                 }
             });
