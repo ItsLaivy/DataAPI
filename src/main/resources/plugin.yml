@@ -3,3 +3,4 @@ version: 1.0-SNAPSHOT
 main: net.redewhite.lvdataapi.LvDataPlugin
 author: DanielZinh#7616
 description: "API criada para armazenamento de dados dos jogadores."
+api-version: 1.16

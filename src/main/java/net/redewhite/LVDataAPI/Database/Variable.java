@@ -47,7 +47,7 @@ public class Variable {
             pst.execute();
         } catch (SQLException e) {
             if (!e.getMessage().contains("duplicate column name:")) {
-                e.printStackTrace();
+                if (LvDataPlugin.debug) e.printStackTrace();
                 LvDataPlugin.broadcastWarn("SQLite variable named '" + name + "' couldn't be created.");
                 return 0;
             } else {
