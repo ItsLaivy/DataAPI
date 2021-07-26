@@ -48,6 +48,7 @@ public class SQLiteConnection {
         try (PreparedStatement pstmt = conn.prepareStatement("CREATE TABLE IF NOT EXISTS `wn_data` (`id` INTEGER, `nickname` TEXT, `uuid` TEXT, `last_update` TEXT, PRIMARY KEY(`id` AUTOINCREMENT))")) {
             pstmt.execute();
         } catch (SQLException e) {
+            if (LvDataPlugin.debug) e.printStackTrace();
             LvDataPlugin.broadcastWarn("SQLite database create process failed. Deactivating plugin...");
             inst.getPluginLoader().disablePlugin(inst);
         }
