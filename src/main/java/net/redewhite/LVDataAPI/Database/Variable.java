@@ -3,6 +3,7 @@ package net.redewhite.lvdataapi.database;
 import net.redewhite.lvdataapi.LvDataPlugin;
 import org.bukkit.plugin.Plugin;
 
+import javax.xml.crypto.Data;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
@@ -45,10 +46,10 @@ public class Variable {
     }
 
     private Integer tryCreateColumn() {
-        try (PreparedStatement pst = SQLiteConnection.conn.prepareStatement("ALTER TABLE `wn_data` ADD COLUMN " + varname + " " + type + " DEFAULT '" + value + "';")) {
+        try (PreparedStatement pst = DatabaseConnection.conn.prepareStatement("ALTER TABLE `wn_data` ADD COLUMN " + varname + " " + type + " DEFAULT '" + value + "';")) {
             pst.execute();
         } catch (SQLException e) {
-            if (!e.getMessage().contains("duplicate column name:")) {
+            if (!e.getMessage().contains("uplicate column name")) {
                 if (LvDataPlugin.debug) e.printStackTrace();
                 LvDataPlugin.broadcastWarn("SQLite variable named '" + name + "' couldn't be created.");
                 return 0;

@@ -1,7 +1,7 @@
 package net.redewhite.lvdataapi;
 
+import net.redewhite.lvdataapi.database.DatabaseConnection;
 import net.redewhite.lvdataapi.database.PlayerVariable;
-import net.redewhite.lvdataapi.database.SQLiteConnection;
 import net.redewhite.lvdataapi.database.Variable;
 import net.redewhite.lvdataapi.events.BukkitDefaultEvents;
 import org.bukkit.Bukkit;
@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -23,8 +24,9 @@ public class LvDataPlugin extends JavaPlugin {
     private static BukkitRunnable task = null;
 
     private static Boolean saved;
-    public static String gitlink = "https://github.com/LaivyTLife/DataAPI";
     public static Boolean debug;
+
+    public static String database_type;
 
     public static String now = new SimpleDateFormat("dd/MM/yyyy - hh:mm").format(new Date());
 
@@ -34,19 +36,28 @@ public class LvDataPlugin extends JavaPlugin {
     public void onEnable() {
         instance = this;
         saveDefaultConfig();
-        SQLiteConnection.connect();
-        debug = LvDataPlugin.getInstance().getConfig().getBoolean("debug");
+        debug = getConfig().getBoolean("debug");
 
-        Bukkit.getPluginManager().registerEvents(new BukkitDefaultEvents(), this);
-
-        new Variable(this, "examplevar", "example-value");
-
-        if (!(getConfig().getInt("AutoSaver") == 0)) {
-            startAutoSave(getConfig().getInt("AutoSaver"));
+        try {
+            DatabaseConnection.connect();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            return;
         }
 
-        for (Player player : getServer().getOnlinePlayers()) {
-            loadPlayer(player);
+        if (DatabaseConnection.conn != null) {
+
+            Bukkit.getPluginManager().registerEvents(new BukkitDefaultEvents(), this);
+
+            new Variable(this, "examplevar", "example-value");
+
+            if (!(getConfig().getInt("AutoSaver") == 0)) {
+                startAutoSave(getConfig().getInt("AutoSaver"));
+            }
+
+            for (Player player : getServer().getOnlinePlayers()) {
+                loadPlayer(player);
+            }
         }
 
     }
@@ -59,7 +70,7 @@ public class LvDataPlugin extends JavaPlugin {
             unloadPlayer(player);
         }
 
-        SQLiteConnection.close();
+        DatabaseConnection.close();
     }
 
     public static LvDataPlugin getInstance() {

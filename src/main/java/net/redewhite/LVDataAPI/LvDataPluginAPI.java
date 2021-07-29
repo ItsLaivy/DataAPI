@@ -1,7 +1,7 @@
 package net.redewhite.lvdataapi;
 
+import net.redewhite.lvdataapi.database.DatabaseConnection;
 import net.redewhite.lvdataapi.database.PlayerVariable;
-import net.redewhite.lvdataapi.database.SQLiteConnection;
 import net.redewhite.lvdataapi.database.Variable;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -14,7 +14,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Map;
 
-import static net.redewhite.lvdataapi.database.SQLiteConnection.createStatement;
+import static net.redewhite.lvdataapi.database.DatabaseConnection.createStatement;
 
 public class LvDataPluginAPI {
 
@@ -27,7 +27,15 @@ public class LvDataPluginAPI {
                 if (LvDataPlugin.debug) e.printStackTrace();
             }
 
-            try (PreparedStatement pstmt = SQLiteConnection.conn.prepareStatement("INSERT INTO `wn_data` (uuid, nickname, last_update) VALUES ('" + player.getUniqueId() + "', '" + player.getName() + "', '" + LvDataPlugin.now + "');")) {
+            try {
+                PreparedStatement pstmt = null;
+
+                if (LvDataPlugin.database_type.equals("MySQL")) {
+                    pstmt = DatabaseConnection.conn.prepareStatement("INSERT INTO `wn_data` (id, uuid, nickname, last_update) VALUES (DEFAULT, '" + player.getUniqueId() + "', '" + player.getName() + "', '" + LvDataPlugin.now + "');");
+                } else {
+                    pstmt = DatabaseConnection.conn.prepareStatement("INSERT INTO `wn_data` (uuid, nickname, last_update) VALUES ('" + player.getUniqueId() + "', '" + player.getName() + "', '" + LvDataPlugin.now + "');");
+                }
+
                 pstmt.execute();
                 LvDataPlugin.broadcastInfo("Successfully registered player '" + player.getName() + "'.");
             } catch (SQLException e) {
@@ -111,7 +119,7 @@ public class LvDataPluginAPI {
             }
 
             query = "UPDATE `wn_data` SET " + query + "last_update = '" + LvDataPlugin.now + "' WHERE uuid = '" + player.getUniqueId() + "';";
-            try (PreparedStatement pst = SQLiteConnection.conn.prepareStatement(query)) {
+            try (PreparedStatement pst = DatabaseConnection.conn.prepareStatement(query)) {
                 pst.execute();
             } catch (SQLException e) {
                 if (LvDataPlugin.debug) e.printStackTrace();
@@ -155,7 +163,7 @@ public class LvDataPluginAPI {
                 }
 
                 query = "UPDATE `wn_data` SET " + query + "last_update = '" + LvDataPlugin.now + "' WHERE uuid = '" + player.getUniqueId() + "';";
-                try (PreparedStatement pst = SQLiteConnection.conn.prepareStatement(query)) {
+                try (PreparedStatement pst = DatabaseConnection.conn.prepareStatement(query)) {
                     pst.execute();
                 } catch (SQLException e) {
                     if (LvDataPlugin.debug) e.printStackTrace();

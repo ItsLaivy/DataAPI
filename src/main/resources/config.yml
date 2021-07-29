@@ -1,3 +1,7 @@
+# Discord: DanielZinh#7616
+# https://github.com/LaivyTLife/DataAPI
+
+
 # Debug (for expert users)
 debug: true
 
@@ -6,3 +10,20 @@ debug: true
 
 # Values more than 600 seconds is not recommended.
 AutoSaver: 600 # seconds
+
+# MySQL connection
+
+# if mysql connection fail, will be set to sqlite? (will stop plugin if false)
+allow-sqlite: true
+
+mysql-user: root
+mysql-password: password
+mysql-address: localhost
+mysql-database: data
+mysql-port: 3306
+
+# Close server if connection not successfully established?
+# The plugin will generate an exception log if true
+# Just stops plugin if false
+
+close-server: false
