@@ -5,22 +5,27 @@ import net.redewhite.lvdataapi.LvDataPlugin;
 import java.io.File;
 import java.sql.*;
 
+import static net.redewhite.lvdataapi.LvDataPlugin.config;
+import static net.redewhite.lvdataapi.LvDataPlugin.instance;
+
 public class DatabaseConnection {
 
-    private static final LvDataPlugin inst = LvDataPlugin.getInstance();
     public static Connection conn;
 
     public static void connect() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://" + inst.getConfig().get("mysql-address") + ":" + inst.getConfig().get("mysql-port") + "/" + inst.getConfig().get("mysql-database"), (String) inst.getConfig().get("mysql-user"), (String) inst.getConfig().get("mysql-password"));
+            conn = DriverManager.getConnection("jdbc:mysql://" + config.get("mysql-address") + ":" + config.get("mysql-port") + "/" + config.get("mysql-database"), (String) config.get("mysql-user"), (String) config.get("mysql-password"));
             LvDataPlugin.broadcastInfo("MySQL connection has been successfully established.");
             LvDataPlugin.database_type = "MySQL";
         } catch (Exception e) {
-            if ((Boolean) inst.getConfig().get("allow-sqlite")) {
+            if (!config.getBoolean("allow-sqlite")) {
+                LvDataPlugin.broadcastWarn("MySQL connection failed. Deactivating plugin...");
+                stopPlugin();
+            } else {
                 try {
                     Class.forName("org.sqlite.JDBC");
-                    File file = new File(inst.getDataFolder() + File.separator + "database.db");
+                    File file = new File(instance.getDataFolder() + File.separator + "database.db");
 
                     conn = DriverManager.getConnection("jdbc:sqlite:" + file);
                     LvDataPlugin.broadcastInfo("SQLite connection has been successfully established.");
@@ -30,14 +35,9 @@ public class DatabaseConnection {
                     LvDataPlugin.broadcastWarn("SQLite connection failed. Deactivating plugin...");
                     stopPlugin();
                 }
-            } else {
-                LvDataPlugin.broadcastWarn("MySQL connection failed. Deactivating plugin...");
-                stopPlugin();
             }
         }
-
         createDatabase();
-
     }
 
     public static void close() {
@@ -47,15 +47,16 @@ public class DatabaseConnection {
         } catch (SQLException e) {
             if (LvDataPlugin.debug) e.printStackTrace();
             LvDataPlugin.broadcastWarn("Database closing process could not be established.");
+        } catch (NullPointerException ignore) {
         }
     }
 
     private static void stopPlugin() {
-        if (inst.getConfig().getBoolean("close-server")) {
-            inst.getServer().shutdown();
-            return;
+        if (config.getBoolean("close-server")) {
+            instance.getServer().shutdown();
+        } else {
+            instance.getPluginLoader().disablePlugin(instance);
         }
-        inst.getPluginLoader().disablePlugin(inst);
     }
 
     public static Statement createStatement() {
@@ -64,6 +65,7 @@ public class DatabaseConnection {
         } catch (SQLException e) {
             e.printStackTrace();
             LvDataPlugin.broadcastWarn("Database's statement creation process failed.");
+        } catch (NullPointerException ignore) {
         }
         return null;
     }
@@ -75,6 +77,7 @@ public class DatabaseConnection {
             if (LvDataPlugin.debug) e.printStackTrace();
             LvDataPlugin.broadcastWarn("Database create process failed. Deactivating plugin...");
             stopPlugin();
+        } catch (NullPointerException ignore) {
         }
     }
 

@@ -1,7 +1,6 @@
 # Discord: DanielZinh#7616
 # https://github.com/LaivyTLife/DataAPI
 
-
 # Debug (for expert users)
 debug: true
 
@@ -16,10 +15,10 @@ AutoSaver: 600 # seconds
 # if mysql connection fail, will be set to sqlite? (will stop plugin if false)
 allow-sqlite: true
 
-mysql-user: root
-mysql-password: password
-mysql-address: localhost
-mysql-database: data
+mysql-user: 'root'
+mysql-password: 'password'
+mysql-address: 'localhost'
+mysql-database: 'data'
 mysql-port: 3306
 
 # Close server if connection not successfully established?

@@ -5,10 +5,12 @@ import net.redewhite.lvdataapi.database.PlayerVariable;
 import net.redewhite.lvdataapi.database.Variable;
 import net.redewhite.lvdataapi.events.BukkitDefaultEvents;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.io.File;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,6 +24,8 @@ public class LvDataPlugin extends JavaPlugin {
     public static HashMap<PlayerVariable, Player> playerapi = new HashMap<>();
 
     private static BukkitRunnable task = null;
+
+    public static YamlConfiguration config;
 
     private static Boolean saved;
     public static Boolean debug;
@@ -37,6 +41,9 @@ public class LvDataPlugin extends JavaPlugin {
         instance = this;
         saveDefaultConfig();
         debug = getConfig().getBoolean("debug");
+
+        File configFile = new File(getInstance().getDataFolder() + File.separator + "config.yml");
+        config = YamlConfiguration.loadConfiguration(configFile);
 
         try {
             DatabaseConnection.connect();
@@ -66,8 +73,10 @@ public class LvDataPlugin extends JavaPlugin {
     public void onDisable() {
         stopAutoSave();
 
-        for (Player player : getServer().getOnlinePlayers()) {
-            unloadPlayer(player);
+        if (DatabaseConnection.conn != null) {
+            for (Player player : getServer().getOnlinePlayers()) {
+                unloadPlayer(player);
+            }
         }
 
         DatabaseConnection.close();

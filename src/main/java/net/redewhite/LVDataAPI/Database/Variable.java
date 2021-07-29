@@ -1,6 +1,7 @@
 package net.redewhite.lvdataapi.database;
 
 import net.redewhite.lvdataapi.LvDataPlugin;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
 import javax.xml.crypto.Data;
@@ -56,6 +57,8 @@ public class Variable {
             } else {
                 return 1;
             }
+        } catch (NullPointerException e) {
+            return 0;
         }
         return 2;
     }
