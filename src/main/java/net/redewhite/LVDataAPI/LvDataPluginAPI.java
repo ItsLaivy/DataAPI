@@ -28,7 +28,7 @@ public class LvDataPluginAPI {
             }
 
             try {
-                PreparedStatement pstmt = null;
+                PreparedStatement pstmt;
 
                 if (LvDataPlugin.database_type.equals("MySQL")) {
                     pstmt = DatabaseConnection.conn.prepareStatement("INSERT INTO `wn_data` (id, uuid, nickname, last_update) VALUES (DEFAULT, '" + player.getUniqueId() + "', '" + player.getName() + "', '" + LvDataPlugin.now + "');");

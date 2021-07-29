@@ -2,11 +2,15 @@ package net.redewhite.lvdataapi.database;
 
 import net.redewhite.lvdataapi.LvDataPlugin;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import javax.xml.crypto.Data;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+
+import static net.redewhite.lvdataapi.database.DatabaseConnection.createStatement;
 
 public class Variable {
 
@@ -40,8 +44,29 @@ public class Variable {
             LvDataPlugin.dataapi.put(this, varname);
             if (trycreate == 1) {
                 LvDataPlugin.broadcastInfo("Successfully loaded variable '" + name + "' of the plugin '" + plugin.getName() + "'.");
+
+                Bukkit.getScheduler().runTaskAsynchronously(LvDataPlugin.getInstance(), () -> {
+                    for (Player player : LvDataPlugin.instance.getServer().getOnlinePlayers()) {
+                        ResultSet result;
+                        Statement statement = createStatement();
+
+                        try {
+                            assert statement != null;
+                            result = statement.executeQuery("SELECT " + varname + " FROM `wn_data` WHERE uuid = '" + player.getUniqueId() + "';");
+                            while (result.next()) {
+                                new PlayerVariable(player, plugin, name, result.getObject(varname));
+                            }
+                        } catch (SQLException throwables) {
+                            throwables.printStackTrace();
+                        }
+                    }
+                });
+
             } else {
                 LvDataPlugin.broadcastInfo("Successfully created variable '" + name + "' of the plugin '" + plugin.getName() + "'.");
+                for (Player player : LvDataPlugin.instance.getServer().getOnlinePlayers()) {
+                    new PlayerVariable(player, plugin, name, value);
+                }
             }
         }
     }
