@@ -11,10 +11,12 @@ public class Variable {
     private final String name;
     private final String varname;
     private final Object value;
+    private final Plugin plugin;
     private String type;
 
     public Variable(Plugin plugin, String name, Object value) {
 
+        this.plugin = plugin;
         this.name = name;
         this.value = value;
         this.varname = plugin.getName() + "_" + name;
@@ -65,5 +67,8 @@ public class Variable {
     }
     public String getType() {
         return type;
+    }
+    public Plugin getPlugin() {
+        return plugin;
     }
 }

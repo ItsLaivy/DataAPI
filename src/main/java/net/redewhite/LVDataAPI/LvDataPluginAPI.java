@@ -130,7 +130,7 @@ public class LvDataPluginAPI {
             try (ResultSet result = statement.executeQuery("SELECT * FROM `wn_data` WHERE uuid = '" + player.getUniqueId() + "';")) {
                 while (result.next()) {
                     for (Variable api : LvDataPlugin.dataapi.keySet()) {
-                        new PlayerVariable(player, LvDataPlugin.getInstance(), api.getName(), result.getObject(api.getVariableName()));
+                        new PlayerVariable(player, api.getPlugin(), api.getName(), result.getObject(api.getVariableName()));
                     }
                 }
             } catch (SQLException e) {

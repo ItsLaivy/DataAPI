@@ -24,7 +24,7 @@ public class LvDataPlugin extends JavaPlugin {
 
     private static Boolean saved;
     public static String gitlink = "https://github.com/LaivyTLife/DataAPI";
-    public static Boolean debug = LvDataPlugin.getInstance().getConfig().getBoolean("debug");
+    public static Boolean debug;
 
     public static String now = new SimpleDateFormat("dd/MM/yyyy - hh:mm").format(new Date());
 
@@ -35,6 +35,7 @@ public class LvDataPlugin extends JavaPlugin {
         instance = this;
         saveDefaultConfig();
         SQLiteConnection.connect();
+        debug = LvDataPlugin.getInstance().getConfig().getBoolean("debug");
 
         Bukkit.getPluginManager().registerEvents(new BukkitDefaultEvents(), this);
 
