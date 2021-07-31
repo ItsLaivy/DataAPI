@@ -35,7 +35,7 @@ public class Variable {
         try {
             Integer.parseInt(String.valueOf(value));
             this.type = "INT";
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException ignore) {
             this.type = "TEXT";
         }
 

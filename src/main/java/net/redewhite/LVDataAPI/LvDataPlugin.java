@@ -11,7 +11,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -27,8 +26,8 @@ public class LvDataPlugin extends JavaPlugin {
 
     public static YamlConfiguration config;
 
-    private static Boolean saved;
-    public static Boolean debug;
+    private static Boolean saved = false;
+    public static Boolean debug = false;
 
     public static String database_type;
 

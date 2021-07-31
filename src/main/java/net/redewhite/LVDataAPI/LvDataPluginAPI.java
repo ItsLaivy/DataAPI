@@ -69,7 +69,7 @@ public class LvDataPluginAPI {
                         } assert type != null;
 
                         try {
-                            Integer.parseInt(name);
+                            Integer.parseInt(value.toString());
                             if (!type.equalsIgnoreCase("INT")) {
                                 return false;
                             }
@@ -80,7 +80,6 @@ public class LvDataPluginAPI {
                         }
 
                         api.setValue(value);
-                        Bukkit.broadcastMessage("uhu");
                         return true;
 
                     }
