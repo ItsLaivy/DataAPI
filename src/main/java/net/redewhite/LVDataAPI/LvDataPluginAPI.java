@@ -136,12 +136,13 @@ public class LvDataPluginAPI {
             if (i.getPlugin() == plugin) {
                 if (i.getPlayer() == player) {
                     if (i.getName().equalsIgnoreCase(name)) {
+                        if (i.getValue().toString().equalsIgnoreCase("[]")) return new ArrayList<>();
                         return new ArrayList<>(Arrays.asList(i.getValue().toString().replace("[", "").replace("]", "").split(", ")));
                     }
                 }
             }
         }
-        return null;
+        return new ArrayList<>();
     }
 
     public static void unloadPlayer(Player player) {
