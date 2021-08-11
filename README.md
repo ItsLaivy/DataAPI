@@ -71,7 +71,10 @@ setVariable(this, player, "nome-da-variável", "novo-valor")
 ```
 ```java
 static Boolean setArrayVariable(Plugin plugin, Player player, String name, ArrayList value)
-setVariable(this, player, "nome-da-variável", novo-valor-array)
+setVariable(this, player, "nome-da-variável-array", novo-valor-array)
+
+static Boolean addToArrayVariable(Plugin plugin, Player player, String name, ArrayList value)
+addToArrayVariable(plugin, player, "nome-da-variável-array", valor-array-adicionado)
 ```
 
 </br>

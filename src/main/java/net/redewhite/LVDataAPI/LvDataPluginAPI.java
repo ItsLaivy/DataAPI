@@ -108,9 +108,44 @@ public class LvDataPluginAPI {
                             return false;
                         }
 
-                        api.setValue(value.toString());
+                        ArrayList<String> array = new ArrayList<>();
+                        for (Object str : value) {
+                            String strFinal = str.toString().replace(",", "<COMMA>");
+                            array.add(strFinal);
+                        }
+
+                        api.setValue(array.toString().replace("[", "").replace("]", ""));
                         return true;
 
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public static Boolean addToArrayVariable(Plugin plugin, Player player, String name, ArrayList value) {
+        for (PlayerVariable api : playerapi.keySet()) {
+            if (api.getPlugin() == plugin) {
+                if (api.getPlayer() == player) {
+                    if (api.getName().equalsIgnoreCase(name)) {
+
+                        if (!(api.getVariableName().contains("_ARRAYLIST_"))) {
+                            return false;
+                        }
+
+                        ArrayList values = new ArrayList<>();
+                        for (Object str : getArrayVariable(plugin, player, name)) {
+                            String strFinal = str.toString().replace(",", "<COMMA>");
+                            values.add(strFinal);
+                        }
+                        for (Object str : value) {
+                            String strFinal = str.toString().replace(",", "<COMMA>");
+                            values.add(strFinal);
+                        }
+
+                        api.setValue(values.toString().replace("[", "").replace("]", ""));
+                        return true;
                     }
                 }
             }
@@ -135,8 +170,15 @@ public class LvDataPluginAPI {
             if (i.getPlugin() == plugin) {
                 if (i.getPlayer() == player) {
                     if (i.getName().equalsIgnoreCase(name)) {
-                        if (i.getValue().toString().equalsIgnoreCase("[]")) return new ArrayList<>();
-                        return new ArrayList<>(Arrays.asList(i.getValue().toString().replace("[", "").replace("]", "").split(", ")));
+                        if (i.getValue().toString().equalsIgnoreCase("")) return new ArrayList<>();
+
+                        ArrayList<String> array = new ArrayList<>();
+                        for (String str : i.getValue().toString().split(", ")) {
+                            String strFinal = str.replace("<COMMA>", ",");
+                            array.add(strFinal);
+                        }
+
+                        return array;
                     }
                 }
             }

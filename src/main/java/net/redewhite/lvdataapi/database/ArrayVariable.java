@@ -22,9 +22,14 @@ public class ArrayVariable {
 
     public ArrayVariable(Plugin plugin, String name, ArrayList value) {
 
+        ArrayList<String> finalArray = new ArrayList<>();
+        for (Object str : value) {
+            finalArray.add(str.toString().replace(",", "<COMMA>"));
+        }
+
         this.plugin = plugin;
         this.name = name;
-        this.value = value;
+        this.value = finalArray.toString().replace("[", "").replace("]", "");
         this.varname = plugin.getName() + "_ARRAYLIST_" + name;
         this.type = "TEXT";
 
