@@ -1,9 +1,11 @@
 package net.redewhite.lvdataapi;
 
+import net.redewhite.lvdataapi.database.ArrayVariable;
 import net.redewhite.lvdataapi.database.DatabaseConnection;
 import net.redewhite.lvdataapi.database.PlayerVariable;
 import net.redewhite.lvdataapi.database.Variable;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -12,8 +14,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.Arrays;
 
+import static net.redewhite.lvdataapi.LvDataPlugin.broadcastColoredMessage;
+import static net.redewhite.lvdataapi.LvDataPlugin.playerapi;
 import static net.redewhite.lvdataapi.database.DatabaseConnection.createStatement;
 
 public class LvDataPluginAPI {
@@ -21,6 +25,8 @@ public class LvDataPluginAPI {
     public static void registerPlayer(Player player) {
         Bukkit.getScheduler().runTaskAsynchronously(LvDataPlugin.getInstance(), () -> {
             Statement statement = createStatement();
+            assert statement != null;
+
             try (ResultSet result = statement.executeQuery("SELECT * FROM `wn_data` WHERE uuid = '" + player.getUniqueId() + "';")) {
                 while (result.next()) { return; }
             } catch (SQLException e) {
@@ -37,18 +43,18 @@ public class LvDataPluginAPI {
                 }
 
                 pstmt.execute();
-                LvDataPlugin.broadcastInfo("Successfully registered player '" + player.getName() + "'.");
+                broadcastColoredMessage("§aSuccessfully registered player '§2" + player.getName() + "§a'.");
             } catch (SQLException e) {
                 if (LvDataPlugin.debug) e.printStackTrace();
-                LvDataPlugin.broadcastWarn("Internal error when trying to register player '" + player.getName() + "'. Aborting...");
+                broadcastColoredMessage("§cInternal error when trying to register player '§4" + player.getName() + "§c'. Aborting...");
             }
             loadPlayer(player);
         });
     }
 
     public static Boolean isLoaded(Player player) {
-        for (Map.Entry<PlayerVariable, Player> api : LvDataPlugin.playerapi.entrySet()) {
-            if (api.getValue().getPlayer() == player) {
+        for (PlayerVariable api : playerapi.keySet()) {
+            if (api.getPlayer() == player) {
                 return true;
             }
         }
@@ -56,13 +62,17 @@ public class LvDataPluginAPI {
     }
 
     public static Boolean setVariable(Plugin plugin, Player player, String name, Object value) {
-        for (PlayerVariable api : LvDataPlugin.playerapi.keySet()) {
+        for (PlayerVariable api : playerapi.keySet()) {
             if (api.getPlugin() == plugin) {
                 if (api.getPlayer() == player) {
                     if (api.getName().equalsIgnoreCase(name)) {
 
+                        if (api.getVariableName().contains("_ARRAYLIST_")) {
+                            return false;
+                        }
+
                         String type = null;
-                        for (Variable var : LvDataPlugin.dataapi.keySet()) {
+                        for (Variable var : LvDataPlugin.variables.keySet()) {
                             if (api.getVariableName().equals(var.getVariableName())) {
                                 type = var.getType();
                             }
@@ -89,12 +99,44 @@ public class LvDataPluginAPI {
         return false;
     }
 
+    public static Boolean setArrayVariable(Plugin plugin, Player player, String name, ArrayList value) {
+        for (PlayerVariable api : playerapi.keySet()) {
+            if (api.getPlugin() == plugin) {
+                if (api.getPlayer() == player) {
+                    if (api.getName().equalsIgnoreCase(name)) {
+
+                        if (!(api.getVariableName().contains("_ARRAYLIST_"))) {
+                            return false;
+                        }
+
+                        api.setValue(value.toString());
+                        return true;
+
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     public static Object getVariable(Plugin plugin, Player player, String name) {
-        for (PlayerVariable i : LvDataPlugin.playerapi.keySet()) {
+        for (PlayerVariable i : playerapi.keySet()) {
+            if (i.getPlugin() == plugin) {
+                if (i.getPlayer() == player) {
+                    if (i.getName().equalsIgnoreCase(ChatColor.AQUA + name)) {
+                        return i.getValue();
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    public static ArrayList getArrayVariable(Plugin plugin, Player player, String name) {
+        for (PlayerVariable i : playerapi.keySet()) {
             if (i.getPlugin() == plugin) {
                 if (i.getPlayer() == player) {
                     if (i.getName().equalsIgnoreCase(name)) {
-                        return i.getValue();
+                        return new ArrayList<>(Arrays.asList(i.getValue().toString().replace("[", "").replace("]", "").split(", ")));
                     }
                 }
             }
@@ -107,25 +149,26 @@ public class LvDataPluginAPI {
             String query = "";
 
             ArrayList<PlayerVariable> array = new ArrayList<>();
-            for (PlayerVariable api : LvDataPlugin.playerapi.keySet()) {
+            for (PlayerVariable api : playerapi.keySet()) {
                 if (api.getPlayer() == player) {
                     query = query + api.getVariableName() + " = '" + api.getValue() + "', ";
                     array.add(api);
                 }
             }
             for (PlayerVariable api : array) {
-                LvDataPlugin.playerapi.remove(api);
+                playerapi.remove(api);
             }
+
 
             query = "UPDATE `wn_data` SET " + query + "last_update = '" + LvDataPlugin.now + "' WHERE uuid = '" + player.getUniqueId() + "';";
             try (PreparedStatement pst = DatabaseConnection.conn.prepareStatement(query)) {
                 pst.execute();
             } catch (SQLException e) {
                 if (LvDataPlugin.debug) e.printStackTrace();
-                LvDataPlugin.broadcastWarn("SQLite failed when tried save variables of the player '" + player.getName() + "'.");
+                broadcastColoredMessage("§cSQLite failed when tried save variables of the player '§4" + player.getName() + "§c'.");
             }
         } else {
-            LvDataPlugin.broadcastWarn("The player '" + player.getName() + "' is not loaded!");
+            broadcastColoredMessage("§cThe player '§4" + player.getName() + "§c' is not loaded!");
         }
     }
 
@@ -134,19 +177,24 @@ public class LvDataPluginAPI {
             registerPlayer(player);
             Statement statement = createStatement();
 
-            try (ResultSet result = statement.executeQuery("SELECT * FROM `wn_data` WHERE uuid = '" + player.getUniqueId() + "';")) {
+            try {
+                assert statement != null;
+                ResultSet result = statement.executeQuery("SELECT * FROM `wn_data` WHERE uuid = '" + player.getUniqueId() + "';");
                 while (result.next()) {
-                    for (Variable api : LvDataPlugin.dataapi.keySet()) {
-                        new PlayerVariable(player, api.getPlugin(), api.getName(), result.getObject(api.getVariableName()));
+                    for (Variable api : LvDataPlugin.variables.keySet()) {
+                        new PlayerVariable(player, api.getPlugin(), api.getName(), result.getObject(api.getVariableName()), "VARIABLE");
+                    }
+                    for (ArrayVariable api : LvDataPlugin.arrayvariables.keySet()) {
+                        new PlayerVariable(player, api.getPlugin(), api.getName(), result.getObject(api.getVariableName()), "ARRAY VARIABLE");
                     }
                 }
             } catch (SQLException e) {
                 if (LvDataPlugin.debug) e.printStackTrace();
-                LvDataPlugin.broadcastWarn("Variables of player '" + player.getName() + "' couldn't be loaded, aborting...");
+                broadcastColoredMessage("§cVariables of player '§4" + player.getName() + "§c' couldn't be loaded, aborting...");
             }
 
         } else {
-            LvDataPlugin.broadcastWarn("The player '" + player.getName() + "' is already loaded!");
+            broadcastColoredMessage("§cThe player '§4" + player.getName() + "§c' is already loaded!");
         }
     }
 
@@ -155,7 +203,7 @@ public class LvDataPluginAPI {
             Bukkit.getScheduler().runTaskAsynchronously(LvDataPlugin.getInstance(), () -> {
                 String query = "";
 
-                for (PlayerVariable api : LvDataPlugin.playerapi.keySet()) {
+                for (PlayerVariable api : playerapi.keySet()) {
                     if (api.getPlayer() == player) {
                         query = query + api.getVariableName() + " = '" + api.getValue() + "', ";
                     }
@@ -166,7 +214,7 @@ public class LvDataPluginAPI {
                     pst.execute();
                 } catch (SQLException e) {
                     if (LvDataPlugin.debug) e.printStackTrace();
-                    LvDataPlugin.broadcastWarn("SQLite attempted save player '" + player.getName() + "' without success.");
+                    broadcastColoredMessage("§cSQLite attempted save player '§4" + player.getName() + "§c' without success.");
                 }
             });
         }

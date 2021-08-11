@@ -1,10 +1,12 @@
 package net.redewhite.lvdataapi;
 
+import net.redewhite.lvdataapi.database.ArrayVariable;
 import net.redewhite.lvdataapi.database.DatabaseConnection;
 import net.redewhite.lvdataapi.database.PlayerVariable;
 import net.redewhite.lvdataapi.database.Variable;
 import net.redewhite.lvdataapi.events.BukkitDefaultEvents;
 import org.bukkit.Bukkit;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -19,7 +21,9 @@ import static net.redewhite.lvdataapi.LvDataPluginAPI.*;
 
 public class LvDataPlugin extends JavaPlugin {
 
-    public static HashMap<Variable, String> dataapi = new HashMap<>();
+    public static HashMap<Variable, String> variables = new HashMap<>();
+    public static HashMap<ArrayVariable, String> arrayvariables = new HashMap<>();
+
     public static HashMap<PlayerVariable, Player> playerapi = new HashMap<>();
 
     private static BukkitRunnable task = null;
@@ -85,11 +89,9 @@ public class LvDataPlugin extends JavaPlugin {
         return instance;
     }
 
-    public static void broadcastInfo(String message) {
-        Bukkit.getLogger().info("[" + getInstance().getDescription().getName() + "]" + " " + message);
-    }
-    public static void broadcastWarn(String message) {
-        Bukkit.getLogger().warning("[" + getInstance().getDescription().getName() + "]" + " " + message);
+    public static void broadcastColoredMessage(String message) {
+        ConsoleCommandSender console = getInstance().getServer().getConsoleSender();
+        console.sendMessage("§8[§6" + getInstance().getDescription().getName() + "§8]§7" + " " + message);
     }
 
     public static void startAutoSave(Integer seconds) {
@@ -105,7 +107,7 @@ public class LvDataPlugin extends JavaPlugin {
                             savePlayer(player);
                         }
                     }
-                    if (saved) LvDataPlugin.broadcastInfo("Successfully saved all players data.");
+                    if (saved) broadcastColoredMessage("§aSuccessfully saved all players data.");
                 });
             }
         }.runTaskTimer(LvDataPlugin.getInstance(), 0, seconds * 20);

@@ -39,6 +39,9 @@ depend: [LvDataAPI]
 ```java
 new Variable(Plugin plugin, String name, Object value);
 new Variable(this, "NOME", "VALOR");
+// ArrayList
+new ArrayVariable(Plugin plugin, String name, ArrayList value);
+new ArrayVariable(this, "NOME", arraylist);
 ```
 
 </br>
@@ -50,6 +53,13 @@ new Variable(this, "NOME", "VALOR");
 static Object getVariable(Plugin plugin, Player player, String name)
 Object var = getVariable(this, player, "nome-da-variável");
 ```
+```java
+static Object getArrayVariable(Plugin plugin, Player player, String name)
+for (Object valor : getArrayVariable(plugin, player, "nome-da-variável")) {
+    Bukkit.broadcastMessage(valor.toString());
+}
+```
+
 </br>
 <p align="center">
     Como <b>definir o valor</b> de uma variável de um jogador
@@ -58,6 +68,10 @@ Object var = getVariable(this, player, "nome-da-variável");
 ```java
 static Boolean setVariable(Plugin plugin, Player player, String name, Object value)
 setVariable(this, player, "nome-da-variável", "novo-valor")
+```
+```java
+static Boolean setArrayVariable(Plugin plugin, Player player, String name, ArrayList value)
+setVariable(this, player, "nome-da-variável", novo-valor-array)
 ```
 
 </br>
