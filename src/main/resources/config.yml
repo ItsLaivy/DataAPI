@@ -4,6 +4,9 @@
 # Debug (for expert users)
 debug: true
 
+# Name of the table
+table-name: 'wn_data'
+
 # Auto save time
 # To not auto-save, just insert 0.
 

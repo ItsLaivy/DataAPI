@@ -27,6 +27,7 @@ public class LvDataPlugin extends JavaPlugin {
     public static HashMap<PlayerVariable, Player> playerapi = new HashMap<>();
 
     private static BukkitRunnable task = null;
+    public static String tableName;
 
     public static YamlConfiguration config;
 
@@ -44,6 +45,7 @@ public class LvDataPlugin extends JavaPlugin {
         instance = this;
         saveDefaultConfig();
         debug = getConfig().getBoolean("debug");
+        tableName = getConfig().getString("table-name");
 
         File configFile = new File(getInstance().getDataFolder() + File.separator + "config.yml");
         config = YamlConfiguration.loadConfiguration(configFile);

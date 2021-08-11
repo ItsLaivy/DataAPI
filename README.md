@@ -54,9 +54,9 @@ static Object getVariable(Plugin plugin, Player player, String name)
 Object var = getVariable(this, player, "nome-da-variável");
 ```
 ```java
-static Object getArrayVariable(Plugin plugin, Player player, String name)
-for (Object valor : getArrayVariable(plugin, player, "nome-da-variável")) {
-    Bukkit.broadcastMessage(valor.toString());
+static ArrayList<String> getArrayVariable(Plugin plugin, Player player, String name)
+for (String valor : getArrayVariable(plugin, player, "nome-da-variável")) {
+    Bukkit.broadcastMessage(valor);
 }
 ```
 

@@ -16,8 +16,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static net.redewhite.lvdataapi.LvDataPlugin.broadcastColoredMessage;
-import static net.redewhite.lvdataapi.LvDataPlugin.playerapi;
+import static net.redewhite.lvdataapi.LvDataPlugin.*;
 import static net.redewhite.lvdataapi.database.DatabaseConnection.createStatement;
 
 public class LvDataPluginAPI {
@@ -27,7 +26,7 @@ public class LvDataPluginAPI {
             Statement statement = createStatement();
             assert statement != null;
 
-            try (ResultSet result = statement.executeQuery("SELECT * FROM `wn_data` WHERE uuid = '" + player.getUniqueId() + "';")) {
+            try (ResultSet result = statement.executeQuery("SELECT * FROM `" + tableName + "` WHERE uuid = '" + player.getUniqueId() + "';")) {
                 while (result.next()) { return; }
             } catch (SQLException e) {
                 if (LvDataPlugin.debug) e.printStackTrace();
@@ -37,9 +36,9 @@ public class LvDataPluginAPI {
                 PreparedStatement pstmt;
 
                 if (LvDataPlugin.database_type.equals("MySQL")) {
-                    pstmt = DatabaseConnection.conn.prepareStatement("INSERT INTO `wn_data` (id, uuid, nickname, last_update) VALUES (DEFAULT, '" + player.getUniqueId() + "', '" + player.getName() + "', '" + LvDataPlugin.now + "');");
+                    pstmt = DatabaseConnection.conn.prepareStatement("INSERT INTO `" + tableName + "` (id, uuid, nickname, last_update) VALUES (DEFAULT, '" + player.getUniqueId() + "', '" + player.getName() + "', '" + LvDataPlugin.now + "');");
                 } else {
-                    pstmt = DatabaseConnection.conn.prepareStatement("INSERT INTO `wn_data` (uuid, nickname, last_update) VALUES ('" + player.getUniqueId() + "', '" + player.getName() + "', '" + LvDataPlugin.now + "');");
+                    pstmt = DatabaseConnection.conn.prepareStatement("INSERT INTO `" + tableName + "` (uuid, nickname, last_update) VALUES ('" + player.getUniqueId() + "', '" + player.getName() + "', '" + LvDataPlugin.now + "');");
                 }
 
                 pstmt.execute();
@@ -123,7 +122,7 @@ public class LvDataPluginAPI {
         for (PlayerVariable i : playerapi.keySet()) {
             if (i.getPlugin() == plugin) {
                 if (i.getPlayer() == player) {
-                    if (i.getName().equalsIgnoreCase(ChatColor.AQUA + name)) {
+                    if (i.getName().equalsIgnoreCase(name)) {
                         return i.getValue();
                     }
                 }
@@ -161,7 +160,7 @@ public class LvDataPluginAPI {
             }
 
 
-            query = "UPDATE `wn_data` SET " + query + "last_update = '" + LvDataPlugin.now + "' WHERE uuid = '" + player.getUniqueId() + "';";
+            query = "UPDATE `" + tableName + "` SET " + query + "last_update = '" + LvDataPlugin.now + "' WHERE uuid = '" + player.getUniqueId() + "';";
             try (PreparedStatement pst = DatabaseConnection.conn.prepareStatement(query)) {
                 pst.execute();
             } catch (SQLException e) {
@@ -180,7 +179,7 @@ public class LvDataPluginAPI {
 
             try {
                 assert statement != null;
-                ResultSet result = statement.executeQuery("SELECT * FROM `wn_data` WHERE uuid = '" + player.getUniqueId() + "';");
+                ResultSet result = statement.executeQuery("SELECT * FROM `" + tableName + "` WHERE uuid = '" + player.getUniqueId() + "';");
                 while (result.next()) {
                     for (Variable api : LvDataPlugin.variables.keySet()) {
                         new PlayerVariable(player, api.getPlugin(), api.getName(), result.getObject(api.getVariableName()), "VARIABLE");
@@ -210,7 +209,7 @@ public class LvDataPluginAPI {
                     }
                 }
 
-                query = "UPDATE `wn_data` SET " + query + "last_update = '" + LvDataPlugin.now + "' WHERE uuid = '" + player.getUniqueId() + "';";
+                query = "UPDATE `" + tableName + "` SET " + query + "last_update = '" + LvDataPlugin.now + "' WHERE uuid = '" + player.getUniqueId() + "';";
                 try (PreparedStatement pst = DatabaseConnection.conn.prepareStatement(query)) {
                     pst.execute();
                 } catch (SQLException e) {

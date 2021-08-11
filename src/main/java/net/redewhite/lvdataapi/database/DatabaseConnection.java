@@ -70,7 +70,7 @@ public class DatabaseConnection {
     }
 
     private static void createDatabase() {
-        try (PreparedStatement pstmt = conn.prepareStatement("CREATE TABLE IF NOT EXISTS `wn_data` (`id` INT AUTO_INCREMENT PRIMARY KEY, `nickname` TEXT, `uuid` TEXT, `last_update` TEXT)")) {
+        try (PreparedStatement pstmt = conn.prepareStatement("CREATE TABLE IF NOT EXISTS `" + tableName + "` (`id` INT AUTO_INCREMENT PRIMARY KEY, `nickname` TEXT, `uuid` TEXT, `last_update` TEXT)")) {
             pstmt.execute();
         } catch (SQLException e) {
             if (LvDataPlugin.debug) e.printStackTrace();

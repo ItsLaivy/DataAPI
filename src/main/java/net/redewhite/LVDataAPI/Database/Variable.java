@@ -8,7 +8,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.sql.*;
 
-import static net.redewhite.lvdataapi.LvDataPlugin.broadcastColoredMessage;
+import static net.redewhite.lvdataapi.LvDataPlugin.*;
 import static net.redewhite.lvdataapi.database.DatabaseConnection.createStatement;
 
 public class Variable {
@@ -51,12 +51,12 @@ public class Variable {
                 broadcastColoredMessage("§aSuccessfully loaded variable '§2" + name + "§a' of the plugin '§2" + plugin.getName() + "§a'.");
 
                 Bukkit.getScheduler().runTaskAsynchronously(LvDataPlugin.getInstance(), () -> {
-                    for (Player player : LvDataPlugin.instance.getServer().getOnlinePlayers()) {
+                    for (Player player : instance.getServer().getOnlinePlayers()) {
                         if (LvDataPluginAPI.isLoaded(player)) {
                             Statement statement = createStatement();
                             assert statement != null;
 
-                            try (ResultSet result = statement.executeQuery("SELECT " + varname + " FROM `wn_data` WHERE uuid = '" + player.getUniqueId() + "';")) {
+                            try (ResultSet result = statement.executeQuery("SELECT " + varname + " FROM `" + tableName + "` WHERE uuid = '" + player.getUniqueId() + "';")) {
                                 while (result.next()) {
                                     new PlayerVariable(player, plugin, name, result.getObject(varname), "VARIABLE");
                                 }
@@ -69,7 +69,7 @@ public class Variable {
 
             } else {
                 broadcastColoredMessage("§aSuccessfully created variable '§2" + name + "§a' of the plugin '§2" + plugin.getName() + "§a'.");
-                for (Player player : LvDataPlugin.instance.getServer().getOnlinePlayers()) {
+                for (Player player : instance.getServer().getOnlinePlayers()) {
                     new PlayerVariable(player, plugin, name, value, "VARIABLE");
                 }
             }
@@ -77,7 +77,7 @@ public class Variable {
     }
 
     private Integer tryCreateColumn() {
-        try (PreparedStatement pst = DatabaseConnection.conn.prepareStatement("ALTER TABLE `wn_data` ADD COLUMN " + varname + " " + type + " DEFAULT '" + value + "';")) {
+        try (PreparedStatement pst = DatabaseConnection.conn.prepareStatement("ALTER TABLE `" + tableName + "` ADD COLUMN " + varname + " " + type + " DEFAULT '" + value + "';")) {
             pst.execute();
         } catch (SQLException e) {
             if (!e.getMessage().contains("uplicate column name")) {
