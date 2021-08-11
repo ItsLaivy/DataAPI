@@ -131,7 +131,7 @@ public class LvDataPluginAPI {
         }
         return null;
     }
-    public static ArrayList getArrayVariable(Plugin plugin, Player player, String name) {
+    public static ArrayList<String> getArrayVariable(Plugin plugin, Player player, String name) {
         for (PlayerVariable i : playerapi.keySet()) {
             if (i.getPlugin() == plugin) {
                 if (i.getPlayer() == player) {
