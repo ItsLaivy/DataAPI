@@ -77,20 +77,23 @@ public class LvDataPluginAPI {
                             }
                         } assert type != null;
 
-                        try {
-                            Integer.parseInt(value.toString());
-                            if (!type.equalsIgnoreCase("INT")) {
-                                return false;
+                        if (value != null) {
+                            try {
+                                Integer.parseInt(value.toString());
+                                if (!type.equalsIgnoreCase("INT")) {
+                                    return false;
+                                }
+                            } catch (IllegalArgumentException ignore) {
+                                if (!type.equalsIgnoreCase("TEXT")) {
+                                    return false;
+                                }
                             }
-                        } catch (IllegalArgumentException ignore) {
-                            if (!type.equalsIgnoreCase("TEXT")) {
-                                return false;
-                            }
+
+                            api.setValue(value);
+                        } else {
+                            api.setValue("");
                         }
-
-                        api.setValue(value);
                         return true;
-
                     }
                 }
             }
@@ -109,10 +112,15 @@ public class LvDataPluginAPI {
                         }
 
                         ArrayList<String> array = new ArrayList<>();
-                        for (Object str : value) {
-                            String strFinal = str.toString().replace(",", "<COMMA>");
-                            array.add(strFinal);
+                        if (value != null) {
+                            for (Object str : value) {
+                                String strFinal = str.toString().replace(",", "<COMMA>");
+                                array.add(strFinal);
+                            }
+                        } else {
+                            array.add("");
                         }
+
 
                         api.setValue(array.toString().replace("[", "").replace("]", ""));
                         return true;
