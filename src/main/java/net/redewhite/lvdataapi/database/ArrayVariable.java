@@ -23,8 +23,12 @@ public class ArrayVariable {
     public ArrayVariable(Plugin plugin, String name, ArrayList value) {
 
         ArrayList<String> finalArray = new ArrayList<>();
-        for (Object str : value) {
-            finalArray.add(str.toString().replace(",", "<COMMA>"));
+        if (value != null) {
+            for (Object str : value) {
+                finalArray.add(str.toString().replace(",", "<COMMA>"));
+            }
+        } else {
+            finalArray.add("");
         }
 
         this.plugin = plugin;

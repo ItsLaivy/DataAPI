@@ -21,6 +21,10 @@ public class Variable {
 
     public Variable(Plugin plugin, String name, Object value) {
 
+        if (value == null) {
+            value = "";
+        }
+
         this.plugin = plugin;
         this.name = name;
         this.value = value;
