@@ -42,7 +42,7 @@ public class DatabaseConnection {
     public static void close() {
         try {
             conn.close();
-            broadcastColoredMessage("§aDatabase database has been closed.");
+            broadcastColoredMessage("§aDatabase has been closed.");
         } catch (SQLException e) {
             if (LvDataPlugin.debug) e.printStackTrace();
             broadcastColoredMessage("§cDatabase closing process could not be established.");

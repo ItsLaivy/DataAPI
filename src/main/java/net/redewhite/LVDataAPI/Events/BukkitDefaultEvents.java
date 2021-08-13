@@ -5,7 +5,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import static net.redewhite.lvdataapi.LvDataPluginAPI.*;
+import static net.redewhite.lvdataapi.developers.API.*;
 
 public class BukkitDefaultEvents implements Listener {
 

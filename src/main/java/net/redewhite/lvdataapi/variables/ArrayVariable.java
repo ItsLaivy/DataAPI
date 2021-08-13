@@ -1,80 +1,81 @@
-package net.redewhite.lvdataapi.database;
+package net.redewhite.lvdataapi.variables;
 
 import net.redewhite.lvdataapi.LvDataPlugin;
-import net.redewhite.lvdataapi.LvDataPluginAPI;
+import net.redewhite.lvdataapi.developers.API;
+import net.redewhite.lvdataapi.database.DatabaseConnection;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 import static net.redewhite.lvdataapi.LvDataPlugin.*;
 import static net.redewhite.lvdataapi.database.DatabaseConnection.createStatement;
 
-public class Variable {
+public class ArrayVariable {
 
     private final String name;
     private final String varname;
     private final Object value;
     private final Plugin plugin;
-    private String type;
+    private final String type;
 
-    public Variable(Plugin plugin, String name, Object value) {
+    public ArrayVariable(Plugin plugin, String name, ArrayList value) {
 
-        if (value == null) {
-            value = "";
+        ArrayList<String> finalArray = new ArrayList<>();
+        if (value != null) {
+            for (Object str : value) {
+                finalArray.add(str.toString().replace(",", "<COMMA>"));
+            }
+        } else {
+            finalArray.add("");
         }
 
         this.plugin = plugin;
         this.name = name;
-        this.value = value;
-        this.varname = plugin.getName() + "_" + name;
+        this.value = finalArray.toString().replace("[", "").replace("]", "");
+        this.varname = plugin.getName() + "_ARRAYLIST_" + name;
+        this.type = "TEXT";
 
-        for (Variable var : LvDataPlugin.variables.keySet()) {
+        for (ArrayVariable var : arrayvariables.keySet()) {
             if (var.getVariableName().equalsIgnoreCase(varname)) {
                 return;
             }
         }
 
         if (name.contains("-")) {
-            broadcastColoredMessage("§cVariable '§4" + name + "§c' couldn't be created because it has illegal characters ('§4-§c')");
+            broadcastColoredMessage("§cArray variable '§4" + name + "§c' couldn't be created because it has illegal characters ('§4-§c')");
             return;
-        }
-
-        try {
-            Integer.parseInt(String.valueOf(value));
-            this.type = "INT";
-        } catch (IllegalArgumentException ignore) {
-            this.type = "TEXT";
         }
 
         int trycreate = tryCreateColumn();
         if (trycreate == 1 || trycreate == 2) {
-            LvDataPlugin.variables.put(this, varname);
+            arrayvariables.put(this, varname);
             if (trycreate == 1) {
-                broadcastColoredMessage("§aSuccessfully loaded variable '§2" + name + "§a' of the plugin '§2" + plugin.getName() + "§a'.");
+                broadcastColoredMessage("§aSuccessfully loaded array variable '§2" + name + "§a' of the plugin '§2" + plugin.getName() + "§a'.");
 
                 Bukkit.getScheduler().runTaskAsynchronously(LvDataPlugin.getInstance(), () -> {
                     for (Player player : instance.getServer().getOnlinePlayers()) {
-                        if (LvDataPluginAPI.isLoaded(player)) {
+                        if (API.isLoaded(player)) {
                             Statement statement = createStatement();
                             assert statement != null;
 
                             try (ResultSet result = statement.executeQuery("SELECT " + varname + " FROM `" + tableName + "` WHERE uuid = '" + player.getUniqueId() + "';")) {
                                 while (result.next()) {
-                                    new PlayerVariable(player, plugin, name, result.getObject(varname), "VARIABLE");
+                                    new PlayerVariable(player, plugin, name, result.getObject(varname), variableType.ARRAY);
                                 }
-                            } catch (SQLException throwables) {
-                                throwables.printStackTrace();
+                            } catch (SQLException e) {
+                                e.printStackTrace();
                             }
                         }
                     }
                 });
 
             } else {
-                broadcastColoredMessage("§aSuccessfully created variable '§2" + name + "§a' of the plugin '§2" + plugin.getName() + "§a'.");
+                broadcastColoredMessage("§aSuccessfully created array variable '§2" + name + "§a' of the plugin '§2" + plugin.getName() + "§a'.");
                 for (Player player : instance.getServer().getOnlinePlayers()) {
-                    new PlayerVariable(player, plugin, name, value, "VARIABLE");
+                    new PlayerVariable(player, plugin, name, value, variableType.ARRAY);
                 }
             }
         }
@@ -86,7 +87,7 @@ public class Variable {
         } catch (SQLException e) {
             if (!e.getMessage().contains("uplicate column name")) {
                 if (LvDataPlugin.debug) e.printStackTrace();
-                broadcastColoredMessage("§cSQLite variable named '§4" + name + "§c' couldn't be created.");
+                broadcastColoredMessage("§cSQLite array variable named '§4" + name + "§c' couldn't be created.");
                 return 0;
             } else {
                 return 1;
@@ -103,10 +104,10 @@ public class Variable {
     public String getVariableName() {
         return varname;
     }
-    public String getType() {
-        return type;
-    }
     public Plugin getPlugin() {
         return plugin;
+    }
+    public variableType getVariableType() {
+        return variableType.ARRAY;
     }
 }

@@ -1,9 +1,10 @@
 package net.redewhite.lvdataapi;
 
-import net.redewhite.lvdataapi.database.ArrayVariable;
+import net.redewhite.lvdataapi.variables.ArrayVariable;
 import net.redewhite.lvdataapi.database.DatabaseConnection;
-import net.redewhite.lvdataapi.database.PlayerVariable;
-import net.redewhite.lvdataapi.database.Variable;
+import net.redewhite.lvdataapi.variables.PlayerVariable;
+import net.redewhite.lvdataapi.variables.TempVariable;
+import net.redewhite.lvdataapi.variables.Variable;
 import net.redewhite.lvdataapi.events.BukkitDefaultEvents;
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
@@ -17,12 +18,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 
-import static net.redewhite.lvdataapi.LvDataPluginAPI.*;
+import static net.redewhite.lvdataapi.developers.API.*;
 
 public class LvDataPlugin extends JavaPlugin {
 
     public static HashMap<Variable, String> variables = new HashMap<>();
     public static HashMap<ArrayVariable, String> arrayvariables = new HashMap<>();
+    public static HashMap<TempVariable, String> tempvariables = new HashMap<>();
 
     public static HashMap<PlayerVariable, Player> playerapi = new HashMap<>();
 
@@ -119,6 +121,10 @@ public class LvDataPlugin extends JavaPlugin {
         if (!(task == null)) {
             task.cancel();
         }
+    }
+
+    public enum variableType {
+        ARRAY, NORMAL, TEMPORARY;
     }
 
 }

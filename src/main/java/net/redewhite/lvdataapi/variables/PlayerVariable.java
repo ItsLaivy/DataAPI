@@ -1,9 +1,11 @@
-package net.redewhite.lvdataapi.database;
+package net.redewhite.lvdataapi.variables;
 
+import net.redewhite.lvdataapi.LvDataPlugin.variableType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import static net.redewhite.lvdataapi.LvDataPlugin.playerapi;
+import static net.redewhite.lvdataapi.LvDataPlugin.variableType.*;
 
 public class PlayerVariable {
 
@@ -12,17 +14,21 @@ public class PlayerVariable {
     private final String varname;
     private Object value;
     private final Plugin plugin;
+    private final variableType vartype;
 
-    public PlayerVariable(Player player, Plugin plugin, String name, Object value, String type) {
+    public PlayerVariable(Player player, Plugin plugin, String name, Object value, variableType type) {
         this.player = player;
         this.name = name;
         this.value = value;
         this.plugin = plugin;
+        this.vartype = type;
 
-        if (type.equalsIgnoreCase("VARIABLE")) {
-            this.varname = plugin.getName() + "_" + getName();
+        if (type == ARRAY) {
+            this.varname = plugin.getName() + "_ARRAYLIST_" + name;
+        } else if (type == TEMPORARY) {
+            this.varname = plugin.getName() + "_TEMPORARY_" + name;
         } else {
-            this.varname = plugin.getName() + "_ARRAYLIST_" + getName();
+            this.varname = plugin.getName() + "_" + name;
         }
 
         for (PlayerVariable api : playerapi.keySet()) {
@@ -51,6 +57,9 @@ public class PlayerVariable {
     }
     public String getVariableName() {
         return varname;
+    }
+    public variableType getVariableType() {
+        return vartype;
     }
     public void setValue(Object value) {
         this.value = value;
