@@ -1,5 +1,7 @@
 package net.redewhite.lvdataapi.variables;
 
+import net.redewhite.lvdataapi.events.VariableCreateEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -15,10 +17,21 @@ public class TempVariable {
 
     public TempVariable(Plugin plugin, String name, Object value) {
 
+        VariableCreateEvent event = new VariableCreateEvent(plugin, name, getVariableType(), value);
+        Bukkit.getPluginManager().callEvent(event);
+
+        if (value == null) {
+            value = "";
+        }
+
         this.plugin = plugin;
         this.name = name;
         this.value = value;
         this.varname = plugin.getName() + "_TEMPORARY_" + name;
+
+        if (event.isCancelled()) {
+            return;
+        }
 
         for (TempVariable var : tempvariables.keySet()) {
             if (var.getVariableName().equalsIgnoreCase(varname)) {
@@ -35,7 +48,7 @@ public class TempVariable {
         broadcastColoredMessage("§aSuccessfully parsed temporary variable '§2" + name + "§a' of the plugin '§2" + plugin.getName() + "§a'.");
 
         for (Player player : instance.getServer().getOnlinePlayers()) {
-            new PlayerVariable(player, plugin, name, value, TEMPORARY);
+            new PlayerVariable(player, plugin, name, value, TEMPORARY, this);
         }
 
     }

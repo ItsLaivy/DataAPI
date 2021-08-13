@@ -1,6 +1,9 @@
 package net.redewhite.lvdataapi.developers;
 
 import net.redewhite.lvdataapi.LvDataPlugin;
+import net.redewhite.lvdataapi.events.PlayerLoadEvent;
+import net.redewhite.lvdataapi.events.PlayerUnloadEvent;
+import net.redewhite.lvdataapi.events.VariableChangeEvent;
 import net.redewhite.lvdataapi.variables.ArrayVariable;
 import net.redewhite.lvdataapi.database.DatabaseConnection;
 import net.redewhite.lvdataapi.variables.PlayerVariable;
@@ -14,6 +17,7 @@ import java.sql.*;
 import java.util.ArrayList;
 
 import static net.redewhite.lvdataapi.LvDataPlugin.*;
+import static net.redewhite.lvdataapi.LvDataPlugin.variableChangeErrorTypes.*;
 import static net.redewhite.lvdataapi.LvDataPlugin.variableType.*;
 import static net.redewhite.lvdataapi.database.DatabaseConnection.createStatement;
 
@@ -29,11 +33,16 @@ public class API {
     }
 
     public static Boolean setVariable(Plugin plugin, Player player, String name, Object value) {
+
         for (PlayerVariable api : playerapi.keySet()) {
-            if (api.getPlugin() == plugin) {
-                if (api.getPlayer() == player) {
+            if (api.getPlayer() == player) {
+                if (api.getPlugin() == plugin) {
                     if (api.getName().equals(name)) {
                         if (api.getVariableType() == NORMAL) {
+
+                            Object finale;
+                            VariableChangeEvent event = new VariableChangeEvent(plugin, player, name, api.getVariable(), value, getVariable(plugin, player, name));
+
                             String type = null;
                             for (Variable var : LvDataPlugin.variables.keySet()) {
                                 if (api.getVariableName().equals(var.getVariableName())) {
@@ -44,43 +53,67 @@ public class API {
                             if (value != null) {
                                 try {
                                     Integer.parseInt(value.toString());
-                                    if (!type.equalsIgnoreCase("INT")) return false;
+                                    if (!type.equalsIgnoreCase("INT")) {
+                                        event.setError(NOT_INT);
+                                        return false;
+                                    }
                                 } catch (IllegalArgumentException ignore) {
-                                    if (!type.equalsIgnoreCase("TEXT")) return false;
+                                    if (!type.equalsIgnoreCase("TEXT")) {
+                                        event.setError(NOT_TEXT);
+                                        return false;
+                                    }
                                 }
-
-                                api.setValue(value);
+                                finale = value;
                             } else {
-                                api.setValue("");
+                                finale = "";
                             }
+                            instance.getServer().getPluginManager().callEvent(event);
+                            if (event.isCancelled()) return false;
+                            api.setValue(finale);
                             return true;
                         } else if (api.getVariableType() == ARRAY) {
 
                             ArrayList<String> array = new ArrayList<>();
+                            VariableChangeEvent event = new VariableChangeEvent(plugin, player, name, api.getVariable(), value, getVariable(plugin, player, name));
                             if (value != null) {
                                 if (value instanceof ArrayList) {
                                     for (Object str : ((ArrayList<?>) value).toArray()) {
                                         String strFinal = str.toString().replace(",", "<COMMA>");
                                         array.add(strFinal);
                                     }
-                                } else return false;
+                                } else {
+                                    event.setError(NOT_ARRAY);
+                                    return false;
+                                }
                             } else {
                                 array.add("");
                             }
+                            instance.getServer().getPluginManager().callEvent(event);
+                            if (event.isCancelled()) return false;
 
                             api.setValue(array.toString().replace("[", "").replace("]", ""));
                             return true;
 
                         } else if (api.getVariableType() == TEMPORARY) {
+                            VariableChangeEvent event = new VariableChangeEvent(plugin, player, name, api.getVariable(), value, getVariable(plugin, player, name));
+                            instance.getServer().getPluginManager().callEvent(event);
+                            if (event.isCancelled()) return false;
                             if (value != null) {
                                 api.setValue(value);
                             } else api.setValue("");
                             return true;
                         }
+                        VariableChangeEvent event = new VariableChangeEvent(plugin, player, name, api.getVariable(), value, getVariable(plugin, player, name));
+                        event.setError(UNKNOWN);
+                        instance.getServer().getPluginManager().callEvent(event);
+                        return false;
                     }
                 }
             }
         }
+        VariableChangeEvent event = new VariableChangeEvent(plugin, player, name, null, value, null);
+        event.setError(UNKNOWN_VARIABLE);
+        instance.getServer().getPluginManager().callEvent(event);
         return false;
     }
 
@@ -157,6 +190,8 @@ public class API {
 
     public static void unloadPlayer(Player player) {
         if (isLoaded(player)) {
+
+            PlayerUnloadEvent event = new PlayerUnloadEvent(player);
             String query = "";
 
             ArrayList<PlayerVariable> array = new ArrayList<>();
@@ -168,18 +203,18 @@ public class API {
                     }
                 }
             }
-            for (PlayerVariable api : array) {
-                playerapi.remove(api);
-            }
-
 
             query = "UPDATE `" + tableName + "` SET " + query + "last_update = '" + LvDataPlugin.now + "' WHERE uuid = '" + player.getUniqueId() + "';";
             try (PreparedStatement pst = DatabaseConnection.conn.prepareStatement(query)) {
                 pst.execute();
+                for (PlayerVariable api : array) playerapi.remove(api);
             } catch (SQLException e) {
                 if (LvDataPlugin.debug) e.printStackTrace();
                 broadcastColoredMessage("§cSQLite failed when tried save variables of the player '§4" + player.getName() + "§c'.");
+                event.setSuccess(false);
             }
+
+            Bukkit.getPluginManager().callEvent(event);
         } else {
             broadcastColoredMessage("§cThe player '§4" + player.getName() + "§c' is not loaded!");
         }
@@ -191,32 +226,37 @@ public class API {
             Statement statement = createStatement();
 
             for (TempVariable api : tempvariables.keySet()) {
-                new PlayerVariable(player, api.getPlugin(), api.getName(), api.getValue(), api.getVariableType());
+                new PlayerVariable(player, api.getPlugin(), api.getName(), api.getValue(), api.getVariableType(), api);
             }
 
             try {
-                assert statement != null;
-                ResultSet result = statement.executeQuery("SELECT * FROM `" + tableName + "` WHERE uuid = '" + player.getUniqueId() + "';");
-                ResultSetMetaData e = result.getMetaData();
-                int r = 1;
+                PlayerLoadEvent event = new PlayerLoadEvent(player);
+                Bukkit.getPluginManager().callEvent(event);
 
-                while (result.next()) {
-                    if (e.getColumnName(r).contains("_ARRAYLIST_")) {
-                        for (ArrayVariable api : arrayvariables.keySet()) {
-                            new PlayerVariable(player, api.getPlugin(), api.getName(), result.getObject(api.getVariableName()), api.getVariableType());
+                if (!(event.isCancelled()) ) {
+                    assert statement != null;
+                    ResultSet result = statement.executeQuery("SELECT * FROM `" + tableName + "` WHERE uuid = '" + player.getUniqueId() + "';");
+                    ResultSetMetaData e = result.getMetaData();
+                    int r = 1;
+
+                    while (result.next()) {
+                        if (e.getColumnName(r).contains("_ARRAYLIST_")) {
+                            for (ArrayVariable api : arrayvariables.keySet()) {
+                                new PlayerVariable(player, api.getPlugin(), api.getName(), result.getObject(api.getVariableName()), api.getVariableType(), api);
+                            }
+                        } else {
+                            for (Variable api : variables.keySet()) {
+                                new PlayerVariable(player, api.getPlugin(), api.getName(), result.getObject(api.getVariableName()), api.getVariableType(), api);
+                            }
                         }
-                    } else {
-                        for (Variable api : variables.keySet()) {
-                            new PlayerVariable(player, api.getPlugin(), api.getName(), result.getObject(api.getVariableName()), api.getVariableType());
-                        }
+                        r++;
                     }
-                    r++;
                 }
+
             } catch (SQLException e) {
                 if (LvDataPlugin.debug) e.printStackTrace();
                 broadcastColoredMessage("§cVariables of player '§4" + player.getName() + "§c' couldn't be loaded, aborting...");
             }
-
         } else {
             broadcastColoredMessage("§cThe player '§4" + player.getName() + "§c' is already loaded!");
         }

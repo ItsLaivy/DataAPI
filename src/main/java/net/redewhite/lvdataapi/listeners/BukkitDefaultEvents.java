@@ -1,4 +1,4 @@
-package net.redewhite.lvdataapi.events;
+package net.redewhite.lvdataapi.listeners;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

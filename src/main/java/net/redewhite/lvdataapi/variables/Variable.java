@@ -3,6 +3,7 @@ package net.redewhite.lvdataapi.variables;
 import net.redewhite.lvdataapi.LvDataPlugin;
 import net.redewhite.lvdataapi.developers.API;
 import net.redewhite.lvdataapi.database.DatabaseConnection;
+import net.redewhite.lvdataapi.events.VariableCreateEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -22,6 +23,9 @@ public class Variable {
 
     public Variable(Plugin plugin, String name, Object value) {
 
+        VariableCreateEvent event = new VariableCreateEvent(plugin, name, getVariableType(), value);
+        Bukkit.getPluginManager().callEvent(event);
+
         if (value == null) {
             value = "";
         }
@@ -31,14 +35,20 @@ public class Variable {
         this.value = value;
         this.varname = plugin.getName() + "_" + name;
 
+        if (event.isCancelled()) {
+            return;
+        }
+
         for (Variable var : variables.keySet()) {
             if (var.getVariableName().equalsIgnoreCase(varname)) {
+                event.setSuccess(false);
                 return;
             }
         }
 
         if (name.contains("-")) {
             broadcastColoredMessage("§cVariable '§4" + name + "§c' couldn't be created because it has illegal characters ('§4-§c')");
+            event.setSuccess(false);
             return;
         }
 
@@ -63,7 +73,7 @@ public class Variable {
 
                             try (ResultSet result = statement.executeQuery("SELECT " + varname + " FROM `" + tableName + "` WHERE uuid = '" + player.getUniqueId() + "';")) {
                                 while (result.next()) {
-                                    new PlayerVariable(player, plugin, name, result.getObject(varname), variableType.NORMAL);
+                                    new PlayerVariable(player, plugin, name, result.getObject(varname), variableType.NORMAL, this);
                                 }
                             } catch (SQLException throwables) {
                                 throwables.printStackTrace();
@@ -75,7 +85,7 @@ public class Variable {
             } else {
                 broadcastColoredMessage("§aSuccessfully created variable '§2" + name + "§a' of the plugin '§2" + plugin.getName() + "§a'.");
                 for (Player player : instance.getServer().getOnlinePlayers()) {
-                    new PlayerVariable(player, plugin, name, value, variableType.NORMAL);
+                    new PlayerVariable(player, plugin, name, value, variableType.NORMAL, this);
                 }
             }
         }

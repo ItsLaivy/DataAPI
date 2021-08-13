@@ -13,14 +13,16 @@ public class PlayerVariable {
     private final String name;
     private final String varname;
     private Object value;
+    private final Object variable;
     private final Plugin plugin;
     private final variableType vartype;
 
-    public PlayerVariable(Player player, Plugin plugin, String name, Object value, variableType type) {
+    public PlayerVariable(Player player, Plugin plugin, String name, Object value, variableType type, Object variable) {
         this.player = player;
         this.name = name;
         this.value = value;
         this.plugin = plugin;
+        this.variable = variable;
         this.vartype = type;
 
         if (type == ARRAY) {
@@ -57,6 +59,9 @@ public class PlayerVariable {
     }
     public String getVariableName() {
         return varname;
+    }
+    public Object getVariable() {
+        return variable;
     }
     public variableType getVariableType() {
         return vartype;

@@ -3,6 +3,7 @@ package net.redewhite.lvdataapi.variables;
 import net.redewhite.lvdataapi.LvDataPlugin;
 import net.redewhite.lvdataapi.developers.API;
 import net.redewhite.lvdataapi.database.DatabaseConnection;
+import net.redewhite.lvdataapi.events.VariableCreateEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -21,7 +22,10 @@ public class ArrayVariable {
     private final Plugin plugin;
     private final String type;
 
-    public ArrayVariable(Plugin plugin, String name, ArrayList value) {
+    public ArrayVariable(Plugin plugin, String name, ArrayList<?> value) {
+
+        VariableCreateEvent event = new VariableCreateEvent(plugin, name, getVariableType(), value);
+        Bukkit.getPluginManager().callEvent(event);
 
         ArrayList<String> finalArray = new ArrayList<>();
         if (value != null) {
@@ -37,6 +41,10 @@ public class ArrayVariable {
         this.value = finalArray.toString().replace("[", "").replace("]", "");
         this.varname = plugin.getName() + "_ARRAYLIST_" + name;
         this.type = "TEXT";
+
+        if (event.isCancelled()) {
+            return;
+        }
 
         for (ArrayVariable var : arrayvariables.keySet()) {
             if (var.getVariableName().equalsIgnoreCase(varname)) {
@@ -63,7 +71,7 @@ public class ArrayVariable {
 
                             try (ResultSet result = statement.executeQuery("SELECT " + varname + " FROM `" + tableName + "` WHERE uuid = '" + player.getUniqueId() + "';")) {
                                 while (result.next()) {
-                                    new PlayerVariable(player, plugin, name, result.getObject(varname), variableType.ARRAY);
+                                    new PlayerVariable(player, plugin, name, result.getObject(varname), variableType.ARRAY, this);
                                 }
                             } catch (SQLException e) {
                                 e.printStackTrace();
@@ -75,7 +83,7 @@ public class ArrayVariable {
             } else {
                 broadcastColoredMessage("§aSuccessfully created array variable '§2" + name + "§a' of the plugin '§2" + plugin.getName() + "§a'.");
                 for (Player player : instance.getServer().getOnlinePlayers()) {
-                    new PlayerVariable(player, plugin, name, value, variableType.ARRAY);
+                    new PlayerVariable(player, plugin, name, value, variableType.ARRAY, this);
                 }
             }
         }

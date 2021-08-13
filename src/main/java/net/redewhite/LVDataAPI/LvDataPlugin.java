@@ -5,7 +5,7 @@ import net.redewhite.lvdataapi.database.DatabaseConnection;
 import net.redewhite.lvdataapi.variables.PlayerVariable;
 import net.redewhite.lvdataapi.variables.TempVariable;
 import net.redewhite.lvdataapi.variables.Variable;
-import net.redewhite.lvdataapi.events.BukkitDefaultEvents;
+import net.redewhite.lvdataapi.listeners.BukkitDefaultEvents;
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -82,11 +82,14 @@ public class LvDataPlugin extends JavaPlugin {
 
         if (DatabaseConnection.conn != null) {
             for (Player player : getServer().getOnlinePlayers()) {
-                unloadPlayer(player);
+                if (isLoaded(player)) {
+                    unloadPlayer(player);
+                }
             }
         }
 
         DatabaseConnection.close();
+
     }
 
     public static LvDataPlugin getInstance() {
@@ -125,6 +128,10 @@ public class LvDataPlugin extends JavaPlugin {
 
     public enum variableType {
         ARRAY, NORMAL, TEMPORARY;
+    }
+
+    public enum variableChangeErrorTypes {
+        UNKNOWN, NOT_ARRAY, NOT_TEXT, NOT_INT, UNKNOWN_VARIABLE;
     }
 
 }
