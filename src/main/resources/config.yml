@@ -1,22 +1,23 @@
-# Discord: DanielZinh#7616
-# https://github.com/LaivyTLife/DataAPI
+# -------------------=-=------------------- #
+#         Author: DanielZinh#7616
+#    https://github.com/LaivyTLife/DataAPI
+# -------------------=-=------------------- #
 
-# Debug (for expert users)
+# Disables console errors if false.
 debug: true
 
-# Name of the table
-table-name: 'wn_data'
+# SQLITE, YAML, MYSQL
+# if you want to try with another one if fail, use
+# 'DATABASE > DATABASE'
+#
+# Example: 'SQLITE > MYSQL > YAML'
 
-# Auto save time
-# To not auto-save, just insert 0.
+Database Type: 'SQLITE'
+Database Name: 'database' # Works only for YAML and SQLite.
 
-# Values more than 600 seconds is not recommended.
-AutoSaver: 600 # seconds
-
-# MySQL connection
-
-# if mysql connection fail, will be set to sqlite? (will stop plugin if false)
-allow-sqlite: true
+# -------------------=-=------------------- #
+#              MySQL Connection
+# -------------------=-=------------------- #
 
 mysql-user: 'root'
 mysql-password: 'password'
@@ -24,8 +25,49 @@ mysql-address: 'localhost'
 mysql-database: 'data'
 mysql-port: 3306
 
-# Close server if connection not successfully established?
-# The plugin will generate an exception log if true
-# Just stops plugin if false
+# -------------------=-=------------------- #
+#         YAML Database Configuration
+# -------------------=-=------------------- #
 
+#   THIS DATABASE TYPE IS NOT RECOMMENDED!  #
+#   THIS DATABASE TYPE IS NOT RECOMMENDED!  #
+
+# if true, plugin will create a .yml for every player.
+# if false, plugin will create just one .yml for all players (NOT RECOMMENDED).
+File for every Player:
+  Enabled: true # High recommended (true)
+  Files path: 'users'
+
+Save players as UUID: true # High recommended (true)
+
+# -------------------=-=------------------- #
+#       General plugin's Configuration
+# -------------------=-=------------------- #
+
+Players table name: 'lvdataapi_players'
+Texts table name: 'lvdataapi_text'
+
+# Values more than 600 seconds is not recommended.
+AutoSaver: 600 # seconds
+
+# Closes the server if connection cannot be established?
+# will just stops the plugin if false.
 close-server: false
+
+# -------------------=-=------------------- #
+#      Advanced plugin's Configuration
+# -------------------=-=------------------- #
+
+Plugin auto player loading: true
+Plugin auto player unloading: true
+
+# You can use async/sync load/unload methods with the API, thats just for the plugin's default player loader.
+Async variables loading: true
+Async variables saving: true
+# Async variables unloading: true # REMOVED BECAUSE ASYNC UNLOADING CAN CAUSE BUGS AND EXCEPTIONS.
+
+Delete variables if unload fail: false
+
+# -------------------=-=------------------- #
+#           Configuration file end
+# -------------------=-=------------------- #

@@ -1,71 +1,14 @@
 package net.redewhite.lvdataapi.variables;
 
-import net.redewhite.lvdataapi.events.VariableCreateEvent;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import net.redewhite.lvdataapi.utils.VariableCreationController;
+import net.redewhite.lvdataapi.LvDataAPI;
 import org.bukkit.plugin.Plugin;
 
-import static net.redewhite.lvdataapi.LvDataPlugin.*;
-import static net.redewhite.lvdataapi.LvDataPlugin.variableType.TEMPORARY;
-
+@SuppressWarnings("unused")
 public class TempVariable {
 
-    private final String name;
-    private final String varname;
-    private final Object value;
-    private final Plugin plugin;
-
-    public TempVariable(Plugin plugin, String name, Object value) {
-
-        VariableCreateEvent event = new VariableCreateEvent(plugin, name, getVariableType(), value);
-        Bukkit.getPluginManager().callEvent(event);
-
-        if (value == null) {
-            value = "";
-        }
-
-        this.plugin = plugin;
-        this.name = name;
-        this.value = value;
-        this.varname = plugin.getName() + "_TEMPORARY_" + name;
-
-        if (event.isCancelled()) {
-            return;
-        }
-
-        for (TempVariable var : tempvariables.keySet()) {
-            if (var.getVariableName().equalsIgnoreCase(varname)) {
-                return;
-            }
-        }
-
-        if (name.contains("-")) {
-            broadcastColoredMessage("§cVariable '§4" + name + "§c' couldn't be created because it has illegal characters ('§4-§c')");
-            return;
-        }
-
-        tempvariables.put(this, varname);
-        broadcastColoredMessage("§aSuccessfully parsed temporary variable '§2" + name + "§a' of the plugin '§2" + plugin.getName() + "§a'.");
-
-        for (Player player : instance.getServer().getOnlinePlayers()) {
-            new PlayerVariable(player, plugin, name, value, TEMPORARY, this);
-        }
-
+    public TempVariable(Plugin plugin, String name, Object default_value) {
+        new VariableCreationController(plugin, name, default_value, LvDataAPI.variableType.TEMPORARY);
     }
 
-    public String getName() {
-        return name;
-    }
-    public String getVariableName() {
-        return varname;
-    }
-    public Plugin getPlugin() {
-        return plugin;
-    }
-    public variableType getVariableType() {
-        return TEMPORARY;
-    }
-    public Object getValue() {
-        return value;
-    }
 }
