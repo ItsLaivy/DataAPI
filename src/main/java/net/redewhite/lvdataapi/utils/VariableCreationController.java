@@ -51,9 +51,12 @@ public class VariableCreationController {
         this.type = type;
         this.sqltype = parseType(this);
 
-        if (name.contains("-")) {
-            broadcastColoredMessage("§cVariable '§4" + name + "§c' couldn't be created because it has illegal characters ('§4-§c')");
-            return;
+        String[] blocked = "-S,S=S[S]S.S/S*S-S+S;S:".split("S");
+        for (String block : blocked) {
+            if (name.contains(block)) {
+                broadcastColoredMessage("§cVariable '§4" + name + "§c' couldn't be created because it has illegal characters ('§4" + block + "§c')");
+                return;
+            }
         }
 
         for (VariableCreationController var : getVariables().keySet()) {
