@@ -31,14 +31,19 @@ public class GeneralAPI {
     public static ArrayList<String> getTextTypeArrayVariable(Plugin plugin, String name, String textVariableName) {
         TextVariableLoader var = getTextTypeVariableLoader(plugin, name, textVariableName);
 
-        ArrayList<String> array = new ArrayList<>();
         if (var != null) {
+            ArrayList<String> array = new ArrayList<>();
             if (var.getVariable().getType() == ARRAY) {
                 String[] split = var.getValue().toString().split("<SPLIT!>");
-                for (String e : split) array.add(getVariableUnhashedValue(e).toString());
+                for (String e : split) {
+                    if (!e.equals("")) {
+                        array.add(getVariableUnhashedValue(e).toString());
+                    }
+                }
             }
+            return array;
         }
-        return array;
+        throw new NullPointerException("That array variable doesn't exists or is not an array variable type!");
     }
     public static ArrayList<String> getPlayerTypeArrayVariable(Plugin plugin, String name, Player player) {
         PlayerVariableLoader var = getPlayerTypeVariableLoader(plugin, name, player);
@@ -47,7 +52,11 @@ public class GeneralAPI {
             ArrayList<String> array = new ArrayList<>();
             if (var.getVariable().getType() == ARRAY) {
                 String[] split = var.getValue().toString().split("<SPLIT!>");
-                for (String e : split) array.add(getVariableUnhashedValue(e).toString());
+                for (String e : split) {
+                    if (!e.equals("")) {
+                        array.add(getVariableUnhashedValue(e).toString());
+                    }
+                }
             }
             return array;
         }
