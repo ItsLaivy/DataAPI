@@ -7,8 +7,11 @@ import org.bukkit.plugin.Plugin;
 @SuppressWarnings("unused")
 public class TempVariable {
 
+    public TempVariable(Plugin plugin, String name, Object default_value, Boolean textvariable) {
+        new VariableCreationController(plugin, name, default_value, LvDataAPI.variableType.TEMPORARY, textvariable);
+    }
     public TempVariable(Plugin plugin, String name, Object default_value) {
-        new VariableCreationController(plugin, name, default_value, LvDataAPI.variableType.TEMPORARY);
+        new VariableCreationController(plugin, name, default_value, LvDataAPI.variableType.TEMPORARY, false);
     }
 
 }

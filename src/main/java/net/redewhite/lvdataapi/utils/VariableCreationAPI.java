@@ -1,6 +1,6 @@
 package net.redewhite.lvdataapi.utils;
 
-import static net.redewhite.lvdataapi.utils.YamlDatabaseAPI.loadPlayerVariable;
+import static net.redewhite.lvdataapi.utils.YamlDatabaseAPI.loadYamlVariable;
 import static net.redewhite.lvdataapi.utils.SQLDatabaseAPI.createColumn;
 import static net.redewhite.lvdataapi.LvDataAPI.databaseConnection.*;
 import static net.redewhite.lvdataapi.LvDataAPI.variableType.*;
@@ -26,7 +26,7 @@ public class VariableCreationAPI {
         if (database_type == SQLITE || database_type == MYSQL) {
             return createColumn(variable);
         } else if (database_type == YAML) {
-            loadPlayerVariable(variable);
+            loadYamlVariable(variable);
             return 3;
         }
         return 0;

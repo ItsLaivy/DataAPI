@@ -1,35 +1,40 @@
 package net.redewhite.lvdataapi.utils;
 
-import net.redewhite.lvdataapi.variables.loaders.PlayerVariable;
+import net.redewhite.lvdataapi.variables.loaders.PlayerVariableLoader;
+import net.redewhite.lvdataapi.variables.loaders.TextVariableLoader;
+import net.redewhite.lvdataapi.variables.receptors.TextVariableReceptor;
 import net.redewhite.lvdataapi.LvDataAPI.variableType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
 
+import static net.redewhite.lvdataapi.developers.GeneralAPI.getInactivePlayerTypeVariable;
+import static net.redewhite.lvdataapi.developers.GeneralAPI.getInactiveTextTypeVariable;
 import static net.redewhite.lvdataapi.developers.DatabaseAPI.getVariableHashedValue;
 import static net.redewhite.lvdataapi.utils.VariableCreationAPI.tryCreateColumn;
+import static net.redewhite.lvdataapi.developers.PlayerVariablesAPI.isLoaded;
 import static net.redewhite.lvdataapi.utils.VariableCreationAPI.parseType;
-import static net.redewhite.lvdataapi.developers.API.getVariable;
 import static net.redewhite.lvdataapi.LvDataAPI.variableType.*;
-import static net.redewhite.lvdataapi.developers.API.isLoaded;
 import static net.redewhite.lvdataapi.LvDataAPI.*;
 
 public class VariableCreationController {
 
+    private final boolean textvariable;
     private final variableType type;
+    private final String sqltype;
     private final Plugin plugin;
     private final Object value;
     private final String name;
     private String varname;
-    private final String sqltype;
 
-    public VariableCreationController(Plugin plugin, String name, Object defaultvalue, variableType type) {
+    public VariableCreationController(Plugin plugin, String name, Object defaultvalue, variableType type, Boolean textvariable) {
 
         if (plugin == null) throw new NullPointerException("Variable plugin cannot be null!");
         else if (name == null) throw new NullPointerException("Variable name cannot be null!");
         else if (type == null) throw new NullPointerException("Variable data type cannot be null!");
 
+        this.textvariable = textvariable;
         this.plugin = plugin;
         this.name = name;
 
@@ -79,16 +84,28 @@ public class VariableCreationController {
         if (type == ARRAY || type == NORMAL) {
             int createid = tryCreateColumn(this);
             if (createid == 1) {
-                for (Player player : instance.getServer().getOnlinePlayers()) {
-                    if (isLoaded(player)) {
-                        new PlayerVariable(player, this, getVariable(varname, player));
+                if (textvariable) {
+                    for (TextVariableReceptor var : getTextVariablesNames().keySet()) {
+                        new TextVariableLoader(var, this, getInactiveTextTypeVariable(varname, var));
+                    }
+                } else {
+                    for (Player player : instance.getServer().getOnlinePlayers()) {
+                        if (isLoaded(player)) {
+                            new PlayerVariableLoader(player, this, getInactivePlayerTypeVariable(varname, player));
+                        }
                     }
                 }
                 broadcastColoredMessage("§aSuccessfully loaded " + message + " '§2" + name + "§a' of the plugin '§2" + plugin.getName() + "§a'.");
             } else if (createid == 2) {
-                for (Player player : instance.getServer().getOnlinePlayers()) {
-                    if (isLoaded(player)) {
-                        new PlayerVariable(player, this, value);
+                if (textvariable) {
+                    for (TextVariableReceptor var : getTextVariablesNames().keySet()) {
+                        new TextVariableLoader(var, this, getInactiveTextTypeVariable(varname, var));
+                    }
+                } else {
+                    for (Player player : instance.getServer().getOnlinePlayers()) {
+                        if (isLoaded(player)) {
+                            new PlayerVariableLoader(player, this, value);
+                        }
                     }
                 }
                 broadcastColoredMessage("§aSuccessfully created " + message + " '§2" + name + "§a' of the plugin '§2" + plugin.getName() + "§a'.");
@@ -99,8 +116,14 @@ public class VariableCreationController {
                 return;
             }
         } else if (type == TEMPORARY) {
-            for (Player player : instance.getServer().getOnlinePlayers()) {
-                new PlayerVariable(player, this, value);
+            if (textvariable) {
+                for (TextVariableReceptor var : getTextVariablesNames().keySet()) {
+                    new TextVariableLoader(var, this, getInactiveTextTypeVariable(varname, var));
+                }
+            } else {
+                for (Player player : instance.getServer().getOnlinePlayers()) {
+                    new PlayerVariableLoader(player, this, value);
+                }
             }
             broadcastColoredMessage("§aSuccessfully parsed " + message + " '§2" + name + "§a' of the plugin '§2" + plugin.getName() + "§a'.");
         }
@@ -109,6 +132,9 @@ public class VariableCreationController {
 
     }
 
+    public Boolean getVariableTextType() {
+        return textvariable;
+    }
     public String getVariableName() {
         return varname;
     }

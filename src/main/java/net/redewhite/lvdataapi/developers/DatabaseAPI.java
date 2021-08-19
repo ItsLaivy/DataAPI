@@ -1,26 +1,27 @@
 package net.redewhite.lvdataapi.developers;
 
-import net.redewhite.lvdataapi.variables.loaders.InactivePlayerVariable;
-import net.redewhite.lvdataapi.variables.loaders.PlayerVariable;
+import net.redewhite.lvdataapi.variables.loaders.InactivePlayerLoader;
+import net.redewhite.lvdataapi.variables.loaders.PlayerVariableLoader;
+import net.redewhite.lvdataapi.variables.loaders.InactiveTextLoader;
+import net.redewhite.lvdataapi.variables.loaders.TextVariableLoader;
 import org.bukkit.configuration.file.YamlConfiguration;
+import net.redewhite.lvdataapi.variables.receptors.TextVariableReceptor;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.Bukkit;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.io.File;
 
+import static net.redewhite.lvdataapi.developers.PlayerVariablesAPI.isLoaded;
 import static net.redewhite.lvdataapi.LvDataAPI.databaseConnection.*;
-import static net.redewhite.lvdataapi.LvDataAPI.variableType.NORMAL;
 import static net.redewhite.lvdataapi.database.DatabaseConnection.*;
-import static net.redewhite.lvdataapi.LvDataAPI.variableType.ARRAY;
-import static net.redewhite.lvdataapi.developers.API.stopPlugin;
-import static net.redewhite.lvdataapi.developers.API.isLoaded;
 import static net.redewhite.lvdataapi.utils.YamlDatabaseAPI.*;
+import static net.redewhite.lvdataapi.developers.GeneralAPI.*;
 import static net.redewhite.lvdataapi.utils.SQLDatabaseAPI.*;
 import static net.redewhite.lvdataapi.LvDataAPI.*;
 
@@ -64,57 +65,51 @@ public class DatabaseAPI {
         }
     }
 
-    public static void deletePlayerVariables(Player player) {
-        ArrayList<PlayerVariable> variables = getPlayerVariablesArrayList(player);
-        ArrayList<InactivePlayerVariable> arraytwo = new ArrayList<>();
+    public static void deleteTextVariables(TextVariableReceptor textVariable) {
+        ArrayList<TextVariableLoader> variables = getTextTypeVariablesArrayList(textVariable);
+        ArrayList<InactiveTextLoader> arraytwo = new ArrayList<>();
 
-        for (PlayerVariable var : variables) getPlayers().remove(var);
-        for (InactivePlayerVariable var : getInactiveVariables().keySet()) {
+        for (TextVariableLoader var : variables) getTextVariables().remove(var);
+        for (InactiveTextLoader var : getInactiveTextVariables().keySet()) {
+            if (var.getOwner() == textVariable) arraytwo.add(var);
+        }
+        for (InactiveTextLoader var : arraytwo) getInactiveTextVariables().remove(var);
+    }
+    public static void deletePlayerVariables(Player player) {
+        ArrayList<PlayerVariableLoader> variables = getPlayerTypeVariablesArrayList(player);
+        ArrayList<InactivePlayerLoader> arraytwo = new ArrayList<>();
+
+        for (PlayerVariableLoader var : variables) getPlayerVariables().remove(var);
+        for (InactivePlayerLoader var : getInactivePlayerVariables().keySet()) {
             if (var.getOwner() == player) arraytwo.add(var);
         }
-        for (InactivePlayerVariable var : arraytwo) getInactiveVariables().remove(var);
+        for (InactivePlayerLoader var : arraytwo) getInactivePlayerVariables().remove(var);
     }
 
-    public static ArrayList<PlayerVariable> getPlayerVariablesArrayList(Player player) {
-        ArrayList<PlayerVariable> variables = new ArrayList<>();
-        for (PlayerVariable var : getPlayers().keySet()) {
-            if (var.getPlayer() == player) {
-                if (var.getVariable().getType() == NORMAL || var.getVariable().getType() == ARRAY) {
-                    variables.add(var);
-                }
-            }
-        }
-        return variables;
-    }
-
-    public static Boolean databaseSavePlayer(Player player) {
+    public static Boolean databaseSaveText(TextVariableReceptor textVariable) {
         if (database_type == SQLITE || database_type == MYSQL) {
-            return executeQuery(getSaverQuery(player, getPlayerVariablesArrayList(player)));
+            return executeQuery(getTextSaverQuery(textVariable, getTextTypeVariablesArrayList(textVariable)));
         } else if (database_type == YAML) {
-            return savePlayerVariables(player);
+            return saveTextTypeVariables(textVariable);
         }
         return false;
     }
-
-    public static PlayerVariable getPlayerVariable(Plugin plugin, Player player, String name) {
-        for (PlayerVariable var : getPlayers().keySet()) {
-            if (var.getPlayer() == player) {
-                if (var.getVariable().getPlugin() == plugin) {
-                    if (var.getVariable().getName().equals(name)) {
-                        return var;
-                    }
-                }
-            }
+    public static Boolean databaseSavePlayer(Player player) {
+        if (database_type == SQLITE || database_type == MYSQL) {
+            return executeQuery(getPlayerSaverQuery(player, getPlayerTypeVariablesArrayList(player)));
+        } else if (database_type == YAML) {
+            return savePlayerTypeVariables(player);
         }
-        return null;
+        return false;
+    }
+    public static void saveFile(YamlConfiguration config, File file) {
+        try {
+            config.save(file);
+        } catch (IOException e) {
+            if (debug) e.printStackTrace();
+        }
     }
 
-    public static ArrayList<InactivePlayerVariable> getPlayerInactiveVariables(Player player) {
-        ArrayList<InactivePlayerVariable> array = new ArrayList<>();
-        for (InactivePlayerVariable var : getInactiveVariables().keySet()) {
-            if (var.getOwner() == player) array.add(var);
-        } return array;
-    }
 
     public static Object getVariableHashedValue(Object value) {
         if (value != null) {
@@ -129,19 +124,44 @@ public class DatabaseAPI {
         return "";
     }
 
+    public static Boolean tryRegisterTextVariableInDatabase(TextVariableReceptor textVariable) {
+        if (getTextDatabaseVariablesAmount(textVariable) != null) return null;
+
+        boolean success = true;
+
+        if (database_type == MYSQL || database_type == SQLITE) {
+            success = insertDefaultTextValues(textVariable);
+        } else if (database_type == YAML) {
+            if (getTextTypeFile(textVariable) == null) success = false;
+        }
+
+        return success;
+    }
     public static Boolean tryRegisterPlayerInDatabase(Player player) {
         if (getPlayerDatabaseVariablesAmount(player) != null) return null;
         boolean success = true;
 
         if (database_type == MYSQL || database_type == SQLITE) {
-            success = insertDefaultValues(player);
+            success = insertDefaultPlayerValues(player);
         } else if (database_type == YAML) {
-            if (getPlayerFile(player) == null) success = false;
+            if (getPlayerTypeFile(player) == null) success = false;
         }
 
         return success;
     }
 
+    public static Boolean unloadDatabaseTextVariables(TextVariableReceptor textVariable) {
+        if (!databaseSaveText(textVariable)) {
+            broadcastColoredMessage("§cDatabase attempted unload text variable '§4" + textVariable.getName() + "§c' without success.");
+            if (config.getBoolean("Delete variables if unload fail")) {
+                deleteTextVariables(textVariable);
+                return false;
+            }
+        }
+
+        deleteTextVariables(textVariable);
+        return true;
+    }
     public static Boolean unloadDatabasePlayerVariables(Player player) {
         if (!isLoaded(player)) return false;
 
@@ -157,6 +177,34 @@ public class DatabaseAPI {
         return true;
     }
 
+    public static Boolean loadDatabaseTextVariables(TextVariableReceptor textVariable) {
+        tryRegisterTextVariableInDatabase(textVariable);
+        if (database_type == SQLITE || database_type == MYSQL) {
+            Statement statement = createStatement();
+            assert statement != null;
+
+            try (ResultSet result = statement.executeQuery("SELECT * FROM '" + tableNameText + "' WHERE name = '" + textVariable.getVariableName() + "';")) {
+                while (result.next()) {
+                    ResultSetMetaData rmtd = result.getMetaData();
+                    for (int row = 1; row <= rmtd.getColumnCount(); row++) {
+                        if (row > 3) {
+                            String e = getVariableUnhashedValue(result.getObject(row)).toString();
+                            if (getVariableUnhashedValue(result.getObject(row)).toString().equals("null")) e = null;
+                            new InactiveTextLoader(rmtd.getColumnName(row), e, textVariable);
+                        }
+                    }
+                }
+                return true;
+            } catch (SQLException e) {
+                if (debug) e.printStackTrace();
+                return false;
+            }
+        } else if (database_type == YAML) {
+            loadTextTypeVariables(textVariable);
+            return true;
+        }
+        return false;
+    }
     public static Boolean loadDatabasePlayerVariables(Player player) {
         if (isLoaded(player)) return false;
 
@@ -172,7 +220,7 @@ public class DatabaseAPI {
                         if (row > 4) {
                             String e = getVariableUnhashedValue(result.getObject(row)).toString();
                             if (getVariableUnhashedValue(result.getObject(row)).toString().equals("null")) e = null;
-                            new InactivePlayerVariable(rmtd.getColumnName(row), e, player);
+                            new InactivePlayerLoader(rmtd.getColumnName(row), e, player);
                         }
                     }
                 }
@@ -182,12 +230,52 @@ public class DatabaseAPI {
                 return false;
             }
         } else if (database_type == YAML) {
-            loadPlayerVariables(player);
+            loadPlayerTypeVariables(player);
             return true;
         }
         return false;
     }
 
+    public static Integer getTextDatabaseVariablesAmount(TextVariableReceptor textVariable) {
+        if (database_type == SQLITE || database_type == MYSQL) {
+            Statement statement = createStatement();
+            assert statement != null;
+
+            try (ResultSet result = statement.executeQuery("SELECT * FROM '" + tableNameText + "' WHERE name = '" + textVariable.getVariableName() + "';")) {
+                if (result.next()) {
+                    ResultSetMetaData rmtd = result.getMetaData();
+                    int number = 0;
+
+                    for (int row = 1; row <= rmtd.getColumnCount(); row++) {
+                        if (row > 3) number++;
+                    }
+
+                    if (number == 0) return null;
+                    return number;
+                }
+            } catch (SQLException e) {
+                if (debug) e.printStackTrace();
+            }
+        } else if (database_type == YAML) {
+            File file = getTextTypeFile(textVariable);
+            assert file != null;
+
+            YamlConfiguration configFile = YamlConfiguration.loadConfiguration(file);
+            if (configFile.getConfigurationSection(textVariable.getName() + ".variables") != null) {
+
+                int number = 0;
+                for (Object ignore : configFile.getConfigurationSection(textVariable.getName() + ".variables").getKeys(false)) {
+                    number++;
+                }
+
+                if (number == 0) return null;
+                return number;
+            } else {
+                return 0;
+            }
+        }
+        return null;
+    }
     public static Integer getPlayerDatabaseVariablesAmount(Player player) {
         if (database_type == SQLITE || database_type == MYSQL) {
             Statement statement = createStatement();
@@ -209,7 +297,7 @@ public class DatabaseAPI {
                 if (debug) e.printStackTrace();
             }
         } else if (database_type == YAML) {
-            File file = getPlayerFile(player);
+            File file = getPlayerTypeFile(player);
             assert file != null;
 
             YamlConfiguration configFile = YamlConfiguration.loadConfiguration(file);

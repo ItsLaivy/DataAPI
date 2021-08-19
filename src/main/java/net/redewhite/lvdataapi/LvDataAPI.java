@@ -1,10 +1,13 @@
 package net.redewhite.lvdataapi;
 
-import net.redewhite.lvdataapi.variables.loaders.InactivePlayerVariable;
+import net.redewhite.lvdataapi.variables.loaders.InactivePlayerLoader;
+import net.redewhite.lvdataapi.variables.loaders.PlayerVariableLoader;
+import net.redewhite.lvdataapi.variables.loaders.InactiveTextLoader;
+import net.redewhite.lvdataapi.variables.loaders.TextVariableLoader;
 import net.redewhite.lvdataapi.utils.VariableCreationController;
-import net.redewhite.lvdataapi.variables.loaders.PlayerVariable;
 import net.redewhite.lvdataapi.listeners.BukkitDefaultEvents;
 import org.bukkit.configuration.file.YamlConfiguration;
+import net.redewhite.lvdataapi.variables.receptors.TextVariableReceptor;
 import net.redewhite.lvdataapi.developers.DatabaseAPI;
 import net.redewhite.lvdataapi.variables.Variable;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -17,18 +20,24 @@ import java.util.HashMap;
 import java.util.Date;
 import java.io.File;
 
+import static net.redewhite.lvdataapi.developers.PlayerVariablesAPI.*;
 import static net.redewhite.lvdataapi.database.DatabaseConnection.*;
-import static net.redewhite.lvdataapi.developers.API.*;
+import static net.redewhite.lvdataapi.developers.TextVariablesAPI.*;
 
 @SuppressWarnings("unused")
 public class LvDataAPI extends JavaPlugin {
 
     public static final String now = new SimpleDateFormat("dd/MM/yyyy - hh:mm").format(new Date());
 
-    private static final HashMap<InactivePlayerVariable, String> inactivevariables = new HashMap<>();
+    private static final HashMap<InactivePlayerLoader, String> inactiveplayervariables = new HashMap<>();
+    private static final HashMap<InactiveTextLoader, String> inactivetextvariables = new HashMap<>();
+
     private static final HashMap<VariableCreationController, String> variables = new HashMap<>();
 
-    private static final HashMap<PlayerVariable, Player> players = new HashMap<>();
+    private static final HashMap<TextVariableLoader, TextVariableReceptor> textvariables = new HashMap<>();
+    private static final HashMap<PlayerVariableLoader, Player> playervariables = new HashMap<>();
+
+    private static final HashMap<TextVariableReceptor, String> textvars = new HashMap<>();
 
     private static BukkitRunnable task;
 
@@ -60,7 +69,10 @@ public class LvDataAPI extends JavaPlugin {
         new Variable(this, "defaultvar", "defaultvalue");
 
         for (Player player : getServer().getOnlinePlayers()) {
-            loadPlayer(player);
+            loadPlayerType(player);
+        }
+        for (TextVariableReceptor textVariable : getTextVariablesNames().keySet()) {
+            loadTextType(textVariable);
         }
 
     }
@@ -69,7 +81,10 @@ public class LvDataAPI extends JavaPlugin {
     public void onDisable() {
         stopAutoSave();
         for (Player player : getServer().getOnlinePlayers()) {
-            unloadPlayer(player);
+            unloadPlayerType(player);
+        }
+        for (TextVariableReceptor textVariable : getTextVariablesNames().keySet()) {
+            unloadTextType(textVariable);
         }
         close();
     }
@@ -88,10 +103,17 @@ public class LvDataAPI extends JavaPlugin {
                     for (Player player : instance.getServer().getOnlinePlayers()) {
                         if (isLoaded(player)) {
                             saved = true;
-                            savePlayer(player, config.getBoolean("Async variables saving"));
+                            savePlayerType(player, true);
                         }
                     }
-                    if (saved) broadcastColoredMessage("§aSuccessfully saved all players data.");
+                    if (saved) broadcastColoredMessage("§aSuccessfully saved all players variables.");
+
+                    saved = false;
+                    for (TextVariableReceptor textVariable : getTextVariablesNames().keySet()) {
+                        saved = true;
+                        saveTextType(textVariable, true);
+                    }
+                    if (saved) broadcastColoredMessage("§aSuccessfully saved all text variables.");
                 });
             }
         }.runTaskTimer(instance, 0, seconds * 20);
@@ -114,14 +136,23 @@ public class LvDataAPI extends JavaPlugin {
         ARRAY, NORMAL, TEMPORARY
     }
 
-    public static HashMap<InactivePlayerVariable, String> getInactiveVariables() {
-        return inactivevariables;
+    public static HashMap<InactivePlayerLoader, String> getInactivePlayerVariables() {
+        return inactiveplayervariables;
+    }
+    public static HashMap<InactiveTextLoader, String> getInactiveTextVariables() {
+        return inactivetextvariables;
     }
     public static HashMap<VariableCreationController, String> getVariables() {
         return variables;
     }
-    public static HashMap<PlayerVariable, Player> getPlayers() {
-        return players;
+    public static HashMap<PlayerVariableLoader, Player> getPlayerVariables() {
+        return playervariables;
+    }
+    public static HashMap<TextVariableLoader, TextVariableReceptor> getTextVariables() {
+        return textvariables;
+    }
+    public static HashMap<TextVariableReceptor, String> getTextVariablesNames() {
+        return textvars;
     }
 
     public static databaseConnection getConnectedDatabase() {

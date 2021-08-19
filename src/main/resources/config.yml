@@ -36,9 +36,10 @@ mysql-port: 3306
 # if false, plugin will create just one .yml for all players (NOT RECOMMENDED).
 File for every Player:
   Enabled: true # High recommended (true)
-  Files path: 'users'
-
+  Player variables files path: 'users'
 Save players as UUID: true # High recommended (true)
+
+Text variables files path: 'textvariabes'
 
 # -------------------=-=------------------- #
 #       General plugin's Configuration
@@ -67,6 +68,10 @@ Async variables saving: true
 # Async variables unloading: true # REMOVED BECAUSE ASYNC UNLOADING CAN CAUSE BUGS AND EXCEPTIONS.
 
 Delete variables if unload fail: false
+
+# if true, a blank (unknown) variable will return a null value
+# if false, a blank (unknown) variable will return ""
+Null variables if blank: false
 
 # -------------------=-=------------------- #
 #           Configuration file end
