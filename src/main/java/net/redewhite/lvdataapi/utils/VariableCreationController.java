@@ -1,8 +1,8 @@
 package net.redewhite.lvdataapi.utils;
 
+import net.redewhite.lvdataapi.variables.receptors.TextVariableReceptor;
 import net.redewhite.lvdataapi.variables.loaders.PlayerVariableLoader;
 import net.redewhite.lvdataapi.variables.loaders.TextVariableLoader;
-import net.redewhite.lvdataapi.variables.receptors.TextVariableReceptor;
 import net.redewhite.lvdataapi.LvDataAPI.variableType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -12,9 +12,9 @@ import java.util.ArrayList;
 import static net.redewhite.lvdataapi.developers.GeneralAPI.getInactivePlayerTypeVariable;
 import static net.redewhite.lvdataapi.developers.GeneralAPI.getInactiveTextTypeVariable;
 import static net.redewhite.lvdataapi.developers.DatabaseAPI.getVariableHashedValue;
-import static net.redewhite.lvdataapi.utils.VariableCreationAPI.tryCreateColumn;
 import static net.redewhite.lvdataapi.developers.PlayerVariablesAPI.isLoaded;
-import static net.redewhite.lvdataapi.utils.VariableCreationAPI.parseType;
+import static net.redewhite.lvdataapi.utils.SQLDatabaseAPI.createColumn;
+import static net.redewhite.lvdataapi.LvDataAPI.databaseConnection.*;
 import static net.redewhite.lvdataapi.LvDataAPI.variableType.*;
 import static net.redewhite.lvdataapi.LvDataAPI.*;
 
@@ -102,7 +102,7 @@ public class VariableCreationController {
             } else if (createid == 2) {
                 if (textvariable) {
                     for (TextVariableReceptor var : getTextVariablesNames().keySet()) {
-                        new TextVariableLoader(var, this, getInactiveTextTypeVariable(varname, var));
+                        new TextVariableLoader(var, this, value);
                     }
                 } else {
                     for (Player player : instance.getServer().getOnlinePlayers()) {
@@ -112,8 +112,6 @@ public class VariableCreationController {
                     }
                 }
                 broadcastColoredMessage("§aSuccessfully created " + message + " '§2" + name + "§a' of the plugin '§2" + plugin.getName() + "§a'.");
-            } else if (createid == 3) {
-                broadcastColoredMessage("§aSuccessfully defined for all players " + message + " '§2" + name + "§a' of the plugin '§2" + plugin.getName() + "§a'.");
             } else {
                 broadcastColoredMessage("§cColumn named '§4" + varname + "§c' for " + message_error + " '§4" + name + "§c' couldn't be created.");
                 return;
@@ -156,4 +154,26 @@ public class VariableCreationController {
     public String getSQLDefaultSymbol() {
         return sqltype;
     }
+
+    public static String parseType(VariableCreationController variable) {
+        if (variable.getType() == NORMAL) {
+            try {
+                Integer.parseInt(String.valueOf(variable.getValue()));
+                return "INT";
+            } catch (IllegalArgumentException ignore) {
+                return "TEXT";
+            }
+        }
+        else if (variable.getType() == ARRAY) return "OBJECT";
+        else if (variable.getType() == TEMPORARY) return "OBJECT";
+        return null;
+    }
+
+    public static Integer tryCreateColumn(VariableCreationController variable) {
+        if (database_type == SQLITE || database_type == MYSQL) {
+            return createColumn(variable);
+        }
+        return 0;
+    }
+
 }

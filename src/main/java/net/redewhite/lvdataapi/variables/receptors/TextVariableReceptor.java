@@ -19,13 +19,8 @@ public class TextVariableReceptor {
         this.name = name;
         this.plugin = plugin;
 
-        if (name.contains("-")) {
-            broadcastColoredMessage("§4Text §cvariable '§4" + name + "§c' couldn't be created because it has illegal characters ('§4-§c')");
-            return;
-        }
-
         getTextVariablesNames().put(this, name);
-        loadTextType(this);
+        loadTextType(this, false);
     }
 
     public String getVariableName() {

@@ -1,5 +1,6 @@
 package net.redewhite.lvdataapi;
 
+import net.redewhite.lvdataapi.variables.receptors.TextVariableReceptor;
 import net.redewhite.lvdataapi.variables.loaders.InactivePlayerLoader;
 import net.redewhite.lvdataapi.variables.loaders.PlayerVariableLoader;
 import net.redewhite.lvdataapi.variables.loaders.InactiveTextLoader;
@@ -7,7 +8,6 @@ import net.redewhite.lvdataapi.variables.loaders.TextVariableLoader;
 import net.redewhite.lvdataapi.utils.VariableCreationController;
 import net.redewhite.lvdataapi.listeners.BukkitDefaultEvents;
 import org.bukkit.configuration.file.YamlConfiguration;
-import net.redewhite.lvdataapi.variables.receptors.TextVariableReceptor;
 import net.redewhite.lvdataapi.developers.DatabaseAPI;
 import net.redewhite.lvdataapi.variables.Variable;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -130,7 +130,7 @@ public class LvDataAPI extends JavaPlugin {
     }
 
     public enum databaseConnection {
-        MYSQL, YAML, SQLITE
+        MYSQL, SQLITE
     }
     public enum variableType {
         ARRAY, NORMAL, TEMPORARY

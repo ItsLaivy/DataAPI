@@ -1,7 +1,5 @@
 package net.redewhite.lvdataapi.database;
 
-import org.bukkit.configuration.file.YamlConfiguration;
-
 import java.io.File;
 import java.sql.*;
 
@@ -11,7 +9,6 @@ import static net.redewhite.lvdataapi.LvDataAPI.*;
 public class DatabaseConnection {
 
     public static Connection conn;
-    public static YamlConfiguration yaml;
 
     public static Boolean connect(databaseConnection type) {
         if (type == MYSQL) {
@@ -33,24 +30,6 @@ public class DatabaseConnection {
                 if (createDatabase()) return true;
             } catch (Exception e) {
                 if (debug) e.printStackTrace();
-            }
-        } else if (type == YAML) {
-            if (!config.getBoolean("File for every Player.Enabled")) {
-                boolean success = false;
-                File accountsFile = new File(instance.getDataFolder() + File.separator + "database.yml");
-
-                if (accountsFile.exists()) success = true;
-                else if (accountsFile.mkdirs()) success = true;
-                if (success) {
-                    yaml = YamlConfiguration.loadConfiguration(accountsFile);
-                    broadcastColoredMessage("§aYAML connection has been successfully established.");
-                    database_type = YAML;
-                    return true;
-                }
-            } else {
-                database_type = YAML;
-                broadcastColoredMessage("§aYAML connection has been successfully established.");
-                return true;
             }
         }
         return false;

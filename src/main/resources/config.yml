@@ -6,14 +6,14 @@
 # Disables console errors if false.
 debug: true
 
-# SQLITE, YAML, MYSQL
+# SQLITE, MYSQL
 # if you want to try with another one if fail, use
 # 'DATABASE > DATABASE'
 #
-# Example: 'SQLITE > MYSQL > YAML'
+# Example: 'SQLITE > MYSQL'
 
 Database Type: 'SQLITE'
-Database Name: 'database' # Works only for YAML and SQLite.
+Database Name: 'database' # Works only for SQLite.
 
 # -------------------=-=------------------- #
 #              MySQL Connection
@@ -24,22 +24,6 @@ mysql-password: 'password'
 mysql-address: 'localhost'
 mysql-database: 'data'
 mysql-port: 3306
-
-# -------------------=-=------------------- #
-#         YAML Database Configuration
-# -------------------=-=------------------- #
-
-#   THIS DATABASE TYPE IS NOT RECOMMENDED!  #
-#   THIS DATABASE TYPE IS NOT RECOMMENDED!  #
-
-# if true, plugin will create a .yml for every player.
-# if false, plugin will create just one .yml for all players (NOT RECOMMENDED).
-File for every Player:
-  Enabled: true # High recommended (true)
-  Player variables files path: 'users'
-Save players as UUID: true # High recommended (true)
-
-Text variables files path: 'textvariabes'
 
 # -------------------=-=------------------- #
 #       General plugin's Configuration
