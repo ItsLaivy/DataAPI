@@ -44,14 +44,14 @@ public class DatabaseAPI {
                     } else if (f.equalsIgnoreCase("SQLITE")) {
                         if (connect(SQLITE)) success = true;
                     } else {
-                        broadcastColoredMessage("§cWrong config.yml configuration at '§4Database Type§c'. Stopping plugin...");
+                        broadcastColoredMessage("&cWrong config.yml configuration at '&4Database Type&c'. Stopping plugin...");
                         stopPlugin();
                         return;
                     }
                 }
             }
             if (!success) {
-                broadcastColoredMessage("§cA database connection could not be established, closing the plugin...");
+                broadcastColoredMessage("&cA database connection could not be established, closing the plugin...");
                 stopPlugin();
             }
         }
@@ -91,7 +91,6 @@ public class DatabaseAPI {
         return false;
     }
 
-
     public static Object getVariableHashedValue(Object value) {
         if (value != null) {
             return value.toString().replace(",", "<!COMMA>").replace("[", "<!RIGHTBRACKET>").replace("]", "<!LEFTBRACKET>").replace("'", "<!SIMPLECOMMA>");
@@ -129,7 +128,7 @@ public class DatabaseAPI {
 
     public static Boolean unloadDatabaseTextVariables(TextVariableReceptor textVariable) {
         if (!databaseSaveText(textVariable)) {
-            broadcastColoredMessage("§cDatabase attempted unload text variable '§4" + textVariable.getName() + "§c' without success.");
+            broadcastColoredMessage("&cDatabase attempted unload text variable '&4" + textVariable.getName() + "&c' without success.");
             if (config.getBoolean("Delete variables if unload fail")) {
                 deleteTextVariables(textVariable);
                 return false;
@@ -143,7 +142,7 @@ public class DatabaseAPI {
         if (!isLoaded(player)) return false;
 
         if (!databaseSavePlayer(player)) {
-            broadcastColoredMessage("§cDatabase attempted unload player '§4" + player.getName() + "§c' without success.");
+            broadcastColoredMessage("&cDatabase attempted unload player '&4" + player.getName() + "&c' without success.");
             if (config.getBoolean("Delete variables if unload fail")) {
                 deletePlayerVariables(player);
                 return false;

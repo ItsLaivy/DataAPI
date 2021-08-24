@@ -24,11 +24,11 @@ public class SQLDatabaseAPI {
             assert pstmt != null;
 
             pstmt.execute();
-            broadcastColoredMessage("§aSuccessfully registered text variable '§2" + textVariable.getName() + "§a'.");
+            broadcastColoredMessage("&aSuccessfully registered text variable '&2" + textVariable.getName() + "&a'.");
             return true;
         } catch (SQLException e) {
             if (debug) e.printStackTrace();
-            broadcastColoredMessage("§cInternal error when trying to register text variable '§4" + textVariable.getName() + "§c'. Aborting...");
+            broadcastColoredMessage("&cInternal error when trying to register text variable '&4" + textVariable.getName() + "&c'. Aborting...");
             return false;
         }
     }
@@ -40,11 +40,11 @@ public class SQLDatabaseAPI {
             assert pstmt != null;
 
             pstmt.execute();
-            broadcastColoredMessage("§aSuccessfully registered player '§2" + player.getName() + "§a'.");
+            broadcastColoredMessage("&aSuccessfully registered player '&2" + player.getName() + "&a'.");
             return true;
         } catch (SQLException e) {
             if (debug) e.printStackTrace();
-            broadcastColoredMessage("§cInternal error when trying to register player '§4" + player.getName() + "§c'. Aborting...");
+            broadcastColoredMessage("&cInternal error when trying to register player '&4" + player.getName() + "&c'. Aborting...");
             return false;
         }
     }

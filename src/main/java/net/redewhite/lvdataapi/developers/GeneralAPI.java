@@ -63,6 +63,17 @@ public class GeneralAPI {
         throw new NullPointerException("That array variable doesn't exists or is not an array variable type!");
     }
 
+    public static Boolean isTextTypeVariableNull(Plugin plugin, String name, String textVariableName) {
+        TextVariableLoader var = getTextTypeVariableLoader(plugin, name, textVariableName);
+        if (var != null) return var.getValue() == null;
+        return true;
+    }
+    public static Boolean isPlayerTypeVariableNull(Plugin plugin, String name, Player player) {
+        PlayerVariableLoader var = getPlayerTypeVariableLoader(plugin, name, player);
+        if (var != null) return var.getValue() == null;
+        return true;
+    }
+
     public static Object getPlayerTypeVariableValue(Plugin plugin, String name, Player player) {
         PlayerVariableLoader var = getPlayerTypeVariableLoader(plugin, name, player);
 

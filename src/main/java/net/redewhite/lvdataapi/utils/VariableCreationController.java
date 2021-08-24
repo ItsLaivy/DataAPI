@@ -54,7 +54,7 @@ public class VariableCreationController {
         String[] blocked = "-S,S=S[S]S.S/S*S-S+S;S:".split("S");
         for (String block : blocked) {
             if (name.contains(block)) {
-                broadcastColoredMessage("§cVariable '§4" + name + "§c' couldn't be created because it has illegal characters ('§4" + block + "§c')");
+                broadcastColoredMessage("&cVariable '&4" + name + "&c' couldn't be created because it has illegal characters ('&4" + block + "&c')");
                 return;
             }
         }
@@ -62,7 +62,7 @@ public class VariableCreationController {
         for (VariableCreationController var : getVariables().keySet()) {
             if (var.getName().equals(name)) {
                 if (var.getPlugin() == plugin) {
-                    broadcastColoredMessage("§cVariable '§4" + name + "§c' couldn't be created because already some variable of this plugin loaded with that name.");
+                    broadcastColoredMessage("&cVariable '&4" + name + "&c' couldn't be created because already some variable of this plugin loaded with that name.");
                     return;
                 }
             }
@@ -98,7 +98,7 @@ public class VariableCreationController {
                         }
                     }
                 }
-                broadcastColoredMessage("§aSuccessfully loaded " + message + " '§2" + name + "§a' of the plugin '§2" + plugin.getName() + "§a'.");
+                broadcastColoredMessage("&aSuccessfully loaded " + message + " '&2" + name + "&a' of the plugin '&2" + plugin.getName() + "&a'.");
             } else if (createid == 2) {
                 if (textvariable) {
                     for (TextVariableReceptor var : getTextVariablesNames().keySet()) {
@@ -111,9 +111,9 @@ public class VariableCreationController {
                         }
                     }
                 }
-                broadcastColoredMessage("§aSuccessfully created " + message + " '§2" + name + "§a' of the plugin '§2" + plugin.getName() + "§a'.");
+                broadcastColoredMessage("&aSuccessfully created " + message + " '&2" + name + "&a' of the plugin '&2" + plugin.getName() + "&a'.");
             } else {
-                broadcastColoredMessage("§cColumn named '§4" + varname + "§c' for " + message_error + " '§4" + name + "§c' couldn't be created.");
+                broadcastColoredMessage("&cColumn named '&4" + varname + "&c' for " + message_error + " '&4" + name + "&c' couldn't be created.");
                 return;
             }
         } else if (type == TEMPORARY) {
@@ -126,7 +126,7 @@ public class VariableCreationController {
                     new PlayerVariableLoader(player, this, value);
                 }
             }
-            broadcastColoredMessage("§aSuccessfully parsed " + message + " '§2" + name + "§a' of the plugin '§2" + plugin.getName() + "§a'.");
+            broadcastColoredMessage("&aSuccessfully parsed " + message + " '&2" + name + "&a' of the plugin '&2" + plugin.getName() + "&a'.");
         }
 
         getVariables().put(this, varname);

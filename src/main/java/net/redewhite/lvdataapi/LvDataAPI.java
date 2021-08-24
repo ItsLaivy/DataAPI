@@ -7,6 +7,7 @@ import net.redewhite.lvdataapi.variables.loaders.InactiveTextLoader;
 import net.redewhite.lvdataapi.variables.loaders.TextVariableLoader;
 import net.redewhite.lvdataapi.utils.VariableCreationController;
 import net.redewhite.lvdataapi.listeners.BukkitDefaultEvents;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import net.redewhite.lvdataapi.developers.DatabaseAPI;
 import net.redewhite.lvdataapi.variables.Variable;
@@ -90,7 +91,7 @@ public class LvDataAPI extends JavaPlugin {
     }
 
     public static void broadcastColoredMessage(String message) {
-        getInstance().getServer().getConsoleSender().sendMessage("§8[§6" + getInstance().getDescription().getName() + "§8]§7" + " " + message);
+        getInstance().getServer().getConsoleSender().sendMessage("§8[§6" + getInstance().getDescription().getName() + "§8]§7" + " " + ChatColor.translateAlternateColorCodes('&', message));
     }
 
     public static void startAutoSave(Integer seconds) {
@@ -106,14 +107,14 @@ public class LvDataAPI extends JavaPlugin {
                             savePlayerType(player, true);
                         }
                     }
-                    if (saved) broadcastColoredMessage("§aSuccessfully saved all players variables.");
+                    if (saved) broadcastColoredMessage("&aSuccessfully saved all players variables.");
 
                     saved = false;
                     for (TextVariableReceptor textVariable : getTextVariablesNames().keySet()) {
                         saved = true;
                         saveTextType(textVariable, true);
                     }
-                    if (saved) broadcastColoredMessage("§aSuccessfully saved all text variables.");
+                    if (saved) broadcastColoredMessage("&aSuccessfully saved all text variables.");
                 });
             }
         }.runTaskTimer(instance, 0, seconds * 20);
