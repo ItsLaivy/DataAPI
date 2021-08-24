@@ -220,7 +220,6 @@ public class DatabaseAPI {
                         if (row > 3) number++;
                     }
 
-                    if (number == 0) return null;
                     return number;
                 }
             } catch (SQLException e) {
@@ -243,7 +242,6 @@ public class DatabaseAPI {
                         if (row > 4) number++;
                     }
 
-                    if (number == 0) return null;
                     return number;
                 }
             } catch (SQLException e) {

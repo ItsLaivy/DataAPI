@@ -28,8 +28,6 @@ import static net.redewhite.lvdataapi.developers.TextVariablesAPI.*;
 @SuppressWarnings("unused")
 public class LvDataAPI extends JavaPlugin {
 
-    public static final String now = new SimpleDateFormat("dd/MM/yyyy - hh:mm").format(new Date());
-
     private static final HashMap<InactivePlayerLoader, String> inactiveplayervariables = new HashMap<>();
     private static final HashMap<InactiveTextLoader, String> inactivetextvariables = new HashMap<>();
 
@@ -124,6 +122,10 @@ public class LvDataAPI extends JavaPlugin {
         if (!(task == null)) {
             task.cancel();
         }
+    }
+
+    public static String getDate() {
+        return new SimpleDateFormat("dd/MM/yyyy - hh:mm").format(new Date());
     }
 
     public static LvDataAPI getInstance() {

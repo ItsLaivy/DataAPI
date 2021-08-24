@@ -19,8 +19,8 @@ public class SQLDatabaseAPI {
     public static Boolean insertDefaultTextValues(TextVariableReceptor textVariable) {
         try {
             PreparedStatement pstmt = null;
-            if (database_type == MYSQL) pstmt = DatabaseConnection.conn.prepareStatement("INSERT INTO '" + tableNameText + "' (id, name, last_update) VALUES (DEFAULT, '" + textVariable.getVariableName() + "', '" + now + "');");
-            else if (database_type == SQLITE) pstmt = DatabaseConnection.conn.prepareStatement("INSERT INTO '" + tableNameText + "' (name, last_update) VALUES ('" + textVariable.getVariableName() + "', '" + now + "');");
+            if (database_type == MYSQL) pstmt = DatabaseConnection.conn.prepareStatement("INSERT INTO '" + tableNameText + "' (id, name, last_update) VALUES (DEFAULT, '" + textVariable.getVariableName() + "', '" + getDate() + "');");
+            else if (database_type == SQLITE) pstmt = DatabaseConnection.conn.prepareStatement("INSERT INTO '" + tableNameText + "' (name, last_update) VALUES ('" + textVariable.getVariableName() + "', '" + getDate() + "');");
             assert pstmt != null;
 
             pstmt.execute();
@@ -35,8 +35,8 @@ public class SQLDatabaseAPI {
     public static Boolean insertDefaultPlayerValues(Player player) {
         try {
             PreparedStatement pstmt = null;
-            if (database_type == MYSQL) pstmt = DatabaseConnection.conn.prepareStatement("INSERT INTO '" + tableNamePlayers + "' (id, uuid, nickname, last_update) VALUES (DEFAULT, '" + player.getUniqueId() + "', '" + player.getName() + "', '" + now + "');");
-            else if (database_type == SQLITE) pstmt = DatabaseConnection.conn.prepareStatement("INSERT INTO '" + tableNamePlayers + "' (uuid, nickname, last_update) VALUES ('" + player.getUniqueId() + "', '" + player.getName() + "', '" + now + "');");
+            if (database_type == MYSQL) pstmt = DatabaseConnection.conn.prepareStatement("INSERT INTO '" + tableNamePlayers + "' (id, uuid, nickname, last_update) VALUES (DEFAULT, '" + player.getUniqueId() + "', '" + player.getName() + "', '" + getDate() + "');");
+            else if (database_type == SQLITE) pstmt = DatabaseConnection.conn.prepareStatement("INSERT INTO '" + tableNamePlayers + "' (uuid, nickname, last_update) VALUES ('" + player.getUniqueId() + "', '" + player.getName() + "', '" + getDate() + "');");
             assert pstmt != null;
 
             pstmt.execute();
@@ -85,14 +85,14 @@ public class SQLDatabaseAPI {
         for (TextVariableLoader var : variables) {
             query.append(var.getVariable().getVariableName()).append(" = '").append(getVariableHashedValue(var.getValue())).append("', ");
         }
-        return "UPDATE '" + tableNameText + "' SET " + query + "last_update = '" + now + "' WHERE name = '" + textVariable.getVariableName() + "';";
+        return "UPDATE '" + tableNameText + "' SET " + query + "last_update = '" + getDate() + "' WHERE name = '" + textVariable.getVariableName() + "';";
     }
     public static String getPlayerSaverQuery(Player player, ArrayList<PlayerVariableLoader> variables) {
         StringBuilder query = new StringBuilder();
         for (PlayerVariableLoader var : variables) {
             query.append(var.getVariable().getVariableName()).append(" = '").append(getVariableHashedValue(var.getValue())).append("', ");
         }
-        return "UPDATE '" + tableNamePlayers + "' SET " + query + "last_update = '" + now + "' WHERE uuid = '" + player.getUniqueId() + "';";
+        return "UPDATE '" + tableNamePlayers + "' SET " + query + "last_update = '" + getDate() + "' WHERE uuid = '" + player.getUniqueId() + "';";
     }
 
 }

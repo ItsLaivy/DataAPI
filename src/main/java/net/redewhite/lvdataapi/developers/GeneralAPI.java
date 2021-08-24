@@ -65,13 +65,13 @@ public class GeneralAPI {
 
     public static Boolean isTextTypeVariableNull(Plugin plugin, String name, String textVariableName) {
         TextVariableLoader var = getTextTypeVariableLoader(plugin, name, textVariableName);
-        if (var != null) return var.getValue() == null;
-        return true;
+        if (var != null) return var.getValue().equals("");
+        return null;
     }
     public static Boolean isPlayerTypeVariableNull(Plugin plugin, String name, Player player) {
         PlayerVariableLoader var = getPlayerTypeVariableLoader(plugin, name, player);
-        if (var != null) return var.getValue() == null;
-        return true;
+        if (var != null) return var.getValue().equals("");
+        return null;
     }
 
     public static Object getPlayerTypeVariableValue(Plugin plugin, String name, Player player) {
