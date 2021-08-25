@@ -2,5 +2,10 @@ name: LvDataAPI
 version: 1.2-SNAPSHOT
 main: net.redewhite.lvdataapi.LvDataAPI
 author: DanielZinh#7616
-description: "API criada para armazenamento de dados dos jogadores."
+description: "Player's variable saving system."
 api-version: 1.16
+
+commands:
+  dataapi:
+    aliases: [data, lvdataapi]
+    description: "General command from LvDataAPI plugin."

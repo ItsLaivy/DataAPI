@@ -28,7 +28,7 @@ public class VariableCreationController {
     private final String name;
     private String varname;
 
-    public VariableCreationController(Plugin plugin, String name, Object defaultvalue, variableType type, Boolean textvariable) {
+    public VariableCreationController(Plugin plugin, String name, Object defaultvalue, variableType type, Boolean textvariable, Boolean replace) {
 
         if (plugin == null) throw new NullPointerException("Variable plugin cannot be null!");
         else if (name == null) throw new NullPointerException("Variable name cannot be null!");
@@ -59,14 +59,25 @@ public class VariableCreationController {
             }
         }
 
+        VariableCreationController delete = null;
         for (VariableCreationController var : getVariables().keySet()) {
             if (var.getName().equals(name)) {
                 if (var.getPlugin() == plugin) {
-                    broadcastColoredMessage("&cVariable '&4" + name + "&c' couldn't be created because already some variable of this plugin loaded with that name.");
-                    return;
+                    if (replace) {
+                        delete = var;
+                    } else {
+                        broadcastColoredMessage("&cVariable '&4" + name + "&c' couldn't be created because already some variable of this plugin loaded with that name.");
+                        return;
+                    }
                 }
             }
         }
+        if (delete != null) {
+            getVariables().remove(delete);
+        }
+
+        String textvar = " ";
+        if (textvariable) textvar = " §6text ";
 
         String message = null;
         String message_error = null;
@@ -98,7 +109,7 @@ public class VariableCreationController {
                         }
                     }
                 }
-                broadcastColoredMessage("&aSuccessfully loaded " + message + " '&2" + name + "&a' of the plugin '&2" + plugin.getName() + "&a'.");
+                broadcastColoredMessage("&aSuccessfully loaded" + textvar + message + " '&2" + name + "&a' of the plugin '&2" + plugin.getName() + "&a'.");
             } else if (createid == 2) {
                 if (textvariable) {
                     for (TextVariableReceptor var : getTextVariablesNames().keySet()) {
@@ -111,9 +122,9 @@ public class VariableCreationController {
                         }
                     }
                 }
-                broadcastColoredMessage("&aSuccessfully created " + message + " '&2" + name + "&a' of the plugin '&2" + plugin.getName() + "&a'.");
+                broadcastColoredMessage("&aSuccessfully created" + textvar + message + " '&2" + name + "&a' of the plugin '&2" + plugin.getName() + "&a'.");
             } else {
-                broadcastColoredMessage("&cColumn named '&4" + varname + "&c' for " + message_error + " '&4" + name + "&c' couldn't be created.");
+                broadcastColoredMessage("&cColumn named '&4" + varname + "&c' for" + textvar + message_error + " '&4" + name + "&c' couldn't be created.");
                 return;
             }
         } else if (type == TEMPORARY) {
@@ -126,7 +137,7 @@ public class VariableCreationController {
                     new PlayerVariableLoader(player, this, value);
                 }
             }
-            broadcastColoredMessage("&aSuccessfully parsed " + message + " '&2" + name + "&a' of the plugin '&2" + plugin.getName() + "&a'.");
+            broadcastColoredMessage("&aSuccessfully parsed" + textvar + message + " '&2" + name + "&a' of the plugin '&2" + plugin.getName() + "&a'.");
         }
 
         getVariables().put(this, varname);

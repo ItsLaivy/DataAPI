@@ -1,9 +1,9 @@
 package net.redewhite.lvdataapi.utils;
 
+import net.redewhite.lvdataapi.variables.receptors.TextVariableReceptor;
 import net.redewhite.lvdataapi.variables.loaders.PlayerVariableLoader;
 import net.redewhite.lvdataapi.variables.loaders.TextVariableLoader;
 import net.redewhite.lvdataapi.database.DatabaseConnection;
-import net.redewhite.lvdataapi.variables.receptors.TextVariableReceptor;
 import org.bukkit.entity.Player;
 
 import java.sql.PreparedStatement;
@@ -24,7 +24,7 @@ public class SQLDatabaseAPI {
             assert pstmt != null;
 
             pstmt.execute();
-            broadcastColoredMessage("&aSuccessfully registered text variable '&2" + textVariable.getName() + "&a'.");
+            broadcastColoredMessage("&aSuccessfully registered &6text &avariable '&2" + textVariable.getName() + "&a'.");
             return true;
         } catch (SQLException e) {
             if (debug) e.printStackTrace();

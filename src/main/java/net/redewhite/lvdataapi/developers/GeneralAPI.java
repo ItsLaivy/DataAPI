@@ -1,16 +1,23 @@
 package net.redewhite.lvdataapi.developers;
 
+import net.redewhite.lvdataapi.variables.receptors.TextVariableReceptor;
 import net.redewhite.lvdataapi.variables.loaders.InactivePlayerLoader;
 import net.redewhite.lvdataapi.variables.loaders.PlayerVariableLoader;
 import net.redewhite.lvdataapi.variables.loaders.InactiveTextLoader;
 import net.redewhite.lvdataapi.variables.loaders.TextVariableLoader;
-import net.redewhite.lvdataapi.variables.receptors.TextVariableReceptor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.Bukkit;
 
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.Arrays;
+import java.util.UUID;
 
+import static net.redewhite.lvdataapi.database.DatabaseConnection.createStatement;
 import static net.redewhite.lvdataapi.LvDataAPI.databaseConnection.SQLITE;
 import static net.redewhite.lvdataapi.LvDataAPI.databaseConnection.MYSQL;
 import static net.redewhite.lvdataapi.LvDataAPI.variableType.*;
@@ -103,67 +110,65 @@ public class GeneralAPI {
 
     public static Boolean setTextTypeVariableValue(Plugin plugin, String name, String textVariableName, Object value) {
         TextVariableLoader var = getTextTypeVariableLoader(plugin, name, textVariableName);
-        assert var != null;
-
-        if (var.getVariable().getType() == NORMAL) {
-            if (database_type == SQLITE || database_type == MYSQL) {
-                try {
-                    Integer.parseInt(value.toString());
-                } catch (IllegalArgumentException ignore) {
-                    if (!var.getVariable().getSQLDefaultSymbol().equals("TEXT")) return false;
+        if (var != null) {
+            if (var.getVariable().getType() == NORMAL) {
+                if (database_type == SQLITE || database_type == MYSQL) {
+                    try {
+                        Integer.parseInt(value.toString());
+                    } catch (IllegalArgumentException ignore) {
+                        if (!var.getVariable().getSQLDefaultSymbol().equals("TEXT")) return false;
+                    }
                 }
-            }
 
-            var.setValue(value);
-            return true;
-        } else if (var.getVariable().getType() == ARRAY) {
-            ArrayList<Object> array = new ArrayList<>();
-            if (value != null) if (value instanceof ArrayList<?>) {
-                for (Object e : new ArrayList<>(Arrays.asList(((ArrayList<?>) value).toArray()))) {
-                    array.add(getVariableHashedValue(e).toString());
+                var.setValue(value);
+                return true;
+            } else if (var.getVariable().getType() == ARRAY) {
+                ArrayList<Object> array = new ArrayList<>();
+                if (value != null) if (value instanceof ArrayList<?>) {
+                    for (Object e : new ArrayList<>(Arrays.asList(((ArrayList<?>) value).toArray()))) {
+                        array.add(getVariableHashedValue(e).toString());
+                    }
                 }
-            }
 
-            var.setValue(array.toString().replace(", ", "<SPLIT!>").replace("[", "").replace("]", ""));
-            return true;
-        } else if (var.getVariable().getType() == TEMPORARY) {
-            var.setValue(value);
-            return true;
+                var.setValue(array.toString().replace(", ", "<SPLIT!>").replace("[", "").replace("]", ""));
+                return true;
+            } else if (var.getVariable().getType() == TEMPORARY) {
+                var.setValue(value);
+                return true;
+            }
         }
-
         return false;
     }
 
     public static Boolean setPlayerTypeVariableValue(Plugin plugin, String name, Player player, Object value) {
         PlayerVariableLoader var = getPlayerTypeVariableLoader(plugin, name, player);
-        assert var != null;
-
-        if (var.getVariable().getType() == NORMAL) {
-            if (database_type == SQLITE || database_type == MYSQL) {
-                try {
-                    Integer.parseInt(value.toString());
-                } catch (IllegalArgumentException ignore) {
-                    if (!var.getVariable().getSQLDefaultSymbol().equals("TEXT")) return false;
+        if (var != null) {
+            if (var.getVariable().getType() == NORMAL) {
+                if (database_type == SQLITE || database_type == MYSQL) {
+                    try {
+                        Integer.parseInt(value.toString());
+                    } catch (IllegalArgumentException ignore) {
+                        if (!var.getVariable().getSQLDefaultSymbol().equals("TEXT")) return false;
+                    }
                 }
-            }
 
-            var.setValue(value);
-            return true;
-        } else if (var.getVariable().getType() == ARRAY) {
-            ArrayList<Object> array = new ArrayList<>();
-            if (value != null) if (value instanceof ArrayList<?>) {
-                for (Object e : new ArrayList<>(Arrays.asList(((ArrayList<?>) value).toArray()))) {
-                    array.add(getVariableHashedValue(e).toString());
+                var.setValue(value);
+                return true;
+            } else if (var.getVariable().getType() == ARRAY) {
+                ArrayList<Object> array = new ArrayList<>();
+                if (value != null) if (value instanceof ArrayList<?>) {
+                    for (Object e : new ArrayList<>(Arrays.asList(((ArrayList<?>) value).toArray()))) {
+                        array.add(getVariableHashedValue(e).toString());
+                    }
                 }
-            }
 
-            var.setValue(array.toString().replace(", ", "<SPLIT!>").replace("[", "").replace("]", ""));
-            return true;
-        } else if (var.getVariable().getType() == TEMPORARY) {
-            var.setValue(value);
-            return true;
+                var.setValue(array.toString().replace(", ", "<SPLIT!>").replace("[", "").replace("]", ""));
+                return true;
+            } else if (var.getVariable().getType() == TEMPORARY) {
+                var.setValue(value);
+                return true;
+            }
         }
-
         return false;
     }
 
@@ -185,9 +190,16 @@ public class GeneralAPI {
             if (var.getVariable().getPlugin() == plugin) {
                 if (var.getTextVariable().getName().equals(textVariableName)) {
                     if (var.getVariable().getName().equals(name)) {
+                        Bukkit.broadcastMessage("d");
                         return var;
+                    } else {
+                        Bukkit.broadcastMessage("12: " + var.getVariable().getName() + " -=- " + name);
                     }
+                } else {
+                    Bukkit.broadcastMessage("1314: " + var.getTextVariable().getName() + " -=- " + textVariableName);
                 }
+            } else {
+                Bukkit.broadcastMessage("Plugin: " + var.getVariable().getPlugin() + " -=- " + plugin);
             }
         }
         return null;
@@ -286,4 +298,83 @@ public class GeneralAPI {
         return variables;
     }
 
+    public static Boolean isTextTypeReceptorRegistered(Plugin plugin, String name) {
+        return isTextTypeReceptorRegistered(plugin.getName() + "_TEXT_" + name);
+    }
+    public static Boolean isTextTypeReceptorRegistered(String textVariableBruteName) {
+        if (database_type == SQLITE || database_type == MYSQL) {
+            Statement statement = createStatement();
+            assert statement != null;
+
+            try (ResultSet result = statement.executeQuery("SELECT * FROM '" + tableNameText + "' WHERE name = '" + textVariableBruteName + "';")) {
+                if (result.next()) {
+                    return true;
+                }
+            } catch (SQLException e) {
+                if (debug) e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    public static Boolean isPlayerTypeMemberRegistered(UUID playerUniqueId) {
+        if (database_type == SQLITE || database_type == MYSQL) {
+            Statement statement = createStatement();
+            assert statement != null;
+
+            try (ResultSet result = statement.executeQuery("SELECT * FROM '" + tableNamePlayers + "' WHERE uuid = '" + playerUniqueId.toString() + "';")) {
+                if (result.next()) {
+                    return true;
+                }
+            } catch (SQLException e) {
+                if (debug) e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    public static Integer getTextDatabaseVariablesAmount(TextVariableReceptor textVariable) {
+        if (database_type == SQLITE || database_type == MYSQL) {
+            Statement statement = createStatement();
+            assert statement != null;
+
+            try (ResultSet result = statement.executeQuery("SELECT * FROM '" + tableNameText + "' WHERE name = '" + textVariable.getVariableName() + "';")) {
+                if (result.next()) {
+                    ResultSetMetaData rmtd = result.getMetaData();
+                    int number = 0;
+
+                    for (int row = 1; row <= rmtd.getColumnCount(); row++) {
+                        if (row > 3) number++;
+                    }
+
+                    return number;
+                }
+            } catch (SQLException e) {
+                if (debug) e.printStackTrace();
+            }
+        }
+        return null;
+    }
+    public static Integer getPlayerDatabaseVariablesAmount(Player player) {
+        if (database_type == SQLITE || database_type == MYSQL) {
+            Statement statement = createStatement();
+            assert statement != null;
+
+            try (ResultSet result = statement.executeQuery("SELECT * FROM '" + tableNamePlayers + "' WHERE uuid = '" + player.getUniqueId() + "';")) {
+                if (result.next()) {
+                    ResultSetMetaData rmtd = result.getMetaData();
+                    int number = 0;
+
+                    for (int row = 1; row <= rmtd.getColumnCount(); row++) {
+                        if (row > 4) number++;
+                    }
+
+                    return number;
+                }
+            } catch (SQLException e) {
+                if (debug) e.printStackTrace();
+            }
+        }
+        return null;
+    }
 }

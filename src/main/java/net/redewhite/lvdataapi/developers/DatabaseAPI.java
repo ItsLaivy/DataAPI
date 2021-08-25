@@ -106,14 +106,10 @@ public class DatabaseAPI {
 
     public static Boolean tryRegisterTextVariableInDatabase(TextVariableReceptor textVariable) {
         if (getTextDatabaseVariablesAmount(textVariable) != null) return null;
-
-        boolean success = true;
-
         if (database_type == MYSQL || database_type == SQLITE) {
-            success = insertDefaultTextValues(textVariable);
+            return insertDefaultTextValues(textVariable);
         }
-
-        return success;
+        return false;
     }
     public static Boolean tryRegisterPlayerInDatabase(Player player) {
         if (getPlayerDatabaseVariablesAmount(player) != null) return null;
@@ -169,6 +165,7 @@ public class DatabaseAPI {
                             new InactiveTextLoader(rmtd.getColumnName(row), e, textVariable);
                         }
                     }
+                    broadcastColoredMessage("&aSuccessfully loaded &6text &avariable '&2" + textVariable.getName() + "&a'.");
                 }
                 return true;
             } catch (SQLException e) {
@@ -204,51 +201,6 @@ public class DatabaseAPI {
             }
         }
         return false;
-    }
-
-    public static Integer getTextDatabaseVariablesAmount(TextVariableReceptor textVariable) {
-        if (database_type == SQLITE || database_type == MYSQL) {
-            Statement statement = createStatement();
-            assert statement != null;
-
-            try (ResultSet result = statement.executeQuery("SELECT * FROM '" + tableNameText + "' WHERE name = '" + textVariable.getVariableName() + "';")) {
-                if (result.next()) {
-                    ResultSetMetaData rmtd = result.getMetaData();
-                    int number = 0;
-
-                    for (int row = 1; row <= rmtd.getColumnCount(); row++) {
-                        if (row > 3) number++;
-                    }
-
-                    return number;
-                }
-            } catch (SQLException e) {
-                if (debug) e.printStackTrace();
-            }
-        }
-        return null;
-    }
-    public static Integer getPlayerDatabaseVariablesAmount(Player player) {
-        if (database_type == SQLITE || database_type == MYSQL) {
-            Statement statement = createStatement();
-            assert statement != null;
-
-            try (ResultSet result = statement.executeQuery("SELECT * FROM '" + tableNamePlayers + "' WHERE uuid = '" + player.getUniqueId() + "';")) {
-                if (result.next()) {
-                    ResultSetMetaData rmtd = result.getMetaData();
-                    int number = 0;
-
-                    for (int row = 1; row <= rmtd.getColumnCount(); row++) {
-                        if (row > 4) number++;
-                    }
-
-                    return number;
-                }
-            } catch (SQLException e) {
-                if (debug) e.printStackTrace();
-            }
-        }
-        return null;
     }
 
 }

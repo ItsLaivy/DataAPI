@@ -10,10 +10,10 @@ import java.util.ArrayList;
 public class ArrayVariable {
 
     public ArrayVariable(Plugin plugin, String name, ArrayList<?> default_value, Boolean textvariable) {
-        new VariableCreationController(plugin, name, default_value, LvDataAPI.variableType.ARRAY, textvariable);
+        new VariableCreationController(plugin, name, default_value, LvDataAPI.variableType.ARRAY, textvariable, false);
     }
     public ArrayVariable(Plugin plugin, String name, ArrayList<?> default_value) {
-        new VariableCreationController(plugin, name, default_value, LvDataAPI.variableType.ARRAY, false);
+        new VariableCreationController(plugin, name, default_value, LvDataAPI.variableType.ARRAY, false, false);
     }
 
 }

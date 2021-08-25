@@ -7,16 +7,18 @@ import net.redewhite.lvdataapi.variables.loaders.InactiveTextLoader;
 import net.redewhite.lvdataapi.variables.loaders.TextVariableLoader;
 import net.redewhite.lvdataapi.utils.VariableCreationController;
 import net.redewhite.lvdataapi.listeners.BukkitDefaultEvents;
-import org.bukkit.ChatColor;
+import net.redewhite.lvdataapi.commands.GeneralCommand;
 import org.bukkit.configuration.file.YamlConfiguration;
 import net.redewhite.lvdataapi.developers.DatabaseAPI;
 import net.redewhite.lvdataapi.variables.Variable;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.entity.Player;
+import org.bukkit.ChatColor;
 import org.bukkit.Bukkit;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Date;
 import java.io.File;
@@ -62,6 +64,7 @@ public class LvDataAPI extends JavaPlugin {
 
         DatabaseAPI.connection();
         Bukkit.getPluginManager().registerEvents(new BukkitDefaultEvents(), this);
+        getCommand("dataapi").setExecutor(new GeneralCommand());
 
         if (!(config.getInt("AutoSaver") == 0)) startAutoSave(getConfig().getInt("AutoSaver"));
 
@@ -73,6 +76,44 @@ public class LvDataAPI extends JavaPlugin {
         for (TextVariableReceptor textVariable : getTextVariablesNames().keySet()) {
             loadTextType(textVariable);
         }
+
+    }
+
+    public void reloadAllConfig() {
+        saveDefaultConfig();
+        reloadConfig();
+        File configFile = new File(getInstance().getDataFolder() + File.separator + "config.yml");
+
+        config = YamlConfiguration.loadConfiguration(configFile);
+        debug = getConfig().getBoolean("debug");
+        tableNamePlayers = getConfig().getString("Players table name");
+        tableNameText = getConfig().getString("Texts table name");
+
+        stopAutoSave();
+
+        for (Player player : getServer().getOnlinePlayers()) {
+            unloadPlayerType(player);
+        }
+        for (TextVariableReceptor textVariable : getTextVariablesNames().keySet()) {
+            unloadTextType(textVariable);
+        }
+
+        close();
+        DatabaseAPI.connection();
+
+        ArrayList<VariableCreationController> vars = new ArrayList<>(getVariables().keySet());
+        for (VariableCreationController variable : vars) {
+            new VariableCreationController(variable.getPlugin(), variable.getName(), variable.getValue(), variable.getType(), variable.getVariableTextType(), true);
+        }
+
+        for (Player player : getServer().getOnlinePlayers()) {
+            loadPlayerType(player);
+        }
+        for (TextVariableReceptor textVariable : getTextVariablesNames().keySet()) {
+            loadTextType(textVariable);
+        }
+
+        if (!(config.getInt("AutoSaver") == 0)) startAutoSave(getConfig().getInt("AutoSaver"));
 
     }
 

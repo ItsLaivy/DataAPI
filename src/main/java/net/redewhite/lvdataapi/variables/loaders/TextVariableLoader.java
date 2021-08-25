@@ -1,7 +1,8 @@
 package net.redewhite.lvdataapi.variables.loaders;
 
-import net.redewhite.lvdataapi.utils.VariableCreationController;
 import net.redewhite.lvdataapi.variables.receptors.TextVariableReceptor;
+import net.redewhite.lvdataapi.utils.VariableCreationController;
+import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
 
@@ -35,9 +36,12 @@ public class TextVariableLoader {
             } for (InactiveTextLoader e : array) getInactiveTextVariables().remove(e);
         }
 
+        Bukkit.broadcastMessage("ab: " + variable.getVariableName());
+
         for (TextVariableLoader var : getTextVariables().keySet()) {
             if (var.getVariable().getName().equals(variable.getName())) {
                 if (var.getVariable().getPlugin() == variable.getPlugin()) {
+                    Bukkit.broadcastMessage("a: " + variable.getVariableName());
                     return;
                 }
             }

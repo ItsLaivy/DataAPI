@@ -1,14 +1,14 @@
 package net.redewhite.lvdataapi.variables.loaders;
 
-import net.redewhite.lvdataapi.utils.VariableCreationController;
 import net.redewhite.lvdataapi.variables.receptors.TextVariableReceptor;
+import net.redewhite.lvdataapi.utils.VariableCreationController;
 
 import static net.redewhite.lvdataapi.LvDataAPI.*;
 
 public class InactiveTextLoader {
 
-    private final Object value;
     private final TextVariableReceptor owner;
+    private final Object value;
     private final String name;
 
     public InactiveTextLoader(String varname, Object value, TextVariableReceptor textVariable) {
