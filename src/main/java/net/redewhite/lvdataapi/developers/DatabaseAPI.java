@@ -161,11 +161,13 @@ public class DatabaseAPI {
                     for (int row = 1; row <= rmtd.getColumnCount(); row++) {
                         if (row > 3) {
                             String e = getVariableUnhashedValue(result.getObject(row)).toString();
-                            if (getVariableUnhashedValue(result.getObject(row)).toString().equals("null")) e = null;
+                            if (getVariableUnhashedValue(result.getObject(row)).toString().equals("")) {
+                                e = null;
+                            }
                             new InactiveTextLoader(rmtd.getColumnName(row), e, textVariable);
                         }
                     }
-                    broadcastColoredMessage("&aSuccessfully loaded &6text &avariable '&2" + textVariable.getName() + "&a'.");
+                    broadcastColoredMessage("&aSuccessfully loaded &6text &avariable '&2" + textVariable.getName() + "&a'. " + getTextTypeVariableValue(instance, "level", textVariable.getName()));
                 }
                 return true;
             } catch (SQLException e) {
@@ -175,6 +177,7 @@ public class DatabaseAPI {
         }
         return false;
     }
+
     public static Boolean loadDatabasePlayerVariables(Player player) {
         if (isLoaded(player)) return false;
 

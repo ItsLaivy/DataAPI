@@ -2,6 +2,7 @@ package net.redewhite.lvdataapi.variables.loaders;
 
 import net.redewhite.lvdataapi.variables.receptors.TextVariableReceptor;
 import net.redewhite.lvdataapi.utils.VariableCreationController;
+import org.bukkit.Bukkit;
 
 import static net.redewhite.lvdataapi.LvDataAPI.*;
 

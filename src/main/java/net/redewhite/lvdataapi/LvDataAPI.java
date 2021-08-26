@@ -79,7 +79,7 @@ public class LvDataAPI extends JavaPlugin {
 
     }
 
-    public void reloadAllConfig() {
+    public void reloadAllConfigFile() {
         saveDefaultConfig();
         reloadConfig();
         File configFile = new File(getInstance().getDataFolder() + File.separator + "config.yml");

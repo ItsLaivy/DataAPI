@@ -46,7 +46,7 @@ public class GeneralCommand implements CommandExecutor {
                     }
                 } else if (args[0].equalsIgnoreCase("reload")) {
                     sender.sendMessage("§aReloading plugin's configuration file...");
-                    getInstance().reloadAllConfig();
+                    getInstance().reloadAllConfigFile();
                     sender.sendMessage("§aSuccessfully reloaded all plugin's configuration file.");
                 }
             } else {

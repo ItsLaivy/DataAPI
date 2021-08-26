@@ -36,13 +36,12 @@ public class TextVariableLoader {
             } for (InactiveTextLoader e : array) getInactiveTextVariables().remove(e);
         }
 
-        Bukkit.broadcastMessage("ab: " + variable.getVariableName());
-
         for (TextVariableLoader var : getTextVariables().keySet()) {
             if (var.getVariable().getName().equals(variable.getName())) {
                 if (var.getVariable().getPlugin() == variable.getPlugin()) {
-                    Bukkit.broadcastMessage("a: " + variable.getVariableName());
-                    return;
+                    if (var.getTextVariable() == textVariable) {
+                        return;
+                    }
                 }
             }
         }

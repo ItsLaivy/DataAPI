@@ -190,16 +190,9 @@ public class GeneralAPI {
             if (var.getVariable().getPlugin() == plugin) {
                 if (var.getTextVariable().getName().equals(textVariableName)) {
                     if (var.getVariable().getName().equals(name)) {
-                        Bukkit.broadcastMessage("d");
                         return var;
-                    } else {
-                        Bukkit.broadcastMessage("12: " + var.getVariable().getName() + " -=- " + name);
                     }
-                } else {
-                    Bukkit.broadcastMessage("1314: " + var.getTextVariable().getName() + " -=- " + textVariableName);
                 }
-            } else {
-                Bukkit.broadcastMessage("Plugin: " + var.getVariable().getPlugin() + " -=- " + plugin);
             }
         }
         return null;
