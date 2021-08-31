@@ -1,6 +1,17 @@
 name: LvDataAPI
-version: 2.0
+version: 2.1-SNAPSHOT
 main: net.redewhite.lvdataapi.DataAPI
 author: DanielZinh#7616
 description: "Player's variable saving system."
 api-version: 1.16
+
+commands:
+  dataapi:
+    aliases: [data, lvdataapi]
+    description: "LvDataAPI's general command"
+    permission: "lvdataapi.command.use"
+
+permissions:
+  lvdataapi.command.use:
+    description: "Access to the general command."
+    default: op

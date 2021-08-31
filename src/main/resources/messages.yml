@@ -39,6 +39,14 @@ Table already created: "&cTable '&4:value1:&c' is &calready created&c!"
 # -------------------=-=------------------- #
 
 Successfully saved all players: "&aSuccessfully saved all players"
+Command no permission: "&cYou don't have permission to execute that command."
+Saving all receptors: "&aSaving all receptors..."
+Saving all receptors successfully: "&aSuccessfully saved all receptors..."
+
+Saving receptor: "&aSaving receptor '&2:value1:&a'..."
+Saving receptor successfully: "&aSuccessfully saved receptor '&2:value1:&a'."
+
+None receptor found: "&cCouldn't find a receptor named '&4:value1:&c'."
 
 # -------------------=-=------------------- #
 #        Database Connection Messages

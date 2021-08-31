@@ -1,5 +1,6 @@
 package net.redewhite.lvdataapi;
 
+import net.redewhite.lvdataapi.commands.GeneralCommand;
 import net.redewhite.lvdataapi.database.DatabaseConnection;
 import net.redewhite.lvdataapi.developers.AdvancedAPI;
 import net.redewhite.lvdataapi.developers.EasyAPI;
@@ -58,6 +59,8 @@ public class DataAPI extends JavaPlugin {
         config = YamlConfiguration.loadConfiguration(configFile);
         messages = YamlConfiguration.loadConfiguration(messagesFile);
         debug = getConfig().getBoolean("debug");
+
+        getCommand("dataapi").setExecutor(new GeneralCommand());
 
         if (connection()) {
             getServer().getPluginManager().registerEvents(new BukkitDefaultEvents(), this);
@@ -134,12 +137,42 @@ public class DataAPI extends JavaPlugin {
             task.cancel();
     }
 
+    public static void getMessage(Player player, String path) {
+        if (messages.isSet(path)) {
+            if (messages.getString(path).equals("")) {
+                return;
+            }
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', messages.getString(path)));
+            return;
+        }
+        broadcastColoredMessage("&cWrong &4messages.yml &cfile! Please, delete then to the plugin re-create for you.");
+        stopPlugin();
+    }
     public static void getMessage(String path) {
         if (messages.isSet(path)) {
             if (messages.getString(path).equals("")) {
                 return;
             }
             broadcastColoredMessage(ChatColor.translateAlternateColorCodes('&', messages.getString(path)));
+            return;
+        }
+        broadcastColoredMessage("&cWrong &4messages.yml &cfile! Please, delete then to the plugin re-create for you.");
+        stopPlugin();
+    }
+
+    public static void getMessage(Player player, String path, String... replaces) {
+        if (messages.isSet(path)) {
+            if (messages.getString(path).equals("")) {
+                return;
+            }
+            String message = messages.getString(path);
+            int row = 1;
+
+            for (String e : replaces) {
+                message = message.replace(":value" + row + ":", e);
+                row++;
+            }
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
             return;
         }
         broadcastColoredMessage("&cWrong &4messages.yml &cfile! Please, delete then to the plugin re-create for you.");
@@ -162,6 +195,26 @@ public class DataAPI extends JavaPlugin {
         }
         broadcastColoredMessage("&cWrong &4messages.yml &cfile! Please, delete then to the plugin re-create for you.");
         stopPlugin();
+    }
+
+    public static void reloadAllConfigFile() {
+        instance.saveDefaultConfig();
+        instance.reloadConfig();
+        instance.saveResource("messages.yml", false);
+        File configFile = new File(instance.getDataFolder() + File.separator + "config.yml");
+        File messagesFile = new File(instance.getDataFolder() + File.separator + "messages.yml");
+
+        config = YamlConfiguration.loadConfiguration(configFile);
+        messages = YamlConfiguration.loadConfiguration(messagesFile);
+        debug = instance.getConfig().getBoolean("debug");
+
+        stopAutoSave();
+
+        DatabaseConnection.close();
+        connection();
+
+        if (config.getInt("AutoSaver") != 0)
+            startAutoSave(instance.getConfig().getInt("AutoSaver"));
     }
 
     public static String getDate() {
