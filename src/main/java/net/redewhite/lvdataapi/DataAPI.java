@@ -1,16 +1,20 @@
 package net.redewhite.lvdataapi;
 
 import net.redewhite.lvdataapi.database.DatabaseConnection;
+import net.redewhite.lvdataapi.developers.AdvancedAPI;
+import net.redewhite.lvdataapi.developers.EasyAPI;
 import net.redewhite.lvdataapi.modules.VariableCreationModule;
 import net.redewhite.lvdataapi.loaders.InactiveVariableLoader;
 import net.redewhite.lvdataapi.loaders.ActiveVariableLoader;
 import net.redewhite.lvdataapi.receptors.VariableReceptor;
 import net.redewhite.lvdataapi.events.BukkitDefaultEvents;
 import net.redewhite.lvdataapi.creators.VariablesTable;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.entity.Player;
 import org.bukkit.ChatColor;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -19,6 +23,7 @@ import java.util.Date;
 import java.io.File;
 
 import static net.redewhite.lvdataapi.developers.AdvancedAPI.*;
+import static net.redewhite.lvdataapi.developers.EasyAPI.getVariableReceptor;
 
 public class DataAPI extends JavaPlugin {
 
@@ -30,6 +35,8 @@ public class DataAPI extends JavaPlugin {
     private static final HashMap<ActiveVariableLoader, String> activeVariables = new HashMap<>();
 
     private static final HashMap<VariableReceptor, String> variableReceptors = new HashMap<>();
+
+    private static BukkitRunnable task = null;
 
     public static databaseConnection database_type;
     public static YamlConfiguration config;
@@ -65,6 +72,8 @@ public class DataAPI extends JavaPlugin {
                     }
                 }
             }
+
+            startAutoSave(config.getInt("AutoSaver"));
         } else {
             stopPlugin();
         }
@@ -80,6 +89,7 @@ public class DataAPI extends JavaPlugin {
             for (VariableReceptor receptor : array) databaseUnload(receptor, table);
         }
 
+        stopAutoSave();
         DatabaseConnection.close();
     }
 
@@ -95,6 +105,33 @@ public class DataAPI extends JavaPlugin {
         if (message != null) {
             getInstance().getServer().getConsoleSender().sendMessage("§8[§6" + instance.getDescription().getName() + "§8]§7" + " " + ChatColor.translateAlternateColorCodes('&', message));
         }
+    }
+
+    public static void startAutoSave(Integer seconds) {
+        new BukkitRunnable() {
+            public void run() {
+                task = this;
+                final boolean[] saved = {false};
+                Bukkit.getScheduler().runTaskAsynchronously(getInstance(), () -> {
+                    for (VariablesTable table : getTables().keySet()) {
+                        for (VariableReceptor receptor : getVariableReceptors().keySet()) {
+                            if (receptor.getTable() == table) {
+                                if (isLoaded(receptor.getNameBruteId())) {
+                                    saved[0] = true;
+                                    AdvancedAPI.databaseSave(getVariableReceptor(table.getPlugin(), receptor.getNameBruteId(), table), table);
+                                }
+                            }
+                        }
+                    }
+                    if (saved[0]) getMessage("Successfully saved all players");
+                });
+            }
+        }.runTaskTimer(getInstance(), (seconds * 20L), (seconds * 20L));
+    }
+
+    public static void stopAutoSave() {
+        if (task != null)
+            task.cancel();
     }
 
     public static void getMessage(String path) {

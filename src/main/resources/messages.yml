@@ -35,6 +35,12 @@ Table illegal characters error: "&cTable '&4:value1:&c' couldn't be created beca
 Table already created: "&cTable '&4:value1:&c' is &calready created&c!"
 
 # -------------------=-=------------------- #
+#              Plugin Messages
+# -------------------=-=------------------- #
+
+Successfully saved all players: "&aSuccessfully saved all players"
+
+# -------------------=-=------------------- #
 #        Database Connection Messages
 # -------------------=-=------------------- #
 
