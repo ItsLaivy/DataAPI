@@ -1,0 +1,45 @@
+# To set a blank message (dont send it) just set message to "".
+
+# -------------------=-=------------------- #
+#            Variables Messages
+# -------------------=-=------------------- #
+
+Normal variable loaded: ":value1: '&2:value2:&a' has been successfully loaded using the plugin '&2:value3:&a'"
+Normal variable created: ":value1: '&2:value2:&a' has been successfully created using the plugin '&2:value3:&a'"
+
+Normal variable unknown error: ":value1: &c'&4:value2:&c' couldn't be created due to an unknown error."
+Normal variable invalid table error: ":value1: &c'&4:value2:&c' couldn't be created because the &4TABLE&c is not valid."
+Normal variable illegal characters error: ":value1: &c'&4:value2:&c' couldn't be created because it has illegal characters (&4':value3:&c')"
+Normal variable already defined: "&cVariable '&4:value1:&c' couldn't be defined to '&4:value2:&c' because it is already defined."
+
+# -------------------=-=------------------- #
+#        Variables receptor Messages
+# -------------------=-=------------------- #
+
+Receptor variable loaded: "&aVariable receptor '&2:value1:&a' has been successfully loaded."
+Receptor variable created: "&aSuccessfully registered '&2:value1:&a' into the table '&2:value2:&a'."
+
+Receptor variable delete unknown error: "&cCouldn't delete variable receptor '&4:value1:&c'."
+Receptor variable define unknown error: "&cVariable receptor '&4:value1:&c' couldn't be defined because an unknown error."
+Receptor variable register error: "&cInternal error when trying to register '&4:value1:&c' into the table '&4:value2:&c', aborting..."
+Receptor variable already defined: "&cVariable receptor &c'&4:value1:&c' couldn't be defined because it is already defined."
+
+# -------------------=-=------------------- #
+#          Variables table Messages
+# -------------------=-=------------------- #
+
+Table successfully loaded: "&aTable '&2:value1:&a' successfully loaded using the plugin '&2:value2:&a'."
+Table successfully created: "&aTable '&2:value1:&a' successfully created using the plugin '&2:value2:&a'."
+
+Table illegal characters error: "&cTable '&4:value1:&c' couldn't be created because it has &cillegal characters&c ('&4:value2:&c')"
+Table already created: "&cTable '&4:value1:&c' is &calready created&c!"
+
+# -------------------=-=------------------- #
+#        Database Connection Messages
+# -------------------=-=------------------- #
+
+Connection established: "&a:value1: connection has been successfully established."
+Connection closed: "&aDatabase connection has been closed."
+Connection closing process failed: "&cDatabase closing process could not be established."
+Connection statement creating process failed: "&cDatabase's statement creation process failed."
+Connection cant be established: "&cA database connection could not be established, closing the plugin..."
