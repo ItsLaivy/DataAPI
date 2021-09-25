@@ -55,6 +55,8 @@ public class VariableReceptor {
     }
 
     public void unload() {
+        AdvancedAPI.databaseSave(this, this.getTable());
+
         ArrayList<ActiveVariableLoader> array1 = new ArrayList<>();
         ArrayList<InactiveVariableLoader> array2 = new ArrayList<>();
         for (ActiveVariableLoader var : getActiveVariables().keySet()) {
@@ -64,12 +66,9 @@ public class VariableReceptor {
             if (var.getOwnerBruteId().equals(getNameBruteId())) array2.add(var);
         }
 
-        for (ActiveVariableLoader var : array1) {
-            getActiveVariables().remove(var);
-        }
-        for (InactiveVariableLoader var : array2) {
-            getInactiveVariables().remove(var);
-        }
+        for (ActiveVariableLoader var : array1) getActiveVariables().remove(var);
+        for (InactiveVariableLoader var : array2) getInactiveVariables().remove(var);
+
         getVariableReceptors().remove(this);
     }
     public void delete() {

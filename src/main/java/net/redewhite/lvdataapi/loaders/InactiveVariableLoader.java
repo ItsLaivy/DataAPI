@@ -44,7 +44,7 @@ public class InactiveVariableLoader {
         return ownerBruteId;
     }
     public Object getValue() {
-        return value;
+        return AdvancedAPI.getVariableUnhashedValue(value);
     }
     public VariablesTable getTable() {
         return table;

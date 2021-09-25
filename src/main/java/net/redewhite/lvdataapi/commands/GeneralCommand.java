@@ -8,8 +8,8 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 
-import static net.redewhite.lvdataapi.DataAPI.*;
 import static net.redewhite.lvdataapi.developers.AdvancedAPI.databaseSave;
+import static net.redewhite.lvdataapi.DataAPI.*;
 
 public class GeneralCommand implements CommandExecutor {
     @Override

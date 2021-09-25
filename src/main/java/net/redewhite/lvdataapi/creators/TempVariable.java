@@ -1,7 +1,7 @@
 package net.redewhite.lvdataapi.creators;
 
-import net.redewhite.lvdataapi.DataAPI;
 import net.redewhite.lvdataapi.modules.VariableCreationModule;
+import net.redewhite.lvdataapi.DataAPI;
 import org.bukkit.plugin.Plugin;
 
 @SuppressWarnings("unused")

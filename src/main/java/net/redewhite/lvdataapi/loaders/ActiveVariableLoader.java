@@ -33,7 +33,6 @@ public class ActiveVariableLoader {
     }
 
     private void process() {
-
         for (ActiveVariableLoader var : getActiveVariables().keySet()) {
             if (var.getVariable().getVariableBruteId().equals(this.getVariable().getVariableBruteId())) {
                 if (var.getOwnerBruteId().equals(owner_brute_id)) {
@@ -59,7 +58,7 @@ public class ActiveVariableLoader {
     }
 
     public Object getValue() {
-        return value;
+        return AdvancedAPI.getVariableUnhashedValue(value);
     }
     public void setValue(Object value) {
         this.value = value;

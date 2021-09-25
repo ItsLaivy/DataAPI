@@ -6,6 +6,7 @@ import net.redewhite.lvdataapi.loaders.ActiveVariableLoader;
 import net.redewhite.lvdataapi.database.DatabaseConnection;
 import net.redewhite.lvdataapi.receptors.VariableReceptor;
 import net.redewhite.lvdataapi.creators.VariablesTable;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -14,6 +15,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Arrays;
+import java.util.List;
 
 import static net.redewhite.lvdataapi.DataAPI.variableDataType.*;
 import static net.redewhite.lvdataapi.developers.AdvancedAPI.*;
@@ -253,7 +255,7 @@ public class EasyAPI {
      * @since 2.0
      * @param name The name of the variable
      * @param receptor The receptor of the variable
-     * @param value the new value of the vaiable
+     * @param value the new value of the variable
      * @return returns the value of the variable
      *
      */
@@ -280,7 +282,9 @@ public class EasyAPI {
                         array.add(getVariableHashedValue(e));
                     }
 
-                    var.setValue(array.toString().replace(", ", "<SPLIT!>").replace("[", "").replace("]", ""));
+                    if (array.size() == 0) var.setValue(null);
+                    else var.setValue(array.toString().replace(", ", "<SPLIT!>").replace("[", "").replace("]", ""));
+
                     return true;
                 } else {
                     throw new NullPointerException("Thats value isn't a arraylist!");
@@ -295,6 +299,122 @@ public class EasyAPI {
     }
     public static Boolean setVariableValue(Plugin plugin, String name, Player player, VariablesTable table, Object value) {
         return setVariableValue(name, getVariableReceptor(plugin, player.getUniqueId().toString(), table), value);
+    }
+
+    /**
+     *
+     * Remove a value from a array or a normal variable integer value.
+     *
+     * @since 2.1
+     * @param name The name of the variable
+     * @param receptor The receptor of the variable
+     * @param value the value that will remove the variable
+     * @return returns the value of the variable
+     *
+     */
+    public static Boolean removeVariableValue(String name, VariableReceptor receptor, Object value) {
+        boolean returnValue = false;
+
+        ActiveVariableLoader activeVar = getVariable(name, receptor);
+        if (activeVar.getVariable().getDataType() == NORMAL || activeVar.getVariable().getDataType() == TEMPORARY) {
+            try {
+                try {
+                    long val1 = Long.parseLong(getVariableValue(name, receptor).toString());
+                    long val2 = Long.parseLong(value.toString());
+
+                    activeVar.setValue(val1 - val2);
+                    returnValue = true;
+                } catch (NumberFormatException ignore) {
+                    throw new IllegalArgumentException("this value isn't a number.");
+                }
+            } catch (NumberFormatException ignore) {
+                throw new IllegalArgumentException("this variable isn't a number variable!");
+            }
+        } else if (activeVar.getVariable().getDataType() == ARRAY) {
+            ArrayList<Object> array = new ArrayList<>();
+            List<String> list = getVariableArray(name, receptor);
+
+            if (value instanceof ArrayList<?>) {
+                for (Object e : new ArrayList<>(Arrays.asList(((ArrayList<?>) value).toArray()))) {
+                    array.add(getVariableHashedValue(e));
+                }
+
+                for (Object e : array) if (!list.contains(e.toString())) {
+                    list.remove(e.toString());
+                }
+
+                if (list.size() == 0) activeVar.setValue(null);
+                else activeVar.setValue(list.toString().replace(", ", "<SPLIT!>").replace("[", "").replace("]", ""));
+            } else {
+                list.remove(getVariableHashedValue(value));
+                activeVar.setValue(list.toString().replace(", ", "<SPLIT!>").replace("[", "").replace("]", ""));
+            }
+            returnValue = true;
+        }
+
+        return returnValue;
+    }
+    public static Boolean removeVariableValue(Plugin plugin, String name, String bruteid, VariablesTable table, Object value) {
+        return removeVariableValue(name, getVariableReceptor(plugin, bruteid, table), value);
+    }
+    public static Boolean removeVariableValue(Plugin plugin, String name, Player player, VariablesTable table, Object value) {
+        return removeVariableValue(name, getVariableReceptor(plugin, player.getUniqueId().toString(), table), value);
+    }
+
+    /**
+     *
+     * Add a value to a array or a normal variable integer value.
+     *
+     * @since 2.1
+     * @param name The name of the variable
+     * @param receptor The receptor of the variable
+     * @param value the value that will add to the variable
+     * @return returns the value of the variable
+     *
+     */
+    public static Boolean addVariableValue(String name, VariableReceptor receptor, Object value) {
+        boolean returnValue = false;
+
+        ActiveVariableLoader activeVar = getVariable(name, receptor);
+        if (activeVar.getVariable().getDataType() == NORMAL || activeVar.getVariable().getDataType() == TEMPORARY) {
+            try {
+                try {
+                    long val1 = Long.parseLong(getVariableValue(name, receptor).toString());
+                    long val2 = Long.parseLong(value.toString());
+
+                    activeVar.setValue(val1 + val2);
+                    returnValue = true;
+                } catch (NumberFormatException ignore) {
+                    throw new IllegalArgumentException("this value isn't a number.");
+                }
+            } catch (NumberFormatException ignore) {
+                throw new IllegalArgumentException("this variable isn't a number variable!");
+            }
+        } else if (activeVar.getVariable().getDataType() == ARRAY) {
+            List<String> list = getVariableArray(name, receptor);
+
+            if (value instanceof ArrayList<?>) {
+                for (Object e : new ArrayList<>(Arrays.asList(((ArrayList<?>) value).toArray()))) {
+                    if (!list.contains(getVariableHashedValue(e))) list.add(getVariableHashedValue(e));
+                }
+
+                if (list.size() == 0) activeVar.setValue(null);
+                else activeVar.setValue(list.toString().replace(", ", "<SPLIT!>").replace("[", "").replace("]", ""));
+
+            } else {
+                if (!list.contains(getVariableHashedValue(value))) list.add(getVariableHashedValue(value));
+                activeVar.setValue(list.toString().replace(", ", "<SPLIT!>").replace("[", "").replace("]", ""));
+            }
+            returnValue = true;
+        }
+
+        return returnValue;
+    }
+    public static Boolean addVariableValue(Plugin plugin, String name, String bruteid, VariablesTable table, Object value) {
+        return addVariableValue(name, getVariableReceptor(plugin, bruteid, table), value);
+    }
+    public static Boolean addVariableValue(Plugin plugin, String name, Player player, VariablesTable table, Object value) {
+        return addVariableValue(name, getVariableReceptor(plugin, player.getUniqueId().toString(), table), value);
     }
 
     /**
@@ -318,7 +438,7 @@ public class EasyAPI {
                     if (getVariableUnhashedValue(e) != null) {
                         array.add(Objects.requireNonNull(getVariableUnhashedValue(e)));
                     } else {
-                        throw new NullPointerException("The value of that arraylist variable is not defined.");
+                        return new ArrayList<>();
                     }
                 }
             }
@@ -350,6 +470,9 @@ public class EasyAPI {
     }
     public static Boolean isVariableValueNull(Plugin plugin, String name, String bruteId, VariablesTable table) {
         return isVariableValueNull(getVariable(name, getVariableReceptor(plugin, bruteId, table)));
+    }
+    public static Boolean isVariableValueNull(String name, VariableReceptor receptor) {
+        return isVariableValueNull(getVariable(name, receptor));
     }
     public static Boolean isVariableValueNull(Plugin plugin, String name, Player player, VariablesTable table) {
         return isVariableValueNull(getVariable(name, getVariableReceptor(plugin, player.getUniqueId().toString(), table)));
