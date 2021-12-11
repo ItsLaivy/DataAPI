@@ -10,18 +10,18 @@
 <p align="center">Para criar um receptor de variáveis, utilize o método</p>
 
 ```java
-new VariableReceptor(Plugin plugin, String name, String bruteId, VariablesTable table);
+new Receptor(Plugin plugin, String name, String bruteId, Table table);
 // ou
-new VariableReceptor(Plugin plugin, Player player, VariablesTable table);
+new Receptor(Plugin plugin, Player player, Table table);
 ```
 
 <p align="center">Exemplo</p>
 
 ```java
-VariablesTable tablePlayers = new VariablesTable(this, "players_data");
+Table tablePlayers = new Table(this, "players_data");
 
-new VariableReceptor(this, player, tablePlayers);
-new VariableReceptor(this, "textName", "textBruteId", tablePlayers);
+new Receptor(this, player, tablePlayers);
+new Receptor(this, "textName", "textBruteId", tablePlayers);
 
 new Variable(this, "coins", tablePlayers, 0);
 ```
@@ -32,9 +32,9 @@ new Variable(this, "coins", tablePlayers, 0);
 <p align="center">O parâmetro "bruteId" pode ser o UUID de um jogador, ou identificador de um receptor não-jogador, você usará o bruteId para pegar aquele receptor no banco de dados. </p>
 
 ```java
-getVariableReceptor(Plugin plugin, String bruteid, VariablesTable table);
+getVariableReceptor(Plugin plugin, String bruteid, Table table);
 // ou
-getVariableReceptor(Plugin plugin, Player player, VariablesTable table);
+getVariableReceptor(Plugin plugin, Player player, Table table);
 ```
 <p align="center">Exemplo</p>
 
