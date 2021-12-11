@@ -13,18 +13,20 @@
 </p><br>
 
 <h2 align="center">
-    🔆 VariablesTable 🔆
+    🔆 Table.class 🔆
 </h3>
 <p align="center">Para criar uma tabela de variáveis, utilize o método</p>
 
 ```java
-new VariablesTable(Plugin plugin, String name);
+new Table(DatabaseCreationModule database);
+new Table(String name, DatabaseCreationModule database);
+new Table(Plugin plugin, String name, DatabaseCreationModule database);
 ```
 
 <p align="center">Exemplo</p>
 
 ```java
-VariablesTable tablePlayers = new VariablesTable(this, "players_data");
+Table tablePlayers = new Table(database, "players_data");
 new Variable(this, "coins", tablePlayers, 0);
 
 // Todos os receptores dessa tabela, terão a variável "coins".
