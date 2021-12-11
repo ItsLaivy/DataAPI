@@ -3,47 +3,7 @@
 #    https://github.com/LaivyTLife/DataAPI
 # -------------------=-=------------------- #
 
-# Disables console errors if false.
-debug: true
-
-# SQLITE, MYSQL
-# if you want to try with another one if fail, use
-# 'DATABASE > DATABASE'
-#
-# Example: 'SQLITE > MYSQL'
-
-Database Type: 'SQLITE'
-Database Name: 'database' # Works only for SQLite.
-
-# -------------------=-=------------------- #
-#              MySQL Connection
-# -------------------=-=------------------- #
-
-mysql-user: 'root'
-mysql-password: 'password'
-mysql-address: 'localhost'
-mysql-database: 'data'
-mysql-port: 3306
-
-# -------------------=-=------------------- #
-#       General plugin's Configuration
-# -------------------=-=------------------- #
+check-updates: true
 
 # Values more than 600 seconds is not recommended.
 AutoSaver: 600 # seconds
-
-# Closes the server if plugin generates some error?
-# will just stops the plugin if false.
-close-server: false
-
-# -------------------=-=------------------- #
-#      Advanced plugin's Configuration
-# -------------------=-=------------------- #
-
-# You can use async/sync load/unload methods with the API, thats just for the plugin's default player loader.
-Async variables loading: true
-Async variables saving: true
-
-# -------------------=-=------------------- #
-#           Configuration file end
-# -------------------=-=------------------- #

@@ -1,132 +1,155 @@
 package net.redewhite.lvdataapi.modules;
 
-import net.redewhite.lvdataapi.events.api.variables.VariableModuleCreateEvent;
-import net.redewhite.lvdataapi.loaders.ActiveVariableLoader;
-import net.redewhite.lvdataapi.database.DatabaseConnection;
-import net.redewhite.lvdataapi.receptors.VariableReceptor;
-import net.redewhite.lvdataapi.DataAPI.variableDataType;
-import net.redewhite.lvdataapi.creators.VariablesTable;
-import net.redewhite.lvdataapi.developers.AdvancedAPI;
+import net.redewhite.lvdataapi.receptors.InactiveVariableLoader;
+import net.redewhite.lvdataapi.receptors.ActiveVariableLoader;
+import net.redewhite.lvdataapi.types.ConnectionType;
+import net.redewhite.lvdataapi.types.VariablesType;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.plugin.Plugin;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
-import static net.redewhite.lvdataapi.DataAPI.variableDataType.*;
+import static net.redewhite.lvdataapi.modules.VariableReturnModule.getVariableHashedValue;
+import static net.redewhite.lvdataapi.developers.API.getVariableReceptorByBruteID;
 import static net.redewhite.lvdataapi.DataAPI.*;
 
+@SuppressWarnings("unused")
 public class VariableCreationModule {
 
-    private Boolean successfully_created = true;
-    private variableDataType data_type;
-    private Object default_value;
-    private VariablesTable table;
-    private Plugin plugin;
-    private String name;
+    private final TableCreationModule table;
 
-    public VariableCreationModule(Plugin plugin, String name, Object default_value, variableDataType data_type, VariablesTable table) {
-        if (plugin == null) throw new NullPointerException("Variable plugin cannot be null!");
-        else if (name == null) throw new NullPointerException("Variable name cannot be null!");
-        else if (data_type == null) throw new NullPointerException("Variable data type type cannot be null!");
-        else if (table == null) throw new NullPointerException("Variable table type cannot be null!");
+    private final Plugin plugin;
+    private final String name;
+    private final Object defaultValue;
 
-        String prefix = "variable";
-        String prefix_caps = "Variable";
+    private final VariablesType type;
 
-        String message_caps = null;
-        String message_error_caps = null;
-        if (data_type == ARRAY) {
-            message_caps = "&eArray" + " &a" + prefix;
-            message_error_caps = "&eArray" + " &c" + prefix;
-        } else if (data_type == TEMPORARY) {
-            message_caps = "&bTemporary" + " &a" + prefix;
-            message_error_caps = "&bTemporary" + " &c" + prefix;
-        } else if (data_type == NORMAL) {
-            message_caps = "&a" + prefix_caps;
-            message_error_caps = "&c" + prefix_caps;
-        }
+    private final boolean saveToDatabase;
+    private boolean isSuccessfullyCreated = false;
 
-        String[] blocked = "-S,S=S[S]S.S/S*S-S+S;S:".split("S");
-        for (String block : blocked) {
-            if (name.contains(block)) {
-                getMessage("Normal variable illegal characters error", message_error_caps, name, block);
-                return;
-            }
-        }
-
-        if (!table.isSuccessfullyCreated()) {
-            getMessage("Normal variable invalid table error", message_error_caps, name);
-            return;
-        }
-
-        if (default_value instanceof ArrayList) {
-            ArrayList<String> array = new ArrayList<>();
-            for (Object e : ((ArrayList<?>) default_value).toArray()) {
-                array.add(AdvancedAPI.getVariableHashedValue(e));
-            }
-            this.default_value = array.toString().replace(", ", "<SPLIT!>").replace("[", "").replace("]", "");
-            if (this.default_value.toString().equals("")) this.default_value = AdvancedAPI.getVariableHashedValue(null);
-        } else {
-            this.default_value = AdvancedAPI.getVariableHashedValue(default_value);
-        }
-
-        this.data_type = data_type;
+    public VariableCreationModule(Plugin plugin, String name, TableCreationModule table, Object defaultValue, Boolean saveToDatabase, VariablesType type) {
         this.plugin = plugin;
         this.table = table;
         this.name = name;
 
-        VariableModuleCreateEvent event = new VariableModuleCreateEvent(this);
-        instance.getServer().getPluginManager().callEvent(event);
+        this.type = type;
 
-        if (!event.isCancelled()) {
-            if (data_type == ARRAY || data_type == NORMAL) {
+        this.saveToDatabase = saveToDatabase;
 
-                int parse = 0;
-                try (PreparedStatement pst = DatabaseConnection.conn.prepareStatement("ALTER TABLE '" + table.getTableBruteId() + "' ADD COLUMN " + getVariableBruteId() + " TEXT DEFAULT '" + this.default_value + "';")) {
-                    pst.execute();
-                    parse = 1;
-                } catch (SQLException e) {
-                    if (e.getMessage().contains("uplicate column name")) {
-                        parse = 2;
-                    } else {
-                        if (debug) e.printStackTrace();
-                    }
-                }
-
-                if (parse == 0) {
-                    getMessage("Normal variable unknown error", message_error_caps, name);
-                } else if (parse == 1) {
-                    getMessage("Normal variable created", message_caps, name, plugin.getName());
-                    for (VariableReceptor receptor : getVariableReceptors().keySet()) {
-                        receptor.createVariable(this);
-                    }
-                } else {
-                    getMessage("Normal variable loaded", message_caps, name, plugin.getName());
-                    for (VariableReceptor receptor : getVariableReceptors().keySet()) {
-                        new ActiveVariableLoader(receptor, AdvancedAPI.getInactiveVariable(getVariableBruteId(), receptor), this);
-                    }
-                }
-
+        Object newValue;
+        if (defaultValue instanceof ArrayList) {
+            ArrayList<String> array = new ArrayList<>();
+            for (Object e : ((ArrayList<?>) defaultValue).toArray()) {
+                array.add(getVariableHashedValue(e));
             }
+            newValue = array.toString().replace(", ", "<SPLIT!>").replace("[", "").replace("]", "");
+            if (newValue.equals("")) newValue = getVariableHashedValue(null);
+        } else {
+            newValue = defaultValue;
+        }
+        this.defaultValue = newValue;
 
-            this.successfully_created = true;
-            table.getVariables().put(this, getVariableBruteId());
-            getVariables().put(this, getVariableBruteId());
+        if (name == null) throw new NullPointerException("variable name cannot be null");
+        if (table == null) throw new NullPointerException("variable table cannot be null");
+        if (plugin == null) plugin = INSTANCE;
+
+        if (!table.isSuccessfullyCreated()) {
+            throw new IllegalStateException("this table was not created correctly.");
+        }
+
+        if (getBruteID().length() > 64) {
+            throw new IllegalStateException("variable name is too big (Name: " + name + ", Plugin: " + plugin.getName() + ")");
+        }
+        for (VariableCreationModule variable : getVariables()) {
+            if (variable.getBruteID().equals(getBruteID())) {
+                isSuccessfullyCreated = true;
+                return;
+            }
+        }
+
+        // Verify if the name contains illegal characters
+        String[] blocked = "-S,S=S[S]S.S/S*S-S+S;S:S(S)".split("S");
+        for (String block : blocked) {
+            if (name.contains(block)) {
+                broadcastColoredMessage("&cThat's variable name contains illegal characters (" + block + ")");
+                return;
+            }
+        }
+
+        if (this.saveToDatabase) {
+            String query = table.getDatabase().getConnectionType().getCreationVariableQuery();
+            query = ConnectionType.replace(query, table.getBruteID(), getBruteID(), getVariableHashedValue(this.defaultValue), table.getDatabase().getBruteID());
+            try (PreparedStatement pst = table.getDatabase().getConnection().prepareStatement(query)) {
+                pst.execute();
+                broadcastColoredMessage("&aVariable &2'" + name + "' &asuccessfully created.");
+            } catch (SQLException e) {
+                if (e.getMessage().contains("uplicate column name")) {
+                    broadcastColoredMessage("&aVariable &2'" + name + "' &asuccessfully loaded.");
+                } else {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            broadcastColoredMessage("&aVariable &2'" + name + "' &asuccessfully loaded.");
+        }
+
+        isSuccessfullyCreated = true;
+        table.getVariables().add(this);
+        getVariables().add(this);
+
+        List<VariableReceptorModule> receptors = new ArrayList<>();
+        for (VariableReceptorModule rec : getReceptors()) if (rec.getTable() == table) {
+            receptors.add(rec);
+        }
+
+        for (InactiveVariableLoader var : new ArrayList<>(getInactiveVariables())) {
+            if (var.getTable() == table) if (var.getVariableBruteID().equals(getBruteID())) {
+                new ActiveVariableLoader(this, getVariableReceptorByBruteID(var.getOwnerBruteID(), table), var.getValue());
+                getInactiveVariables().remove(var);
+                receptors.remove(getVariableReceptorByBruteID(var.getOwnerBruteID(), var.getTable()));
+            }
+        }
+
+        for (VariableReceptorModule receptor : receptors) {
+            if (this.saveToDatabase) {
+                String query = receptor.getTable().getDatabase().getConnectionType().getSelectQuery();
+                query = ConnectionType.replace(query, "*", table.getBruteID(), "WHERE bruteid = '" + receptor.getBruteID() + "'", table.getDatabase().getBruteID());
+
+                try (ResultSet result = table.getDatabase().createStatement().executeQuery(query)) {
+                    while (result.next()) {
+                        new ActiveVariableLoader(this, receptor, getVariableHashedValue(result.getObject(getBruteID())));
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                new ActiveVariableLoader(this, receptor, defaultValue);
+            }
         }
     }
 
-    @SuppressWarnings("unused")
-    public Boolean isSuccessfullyCreated() {
-        return successfully_created;
+    public VariablesType getType() {
+        return type;
     }
-    public variableDataType getDataType() {
-        return data_type;
+
+    public boolean isSuccessfullyCreated() {
+        return isSuccessfullyCreated;
     }
+
+    public boolean isSaveToDatabase() {
+        return saveToDatabase;
+    }
+
     public Object getDefaultValue() {
-        return default_value;
+        return defaultValue;
     }
-    public VariablesTable getTable() {
+
+    public TableCreationModule getTable() {
         return table;
     }
     public Plugin getPlugin() {
@@ -135,7 +158,7 @@ public class VariableCreationModule {
     public String getName() {
         return name;
     }
-    public String getVariableBruteId() {
-        return plugin.getName() + "_" + data_type.name() + "_" + name;
+    public String getBruteID() {
+        return plugin.getName() + "_" + name;
     }
 }

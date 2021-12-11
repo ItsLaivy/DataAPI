@@ -1,9 +1,13 @@
 name: LvDataAPI
-version: 2.1
+version: 3.0
 main: net.redewhite.lvdataapi.DataAPI
 author: DanielZinh#7616
 description: "Player's variable saving system."
 api-version: 1.16
+
+website: "https://laivy.net"
+
+load: STARTUP
 
 commands:
   dataapi:
