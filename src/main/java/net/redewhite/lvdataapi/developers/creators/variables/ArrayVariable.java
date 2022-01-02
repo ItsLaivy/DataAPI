@@ -11,17 +11,17 @@ import static net.redewhite.lvdataapi.DataAPI.INSTANCE;
 public class ArrayVariable extends VariableCreator {
 
     public ArrayVariable(String name, TableCreator table, Object defaultValue) {
-        super(INSTANCE, name, table, defaultValue, true, ARRAY);
+        super(INSTANCE, name, table, defaultValue, true, ARRAY, true);
     }
     public ArrayVariable(Plugin plugin, String name, TableCreator table, Object defaultValue) {
-        super(plugin, name, table, defaultValue, true, ARRAY);
+        super(plugin, name, table, defaultValue, true, ARRAY, true);
     }
 
     public ArrayVariable(String name, TableCreator table, Object defaultValue, Boolean saveToDatabase) {
-        super(INSTANCE, name, table, defaultValue, saveToDatabase, ARRAY);
+        super(INSTANCE, name, table, defaultValue, saveToDatabase, ARRAY, true);
     }
     public ArrayVariable(Plugin plugin, String name, TableCreator table, Object defaultValue, Boolean saveToDatabase) {
-        super(plugin, name, table, defaultValue, saveToDatabase, ARRAY);
+        super(plugin, name, table, defaultValue, saveToDatabase, ARRAY, true);
     }
 
 }

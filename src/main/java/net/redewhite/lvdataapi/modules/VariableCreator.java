@@ -2,7 +2,6 @@ package net.redewhite.lvdataapi.modules;
 
 import net.redewhite.lvdataapi.receptors.InactiveVariable;
 import net.redewhite.lvdataapi.receptors.ActiveVariable;
-import net.redewhite.lvdataapi.types.ConnectionType;
 import net.redewhite.lvdataapi.types.VariablesType;
 import org.bukkit.plugin.Plugin;
 
@@ -29,7 +28,7 @@ public class VariableCreator {
     private final boolean saveToDatabase;
     private boolean isSuccessfullyCreated = false;
 
-    public VariableCreator(Plugin plugin, String name, TableCreator table, Object defaultValue, Boolean saveToDatabase, VariablesType type) {
+    public VariableCreator(Plugin plugin, String name, TableCreator table, Object defaultValue, Boolean saveToDatabase, VariablesType type, boolean messages) {
         this.plugin = plugin;
         this.table = table;
         this.name = name;
@@ -64,8 +63,10 @@ public class VariableCreator {
         }
         for (VariableCreator variable : getVariables()) {
             if (variable.getBruteID().equals(getBruteID())) {
-                isSuccessfullyCreated = true;
-                return;
+                if (variable.getTable().equals(table)) {
+                    isSuccessfullyCreated = true;
+                    return;
+                }
             }
         }
 
@@ -73,26 +74,25 @@ public class VariableCreator {
         String[] blocked = "-S,S=S[S]S.S/S*S-S+S;S:S(S)".split("S");
         for (String block : blocked) {
             if (name.contains(block)) {
-                broadcastColoredMessage("&cThat's variable name contains illegal characters (" + block + ")");
+                broadcastColoredMessage("&cThat's variable name contains illegal characters (" + block + ")", messages);
                 return;
             }
         }
 
         if (this.saveToDatabase) {
-            String query = table.getDatabase().getConnectionType().getCreationVariableQuery();
-            query = ConnectionType.replace(query, table.getBruteID(), getBruteID(), getVariableHashedValue(this.defaultValue), table.getDatabase().getBruteID());
+            String query = table.getDatabase().getConnectionType().getVariableCreationQuery(table.getBruteID(), getBruteID(), getVariableHashedValue(this.defaultValue), table.getDatabase().getBruteID());
             try (PreparedStatement pst = table.getDatabase().getConnection().prepareStatement(query)) {
                 pst.execute();
-                broadcastColoredMessage("&aVariable &2'" + name + "' &asuccessfully created.");
+                broadcastColoredMessage("&aVariable &2'" + name + "' &asuccessfully created.", messages);
             } catch (SQLException e) {
                 if (e.getMessage().contains("uplicate column name")) {
-                    broadcastColoredMessage("&aVariable &2'" + name + "' &asuccessfully loaded.");
+                    broadcastColoredMessage("&aVariable &2'" + name + "' &asuccessfully loaded.", messages);
                 } else {
                     e.printStackTrace();
                 }
             }
         } else {
-            broadcastColoredMessage("&aVariable &2'" + name + "' &asuccessfully loaded.");
+            broadcastColoredMessage("&aVariable &2'" + name + "' &asuccessfully loaded.", messages);
         }
 
         isSuccessfullyCreated = true;
@@ -114,9 +114,7 @@ public class VariableCreator {
 
         for (ReceptorCreator receptor : receptors) {
             if (this.saveToDatabase) {
-                String query = receptor.getTable().getDatabase().getConnectionType().getSelectQuery();
-                query = ConnectionType.replace(query, "*", table.getBruteID(), "WHERE bruteid = '" + receptor.getBruteID() + "'", table.getDatabase().getBruteID());
-
+                String query = receptor.getTable().getDatabase().getConnectionType().getSelectQuery("*", table.getBruteID(), "WHERE bruteid = '" + receptor.getBruteID() + "'", table.getDatabase().getBruteID());
                 try (ResultSet result = table.getDatabase().createStatement().executeQuery(query)) {
                     while (result.next()) {
                         new ActiveVariable(this, receptor, getVariableHashedValue(result.getObject(getBruteID())));

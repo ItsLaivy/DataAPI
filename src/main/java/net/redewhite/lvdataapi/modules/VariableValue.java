@@ -1,7 +1,9 @@
 package net.redewhite.lvdataapi.modules;
 
+import net.redewhite.lvdataapi.developers.events.variables.ActiveVariableValueChangeEvent;
 import net.redewhite.lvdataapi.receptors.ActiveVariable;
 import net.redewhite.lvdataapi.types.VariablesType;
+import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,6 +21,13 @@ public class VariableValue {
     }
 
     public void setValue(Object value) {
+        ActiveVariableValueChangeEvent event = new ActiveVariableValueChangeEvent(this.variable, value);
+        Bukkit.getServer().getPluginManager().callEvent(event);
+
+        if (event.isCancelled()) {
+            return;
+        }
+
         String newValue = null;
 
         if (value != null) {

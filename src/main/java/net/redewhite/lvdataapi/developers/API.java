@@ -151,8 +151,7 @@ public class API {
     }
 
     public static int getValuesAmountInTable(TableCreator table) {
-        String query = table.getDatabase().getConnectionType().getSelectQuery();
-        query = ConnectionType.replace(query, "*", table.getBruteID(), "", table.getDatabase().getBruteID());
+        String query = table.getDatabase().getConnectionType().getSelectQuery("*", table.getBruteID(), "", table.getDatabase().getBruteID());
         int returnValue = 0;
 
         try (ResultSet result2 = table.getDatabase().createStatement().executeQuery(query)) {

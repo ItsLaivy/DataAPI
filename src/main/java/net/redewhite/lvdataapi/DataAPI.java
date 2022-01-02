@@ -1,7 +1,9 @@
 package net.redewhite.lvdataapi;
 
+import net.redewhite.lvdataapi.listeners.PluginEvents;
 import net.redewhite.lvdataapi.receptors.InactiveVariable;
 import net.redewhite.lvdataapi.receptors.ActiveVariable;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -17,7 +19,7 @@ import java.io.File;
 @SuppressWarnings("unused")
 public class DataAPI extends JavaPlugin {
 
-    public static final String version = "3.01";
+    public static final String version = "3.02";
 
     public static DataAPI INSTANCE;
     public static YamlConfiguration config;
@@ -36,6 +38,8 @@ public class DataAPI extends JavaPlugin {
     @Override
     public void onEnable() {
         INSTANCE = this;
+
+        Bukkit.getPluginManager().registerEvents(new PluginEvents(), this);
 
         saveDefaultConfig();
         config = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "config.yml"));
@@ -65,6 +69,9 @@ public class DataAPI extends JavaPlugin {
         }
     }
 
+    public static void broadcastColoredMessage(String message, boolean reallySend) {
+        if (reallySend) broadcastColoredMessage(message);
+    }
     public static void broadcastColoredMessage(String message) {
         INSTANCE.getServer().getConsoleSender().sendMessage("§8[§6" + INSTANCE.getDescription().getName() + "§8]§7" + " " + ChatColor.translateAlternateColorCodes('&', message));
     }

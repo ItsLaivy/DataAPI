@@ -1,6 +1,7 @@
 package net.redewhite.lvdataapi.modules;
 
-import net.redewhite.lvdataapi.types.ConnectionType;
+import net.redewhite.lvdataapi.developers.events.tables.TableLoadEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
 import java.sql.PreparedStatement;
@@ -37,7 +38,9 @@ public class TableCreator {
 
         for (TableCreator table : getTables()) {
             if (table.getBruteID().equals(getBruteID())) {
-                throw new IllegalStateException("a table with that name already exists in plugin " + table.getPlugin() + ". Use API.getTable() to get a table.");
+                if (table.getDatabase().equals(database)) {
+                    throw new IllegalStateException("a table with that name already exists in plugin " + table.getPlugin() + ". Use API.getTable() to get a table.");
+                }
             }
         }
 
@@ -55,7 +58,7 @@ public class TableCreator {
         }
 
         // Try to create the table in the database
-        try (PreparedStatement pst = database.getConnection().prepareStatement(ConnectionType.replace(database.getConnectionType().getCreationTableQuery(), getBruteID(), getDatabase().getBruteID()))) {
+        try (PreparedStatement pst = database.getConnection().prepareStatement(database.getConnectionType().getTableCreationQuery(getBruteID(), getDatabase().getBruteID()))) {
             pst.execute();
             broadcastColoredMessage("&aTable &2'" + name + "' &asucessfully created.");
         } catch (SQLException e) {
@@ -69,6 +72,9 @@ public class TableCreator {
 
         isSuccessfullyCreated = true;
         getTables().add(this);
+
+        TableLoadEvent event = new TableLoadEvent(this);
+        Bukkit.getPluginManager().callEvent(event);
     }
 
     public boolean isSuccessfullyCreated() {

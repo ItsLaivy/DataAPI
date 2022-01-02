@@ -11,17 +11,17 @@ import static net.redewhite.lvdataapi.DataAPI.INSTANCE;
 public class Variable extends VariableCreator {
 
     public Variable(String name, TableCreator table, Object defaultValue) {
-        super(INSTANCE, name, table, defaultValue, true, NORMAL);
+        super(INSTANCE, name, table, defaultValue, true, NORMAL, true);
     }
     public Variable(Plugin plugin, String name, TableCreator table, Object defaultValue) {
-        super(plugin, name, table, defaultValue, true, NORMAL);
+        super(plugin, name, table, defaultValue, true, NORMAL, true);
     }
 
     public Variable(String name, TableCreator table, Object defaultValue, Boolean saveToDatabase) {
-        super(INSTANCE, name, table, defaultValue, saveToDatabase, NORMAL);
+        super(INSTANCE, name, table, defaultValue, saveToDatabase, NORMAL, true);
     }
     public Variable(Plugin plugin, String name, TableCreator table, Object defaultValue, Boolean saveToDatabase) {
-        super(plugin, name, table, defaultValue, saveToDatabase, NORMAL);
+        super(plugin, name, table, defaultValue, saveToDatabase, NORMAL, true);
     }
 
 }
