@@ -1,13 +1,13 @@
 package net.redewhite.lvdataapi.developers.creators.database;
 
-import net.redewhite.lvdataapi.modules.DatabaseCreationModule;
+import net.redewhite.lvdataapi.modules.Database;
 import org.bukkit.plugin.Plugin;
 
 import static net.redewhite.lvdataapi.types.ConnectionType.SQLITE;
 import static net.redewhite.lvdataapi.DataAPI.*;
 
 @SuppressWarnings("unused")
-public class SQLiteDatabase extends DatabaseCreationModule {
+public class SQLiteDatabase extends Database {
 
     public SQLiteDatabase() {
         super(INSTANCE, "default", SQLITE, null, null, null, null, "");

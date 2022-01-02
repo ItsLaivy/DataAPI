@@ -9,7 +9,7 @@ import java.sql.*;
 import static net.redewhite.lvdataapi.DataAPI.*;
 
 @SuppressWarnings("unused")
-public class DatabaseCreationModule {
+public class Database {
 
     private final ConnectionType connectionType;
     private Connection connection;
@@ -26,29 +26,29 @@ public class DatabaseCreationModule {
 
     private boolean isSuccessfullyCreated = false;
 
-    public DatabaseCreationModule(String name, ConnectionType connectionType,
+    public Database(String name, ConnectionType connectionType,
 
-                                  String user,
-                                  String password,
-                                  Integer port,
-                                  String address,
+                    String user,
+                    String password,
+                    Integer port,
+                    String address,
 
-                                  String path
+                    String path
 
     ) {
         this(INSTANCE, name, connectionType, user, password, port, address, path);
     }
 
-    public DatabaseCreationModule(Plugin plugin,
-                                  String name,
-                                  ConnectionType connectionType,
+    public Database(Plugin plugin,
+                    String name,
+                    ConnectionType connectionType,
 
-                                  String user,
-                                  String password,
-                                  Integer port,
-                                  String address,
+                    String user,
+                    String password,
+                    Integer port,
+                    String address,
 
-                                  String path
+                    String path
     ) {
         this.plugin = plugin;
         this.name = name;
@@ -75,7 +75,7 @@ public class DatabaseCreationModule {
         if (getBruteID().length() > 64) {
             throw new IllegalStateException("database name is too big (Name: " + name + ", Plugin: " + plugin.getName() + ")");
         }
-        for (DatabaseCreationModule database : getDatabases()) {
+        for (Database database : getDatabases()) {
             if (database.getBruteID().equals(getBruteID())) {
                 connection = database.connection;
 

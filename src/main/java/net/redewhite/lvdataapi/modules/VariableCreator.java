@@ -1,11 +1,9 @@
 package net.redewhite.lvdataapi.modules;
 
-import net.redewhite.lvdataapi.receptors.InactiveVariableLoader;
-import net.redewhite.lvdataapi.receptors.ActiveVariableLoader;
+import net.redewhite.lvdataapi.receptors.InactiveVariable;
+import net.redewhite.lvdataapi.receptors.ActiveVariable;
 import net.redewhite.lvdataapi.types.ConnectionType;
 import net.redewhite.lvdataapi.types.VariablesType;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.plugin.Plugin;
 
 import java.sql.PreparedStatement;
@@ -14,14 +12,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static net.redewhite.lvdataapi.modules.VariableReturnModule.getVariableHashedValue;
 import static net.redewhite.lvdataapi.developers.API.getVariableReceptorByBruteID;
 import static net.redewhite.lvdataapi.DataAPI.*;
 
 @SuppressWarnings("unused")
-public class VariableCreationModule {
+public class VariableCreator {
 
-    private final TableCreationModule table;
+    private final TableCreator table;
 
     private final Plugin plugin;
     private final String name;
@@ -32,7 +29,7 @@ public class VariableCreationModule {
     private final boolean saveToDatabase;
     private boolean isSuccessfullyCreated = false;
 
-    public VariableCreationModule(Plugin plugin, String name, TableCreationModule table, Object defaultValue, Boolean saveToDatabase, VariablesType type) {
+    public VariableCreator(Plugin plugin, String name, TableCreator table, Object defaultValue, Boolean saveToDatabase, VariablesType type) {
         this.plugin = plugin;
         this.table = table;
         this.name = name;
@@ -65,7 +62,7 @@ public class VariableCreationModule {
         if (getBruteID().length() > 64) {
             throw new IllegalStateException("variable name is too big (Name: " + name + ", Plugin: " + plugin.getName() + ")");
         }
-        for (VariableCreationModule variable : getVariables()) {
+        for (VariableCreator variable : getVariables()) {
             if (variable.getBruteID().equals(getBruteID())) {
                 isSuccessfullyCreated = true;
                 return;
@@ -102,33 +99,33 @@ public class VariableCreationModule {
         table.getVariables().add(this);
         getVariables().add(this);
 
-        List<VariableReceptorModule> receptors = new ArrayList<>();
-        for (VariableReceptorModule rec : getReceptors()) if (rec.getTable() == table) {
+        List<ReceptorCreator> receptors = new ArrayList<>();
+        for (ReceptorCreator rec : getReceptors()) if (rec.getTable() == table) {
             receptors.add(rec);
         }
 
-        for (InactiveVariableLoader var : new ArrayList<>(getInactiveVariables())) {
+        for (InactiveVariable var : new ArrayList<>(getInactiveVariables())) {
             if (var.getTable() == table) if (var.getVariableBruteID().equals(getBruteID())) {
-                new ActiveVariableLoader(this, getVariableReceptorByBruteID(var.getOwnerBruteID(), table), var.getValue());
+                new ActiveVariable(this, getVariableReceptorByBruteID(var.getOwnerBruteID(), table), var.getValue());
                 getInactiveVariables().remove(var);
                 receptors.remove(getVariableReceptorByBruteID(var.getOwnerBruteID(), var.getTable()));
             }
         }
 
-        for (VariableReceptorModule receptor : receptors) {
+        for (ReceptorCreator receptor : receptors) {
             if (this.saveToDatabase) {
                 String query = receptor.getTable().getDatabase().getConnectionType().getSelectQuery();
                 query = ConnectionType.replace(query, "*", table.getBruteID(), "WHERE bruteid = '" + receptor.getBruteID() + "'", table.getDatabase().getBruteID());
 
                 try (ResultSet result = table.getDatabase().createStatement().executeQuery(query)) {
                     while (result.next()) {
-                        new ActiveVariableLoader(this, receptor, getVariableHashedValue(result.getObject(getBruteID())));
+                        new ActiveVariable(this, receptor, getVariableHashedValue(result.getObject(getBruteID())));
                     }
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
             } else {
-                new ActiveVariableLoader(this, receptor, defaultValue);
+                new ActiveVariable(this, receptor, defaultValue);
             }
         }
     }
@@ -149,7 +146,7 @@ public class VariableCreationModule {
         return defaultValue;
     }
 
-    public TableCreationModule getTable() {
+    public TableCreator getTable() {
         return table;
     }
     public Plugin getPlugin() {

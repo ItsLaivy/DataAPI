@@ -1,7 +1,7 @@
 package net.redewhite.lvdataapi;
 
-import net.redewhite.lvdataapi.receptors.InactiveVariableLoader;
-import net.redewhite.lvdataapi.receptors.ActiveVariableLoader;
+import net.redewhite.lvdataapi.receptors.InactiveVariable;
+import net.redewhite.lvdataapi.receptors.ActiveVariable;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -17,7 +17,7 @@ import java.io.File;
 @SuppressWarnings("unused")
 public class DataAPI extends JavaPlugin {
 
-    public static final String version = "3.0";
+    public static final String version = "3.01";
 
     public static DataAPI INSTANCE;
     public static YamlConfiguration config;
@@ -25,13 +25,13 @@ public class DataAPI extends JavaPlugin {
     private static BukkitRunnable saveTask;
 
     // Modules List
-    private static final List<DatabaseCreationModule> databases = new ArrayList<>();
-    private static final List<VariableCreationModule> variables = new ArrayList<>();
-    private static final List<TableCreationModule> tables = new ArrayList<>();
-    private static final List<VariableReceptorModule> receptors = new ArrayList<>();
+    private static final List<Database> databases = new ArrayList<>();
+    private static final List<VariableCreator> variables = new ArrayList<>();
+    private static final List<TableCreator> tables = new ArrayList<>();
+    private static final List<ReceptorCreator> receptors = new ArrayList<>();
 
-    private static final List<ActiveVariableLoader> activeVariables = new ArrayList<>();
-    private static final List<InactiveVariableLoader> inactiveVariables = new ArrayList<>();
+    private static final List<ActiveVariable> activeVariables = new ArrayList<>();
+    private static final List<InactiveVariable> inactiveVariables = new ArrayList<>();
 
     @Override
     public void onEnable() {
@@ -39,7 +39,7 @@ public class DataAPI extends JavaPlugin {
 
         saveDefaultConfig();
         config = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "config.yml"));
-        if (config.getBoolean("check-updates")) Updater.checkUpdates();
+        new Thread(new Updater()).start();
 
         long interval = config.getLong("AutoSaver") * 20;
         new BukkitRunnable() {
@@ -47,7 +47,7 @@ public class DataAPI extends JavaPlugin {
             public void run() {
                 saveTask = this;
                 boolean save = false;
-                for (VariableReceptorModule receptor : getReceptors()) {
+                for (ReceptorCreator receptor : getReceptors()) {
                     receptor.save();
                     save = true;
                 }
@@ -60,7 +60,7 @@ public class DataAPI extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        for (VariableReceptorModule receptor : getReceptors()) {
+        for (ReceptorCreator receptor : getReceptors()) {
             receptor.save();
         }
     }
@@ -69,26 +69,48 @@ public class DataAPI extends JavaPlugin {
         INSTANCE.getServer().getConsoleSender().sendMessage("§8[§6" + INSTANCE.getDescription().getName() + "§8]§7" + " " + ChatColor.translateAlternateColorCodes('&', message));
     }
 
-    public static List<DatabaseCreationModule> getDatabases() {
+    public static List<Database> getDatabases() {
         return databases;
     }
-    public static List<VariableCreationModule> getVariables() {
+    public static List<VariableCreator> getVariables() {
         return variables;
     }
-    public static List<TableCreationModule> getTables() {
+    public static List<TableCreator> getTables() {
         return tables;
     }
-    public static List<VariableReceptorModule> getReceptors() {
+    public static List<ReceptorCreator> getReceptors() {
         return receptors;
     }
-    public static List<ActiveVariableLoader> getActiveVariables() {
+    public static List<ActiveVariable> getActiveVariables() {
         return activeVariables;
     }
-    public static List<InactiveVariableLoader> getInactiveVariables() {
+    public static List<InactiveVariable> getInactiveVariables() {
         return inactiveVariables;
     }
 
     public static String getDate() {
         return new SimpleDateFormat("dd/MM/yyyy - hh:mm").format(new Date());
+    }
+
+    // VARIABLE HASHES
+
+    public static String getVariableHashedValue(Object value) {
+        try {
+            if (value != null) {
+                return value.toString().replace(",", "<!COMMA>").replace("[", "<!RIGHTBRACKET>").replace("]", "<!LEFTBRACKET>").replace("'", "<!SIMPLECOMMA>");
+            }
+        } catch (NullPointerException ignore) {
+        }
+        return "<NULL!>";
+    }
+    public static String getVariableUnhashedValue(Object value) {
+        try {
+            boolean bool = value.toString().equals("<NULL!>");
+            if (!bool) {
+                return value.toString().replace("<!COMMA>", ",").replace("<!RIGHTBRACKET>", "[").replace("<!LEFTBRACKET>", "]").replace("<!SIMPLECOMMA>", "'");
+            }
+        } catch (NullPointerException ignore) {
+        }
+        return null;
     }
 }

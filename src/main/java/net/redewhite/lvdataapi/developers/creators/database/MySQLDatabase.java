@@ -1,13 +1,13 @@
 package net.redewhite.lvdataapi.developers.creators.database;
 
-import net.redewhite.lvdataapi.modules.DatabaseCreationModule;
+import net.redewhite.lvdataapi.modules.Database;
 import org.bukkit.plugin.Plugin;
 
 import static net.redewhite.lvdataapi.types.ConnectionType.MYSQL;
 import static net.redewhite.lvdataapi.DataAPI.INSTANCE;
 
 @SuppressWarnings("unused")
-public class MySQLDatabase extends DatabaseCreationModule {
+public class MySQLDatabase extends Database {
 
     public MySQLDatabase(String address, Integer port, String user, String password) {
         super(INSTANCE, "default", MYSQL, user, password, port, address, null);

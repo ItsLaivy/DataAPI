@@ -11,18 +11,18 @@ import java.util.List;
 import static net.redewhite.lvdataapi.DataAPI.*;
 
 @SuppressWarnings("unused")
-public class TableCreationModule {
+public class TableCreator {
 
-    private final DatabaseCreationModule database;
+    private final Database database;
 
     private final Plugin plugin;
     private final String name;
 
-    private final List<VariableCreationModule> variables = new ArrayList<>();
+    private final List<VariableCreator> variables = new ArrayList<>();
 
     private boolean isSuccessfullyCreated = false;
 
-    public TableCreationModule(Plugin plugin, String name, DatabaseCreationModule database) {
+    public TableCreator(Plugin plugin, String name, Database database) {
         this.database = database;
         this.plugin = plugin;
         this.name = name;
@@ -35,7 +35,7 @@ public class TableCreationModule {
             throw new IllegalStateException("table name is too big (Name: " + name + ", Plugin: " + plugin.getName() + ")");
         }
 
-        for (TableCreationModule table : getTables()) {
+        for (TableCreator table : getTables()) {
             if (table.getBruteID().equals(getBruteID())) {
                 throw new IllegalStateException("a table with that name already exists in plugin " + table.getPlugin() + ". Use API.getTable() to get a table.");
             }
@@ -75,7 +75,7 @@ public class TableCreationModule {
         return isSuccessfullyCreated;
     }
 
-    public DatabaseCreationModule getDatabase() {
+    public Database getDatabase() {
         return database;
     }
 
@@ -89,7 +89,7 @@ public class TableCreationModule {
         return plugin.getName() + "_" + name;
     }
 
-    public List<VariableCreationModule> getVariables() {
+    public List<VariableCreator> getVariables() {
         return variables;
     }
 }

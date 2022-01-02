@@ -13,9 +13,11 @@ import java.io.*;
 
 import static net.redewhite.lvdataapi.DataAPI.*;
 
-public class Updater {
-    public static void checkUpdates() {
+public class Updater implements Runnable {
+    @Override
+    public void run() {
         if (INSTANCE.getConfig().getBoolean("check-updates")) {
+            broadcastColoredMessage("Procurando por atualizações...");
             StringBuilder content = new StringBuilder();
             try {
                 URL url = new URL("https://api.github.com/repos/LaivyTLife/DataAPI/releases");
@@ -30,6 +32,7 @@ public class Updater {
 
                 bufferedReader.close();
             } catch (Exception e) {
+                broadcastColoredMessage("&cNão foi possível verificar por novas atualizações, você está conectado à internet?");
                 return;
             }
 
@@ -44,6 +47,8 @@ public class Updater {
                 broadcastColoredMessage("&cA new version of &6LvDataAPI &cis already available.");
                 broadcastColoredMessage("&cDownload Link: &6https://github.com/LaivyTLife/DataAPI/releases/" + releases.get(0) + "/");
                 broadcastColoredMessage("&cNew version: &6" + releases.get(0) + "&c, Your version: &6" + version + "&c.");
+            } else {
+                broadcastColoredMessage("&aVocê está atualizado :)");
             }
         }
     }

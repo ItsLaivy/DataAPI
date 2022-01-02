@@ -1,12 +1,10 @@
 package net.redewhite.lvdataapi.modules;
 
 import net.redewhite.lvdataapi.developers.API;
-import net.redewhite.lvdataapi.receptors.InactiveVariableLoader;
-import net.redewhite.lvdataapi.receptors.ActiveVariableLoader;
+import net.redewhite.lvdataapi.receptors.InactiveVariable;
+import net.redewhite.lvdataapi.receptors.ActiveVariable;
 import net.redewhite.lvdataapi.types.ConnectionType;
 import net.redewhite.lvdataapi.DataAPI;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.plugin.Plugin;
 
 import java.sql.PreparedStatement;
@@ -15,22 +13,20 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.sql.ResultSet;
 import java.util.List;
-import java.util.Objects;
 
 import static net.redewhite.lvdataapi.DataAPI.*;
-import static net.redewhite.lvdataapi.modules.VariableReturnModule.getVariableHashedValue;
 
 @SuppressWarnings("unused")
-public class VariableReceptorModule {
+public class ReceptorCreator {
 
-    private final TableCreationModule table;
+    private final TableCreator table;
     private final Plugin plugin;
     private final String name;
     private final String bruteID;
 
-    private final List<ActiveVariableLoader> variables = new ArrayList<>();
+    private final List<ActiveVariable> variables = new ArrayList<>();
 
-    public VariableReceptorModule(Plugin plugin, String name, String bruteID, TableCreationModule table) {
+    public ReceptorCreator(Plugin plugin, String name, String bruteID, TableCreator table) {
         this.plugin = plugin;
         this.table = table;
         this.name = name;
@@ -49,9 +45,9 @@ public class VariableReceptorModule {
 
         getReceptors().add(this);
 
-        for (VariableCreationModule var : DataAPI.getVariables()) {
+        for (VariableCreator var : DataAPI.getVariables()) {
             if (!var.isSaveToDatabase()) {
-                new ActiveVariableLoader(var, this, getVariableHashedValue(var.getDefaultValue()));
+                new ActiveVariable(var, this, getVariableHashedValue(var.getDefaultValue()));
             }
         }
 
@@ -75,7 +71,7 @@ public class VariableReceptorModule {
                         ResultSetMetaData rmtd = result.getMetaData();
                         for (int row = 1; row <= rmtd.getColumnCount(); row++) {
                             if (row > 4) {
-                                new InactiveVariableLoader(bruteID, rmtd.getColumnName(row), table, result.getObject(row));
+                                new InactiveVariable(bruteID, rmtd.getColumnName(row), table, result.getObject(row));
                             }
                         }
                     }
@@ -87,7 +83,7 @@ public class VariableReceptorModule {
         }
     }
 
-    public TableCreationModule getTable() {
+    public TableCreator getTable() {
         return table;
     }
     public Plugin getPlugin() {
@@ -100,14 +96,14 @@ public class VariableReceptorModule {
         return bruteID;
     }
 
-    public List<ActiveVariableLoader> getVariables() {
+    public List<ActiveVariable> getVariables() {
         return variables;
     }
 
     public void save() {
         StringBuilder query = new StringBuilder();
 
-        for (ActiveVariableLoader var : variables) {
+        for (ActiveVariable var : variables) {
             if (var.getVariable().isSaveToDatabase()) {
                 query.append(var.getVariable().getBruteID()).append(" = '").append(getVariableHashedValue(var.getValue())).append("',");
             }

@@ -1,23 +1,18 @@
 package net.redewhite.lvdataapi.receptors;
 
-import net.redewhite.lvdataapi.modules.VariableCreationModule;
-import net.redewhite.lvdataapi.modules.TableCreationModule;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import net.redewhite.lvdataapi.DataAPI;
+import net.redewhite.lvdataapi.developers.API;
+import net.redewhite.lvdataapi.modules.VariableCreator;
+import net.redewhite.lvdataapi.modules.TableCreator;
 
-import static net.redewhite.lvdataapi.modules.VariableReturnModule.getVariableUnhashedValue;
-import static net.redewhite.lvdataapi.developers.API.getVariableReceptorByBruteID;
-import static net.redewhite.lvdataapi.DataAPI.getInactiveVariables;
-import static net.redewhite.lvdataapi.DataAPI.getVariables;
+public class InactiveVariable {
 
-public class InactiveVariableLoader {
-
-    private final TableCreationModule table;
+    private final TableCreator table;
     private final String variableBruteID;
     private final String ownerBruteID;
     private final Object value;
 
-    public InactiveVariableLoader(String ownerBruteID, String variableBruteID, TableCreationModule table, Object value) {
+    public InactiveVariable(String ownerBruteID, String variableBruteID, TableCreator table, Object value) {
         this.variableBruteID = variableBruteID;
         this.ownerBruteID = ownerBruteID;
         this.table = table;
@@ -27,14 +22,14 @@ public class InactiveVariableLoader {
         if (variableBruteID == null) throw new NullPointerException("inactive variable's variable brute id cannot be null");
         if (table == null) throw new NullPointerException("inactive variable's table cannot be null");
 
-        for (VariableCreationModule var : getVariables()) {
+        for (VariableCreator var : DataAPI.getVariables()) {
             if (var.getTable() == table && var.getBruteID().equals(variableBruteID)) {
-                new ActiveVariableLoader(var, getVariableReceptorByBruteID(ownerBruteID, table), value);
+                new ActiveVariable(var, API.getVariableReceptorByBruteID(ownerBruteID, table), value);
                 return;
             }
         }
 
-        getInactiveVariables().add(this);
+        DataAPI.getInactiveVariables().add(this);
     }
 
     public String getOwnerBruteID() {
@@ -44,9 +39,9 @@ public class InactiveVariableLoader {
         return variableBruteID;
     }
     public Object getValue() {
-        return getVariableUnhashedValue(value);
+        return DataAPI.getVariableUnhashedValue(value);
     }
-    public TableCreationModule getTable() {
+    public TableCreator getTable() {
         return table;
     }
 }

@@ -1,23 +1,20 @@
 package net.redewhite.lvdataapi.receptors;
 
-import net.redewhite.lvdataapi.modules.VariableCreationModule;
-import net.redewhite.lvdataapi.modules.VariableReceptorModule;
-import net.redewhite.lvdataapi.modules.VariableReturnModule;
+import net.redewhite.lvdataapi.modules.VariableCreator;
+import net.redewhite.lvdataapi.modules.ReceptorCreator;
+import net.redewhite.lvdataapi.modules.VariableValue;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import static net.redewhite.lvdataapi.modules.VariableReturnModule.getVariableUnhashedValue;
-import static net.redewhite.lvdataapi.modules.VariableReturnModule.getVariableHashedValue;
 import static net.redewhite.lvdataapi.DataAPI.*;
 
-public class ActiveVariableLoader {
+public class ActiveVariable {
 
-    private final VariableReceptorModule receptor;
-    private final VariableCreationModule variable;
+    private final ReceptorCreator receptor;
+    private final VariableCreator variable;
     private Object value;
 
-    public ActiveVariableLoader(VariableCreationModule variable, VariableReceptorModule receptor, Object value) {
+    public ActiveVariable(VariableCreator variable, ReceptorCreator receptor, Object value) {
         this.variable = variable;
         this.receptor = receptor;
         this.value = value;
@@ -30,7 +27,7 @@ public class ActiveVariableLoader {
         }
 
         //noinspection Java8CollectionRemoveIf
-        for (InactiveVariableLoader iv : new ArrayList<>(getInactiveVariables())) {
+        for (InactiveVariable iv : new ArrayList<>(getInactiveVariables())) {
             if (iv.getTable() == variable.getTable() && iv.getVariableBruteID().equals(variable.getBruteID())) {
                 getInactiveVariables().remove(iv);
             }
@@ -41,19 +38,19 @@ public class ActiveVariableLoader {
     }
 
     @SuppressWarnings("unused")
-    public VariableReceptorModule getReceptor() {
+    public ReceptorCreator getReceptor() {
         return receptor;
     }
 
-    public VariableCreationModule getVariable() {
+    public VariableCreator getVariable() {
         return variable;
     }
 
     public Object getValue() {
         return getVariableUnhashedValue(value);
     }
-    public VariableReturnModule getValueModule() {
-        return new VariableReturnModule(getVariableUnhashedValue(value));
+    public VariableValue getValueModule() {
+        return new VariableValue(this);
     }
     public void setValue(Object value) {
         this.value = getVariableHashedValue(value);
