@@ -19,7 +19,7 @@ import java.io.File;
 @SuppressWarnings("unused")
 public class DataAPI extends JavaPlugin {
 
-    public static final String version = "3.02";
+    public static final String version = "3.03";
 
     public static DataAPI INSTANCE;
     public static YamlConfiguration config;

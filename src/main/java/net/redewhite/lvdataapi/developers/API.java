@@ -2,8 +2,7 @@ package net.redewhite.lvdataapi.developers;
 
 import net.redewhite.lvdataapi.modules.*;
 import net.redewhite.lvdataapi.receptors.ActiveVariable;
-import net.redewhite.lvdataapi.types.ConnectionType;
-import org.bukkit.entity.Player;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.plugin.Plugin;
 
 import java.sql.ResultSet;
@@ -22,10 +21,10 @@ public class API {
         }
         throw new NullPointerException("Couldn't find any variable receptor with this parameters (Plugin: " + plugin.getName() + ", BruteID: " + bruteID + ", Table: " + table.getName() + ")");
     }
-    public static ReceptorCreator getVariableReceptor(Plugin plugin, Player player, TableCreator table) {
+    public static ReceptorCreator getVariableReceptor(Plugin plugin, OfflinePlayer player, TableCreator table) {
         return getVariableReceptor(plugin, player.getUniqueId().toString(), table);
     }
-    public static ReceptorCreator getVariableReceptor(Player player, TableCreator table) {
+    public static ReceptorCreator getVariableReceptor(OfflinePlayer player, TableCreator table) {
         return getVariableReceptor(INSTANCE, player.getUniqueId().toString(), table);
     }
     public static ReceptorCreator getVariableReceptor(String bruteID, TableCreator table) {
@@ -40,10 +39,10 @@ public class API {
             return false;
         }
     }
-    public static boolean isVariableReceptorLoaded(Plugin plugin, Player player, TableCreator table) {
+    public static boolean isVariableReceptorLoaded(Plugin plugin, OfflinePlayer player, TableCreator table) {
         return isVariableReceptorLoaded(plugin, player.getUniqueId().toString(), table);
     }
-    public static boolean isVariableReceptorLoaded(Player player, TableCreator table) {
+    public static boolean isVariableReceptorLoaded(OfflinePlayer player, TableCreator table) {
         return isVariableReceptorLoaded(INSTANCE, player.getUniqueId().toString(), table);
     }
     public static boolean isVariableReceptorLoaded(String bruteID, TableCreator table) {
@@ -70,7 +69,7 @@ public class API {
         }
         throw new NullPointerException("Couldn't find any variable receptor with this parameters (BruteID: " + bruteID + ", Table: " + table.getName() + ")");
     }
-    public static ReceptorCreator getVariableReceptorByBruteID(Player player, TableCreator table) {
+    public static ReceptorCreator getVariableReceptorByBruteID(OfflinePlayer player, TableCreator table) {
         return getVariableReceptorByBruteID(player.getUniqueId().toString(), table);
     }
 
@@ -102,10 +101,10 @@ public class API {
         return getVariableValue(plugin, name, getVariableReceptorByBruteID(bruteID, table));
     }
 
-    public static VariableValue getVariableValue(String name, Player player, TableCreator table) {
+    public static VariableValue getVariableValue(String name, OfflinePlayer player, TableCreator table) {
         return getVariableValue(null, name, getVariableReceptorByBruteID(player.getUniqueId().toString(), table));
     }
-    public static VariableValue getVariableValue(Plugin plugin, String name, Player player, TableCreator table) {
+    public static VariableValue getVariableValue(Plugin plugin, String name, OfflinePlayer player, TableCreator table) {
         return getVariableValue(plugin, name, getVariableReceptorByBruteID(player.getUniqueId().toString(), table));
     }
 
@@ -115,7 +114,7 @@ public class API {
     public static void setVariableValue(String name, String bruteID, TableCreator table, Object value) {
         setVariableValue(name, getVariableReceptorByBruteID(bruteID, table), value);
     }
-    public static void setVariableValue(String name, Player player, TableCreator table, Object value) {
+    public static void setVariableValue(String name, OfflinePlayer player, TableCreator table, Object value) {
         setVariableValue(name, getVariableReceptorByBruteID(player.getUniqueId().toString(), table), value);
     }
 
@@ -125,7 +124,7 @@ public class API {
     public static void removeVariableValue(String name, String bruteID, TableCreator table, Object value) {
         removeVariableValue(name, getVariableReceptorByBruteID(bruteID, table), value);
     }
-    public static void removeVariableValue(String name, Player player, TableCreator table, Object value) {
+    public static void removeVariableValue(String name, OfflinePlayer player, TableCreator table, Object value) {
         removeVariableValue(name, getVariableReceptorByBruteID(player.getUniqueId().toString(), table), value);
     }
 
@@ -135,7 +134,7 @@ public class API {
     public static void addVariableValue(String name, String bruteID, TableCreator table, Object value) {
         addVariableValue(name, getVariableReceptorByBruteID(bruteID, table), value);
     }
-    public static void addVariableValue(String name, Player player, TableCreator table, Object value) {
+    public static void addVariableValue(String name, OfflinePlayer player, TableCreator table, Object value) {
         addVariableValue(name, getVariableReceptorByBruteID(player.getUniqueId().toString(), table), value);
     }
 
@@ -146,7 +145,7 @@ public class API {
     public static boolean isVariableValueNull(String name, String bruteID, TableCreator table) {
         return isVariableValueNull(name, getVariableReceptorByBruteID(bruteID, table));
     }
-    public static boolean isVariableValueNull(String name, Player player, TableCreator table) {
+    public static boolean isVariableValueNull(String name, OfflinePlayer player, TableCreator table) {
         return isVariableValueNull(name, getVariableReceptorByBruteID(player.getUniqueId().toString(), table));
     }
 

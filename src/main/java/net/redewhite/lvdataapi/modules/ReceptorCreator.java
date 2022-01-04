@@ -19,7 +19,7 @@ import java.sql.ResultSet;
 import java.util.List;
 
 import static net.redewhite.lvdataapi.DataAPI.*;
-import static net.redewhite.lvdataapi.developers.API.getVariableValue;
+import static net.redewhite.lvdataapi.developers.API.getVariableFromReceptor;
 
 @SuppressWarnings("unused")
 public class ReceptorCreator {
@@ -104,11 +104,27 @@ public class ReceptorCreator {
         return variables;
     }
 
+    public ActiveVariable getVariable(Plugin plugin, String name) {
+        return getVariableFromReceptor(plugin, name, this);
+    }
+    public ActiveVariable getVariable(String name) {
+        return getVariableFromReceptor(INSTANCE, name, this);
+    }
+    public VariableValue getVariableValue(Plugin plugin, String name) {
+        return getVariable(plugin, name).getValueModule();
+    }
+    public VariableValue getVariableValue(String name) {
+        return getVariable(INSTANCE, name).getValueModule();
+    }
+
     public boolean hasLoadedBefore() {
-        return getVariableValue("hasLoadedBefore", this).asBoolean();
+        return getVariableValue("hasLoadedBefore").asBoolean();
     }
     public long timesLoaded() {
-        return getVariableValue("timesLoaded", this).asLong();
+        return getVariableValue("timesLoaded").asLong();
+    }
+    public void deleteIfHasntLoadedBefore() {
+        if (!hasLoadedBefore()) delete();
     }
 
     public void save() {
@@ -128,6 +144,10 @@ public class ReceptorCreator {
         Bukkit.getPluginManager().callEvent(event);
     }
     public void unload() {
+        if (!getReceptors().contains(this)) {
+            return;
+        }
+
         ReceptorUnloadEvent event = new ReceptorUnloadEvent(this);
         Bukkit.getPluginManager().callEvent(event);
 
