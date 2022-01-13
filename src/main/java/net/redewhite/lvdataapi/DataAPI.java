@@ -10,18 +10,17 @@ import org.bukkit.plugin.java.JavaPlugin;
 import net.redewhite.lvdataapi.modules.*;
 import org.bukkit.ChatColor;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.io.File;
 
 @SuppressWarnings("unused")
 public class DataAPI extends JavaPlugin {
 
-    public static final String version = "3.03";
-
     public static DataAPI INSTANCE;
+    
     public static YamlConfiguration config;
 
     private static BukkitRunnable saveTask;
@@ -38,11 +37,28 @@ public class DataAPI extends JavaPlugin {
     @Override
     public void onEnable() {
         INSTANCE = this;
+        config = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "config.yml"));
+        
+        if (hasWrongConfiguration(
+                "variables loading messages",
+                "variables creating messages",
+                "table loading messages",
+                "table creating messages",
+                "database loading messages",
+                "database creating messages",
+
+                "check-updates",
+                "AutoSaver"
+        )) {
+            if (new File(getDataFolder(), "config.yml").delete()) {
+                saveDefaultConfig();
+                broadcastColoredMessage("§cYour configuration file is broken, reseted.");
+            }
+        }
 
         Bukkit.getPluginManager().registerEvents(new PluginEvents(), this);
 
         saveDefaultConfig();
-        config = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "config.yml"));
         new Thread(new Updater()).start();
 
         long interval = config.getLong("AutoSaver") * 20;
@@ -65,7 +81,9 @@ public class DataAPI extends JavaPlugin {
     @Override
     public void onDisable() {
         for (ReceptorCreator receptor : getReceptors()) {
-            receptor.save();
+            if (receptor.autoSaveWhenServerClose()) {
+                receptor.save();
+            }
         }
     }
 
@@ -95,6 +113,10 @@ public class DataAPI extends JavaPlugin {
         return inactiveVariables;
     }
 
+    public static BukkitRunnable getSaveTask() {
+        return saveTask;
+    }
+
     public static String getDate() {
         return new SimpleDateFormat("dd/MM/yyyy - hh:mm").format(new Date());
     }
@@ -119,5 +141,14 @@ public class DataAPI extends JavaPlugin {
         } catch (NullPointerException ignore) {
         }
         return null;
+    }
+
+    private boolean hasWrongConfiguration(String... strings) {
+        for (String str : strings) {
+            if (!config.contains(str)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

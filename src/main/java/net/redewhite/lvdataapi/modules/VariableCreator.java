@@ -58,9 +58,8 @@ public class VariableCreator {
             throw new IllegalStateException("this table was not created correctly.");
         }
 
-        if (getBruteID().length() > 64) {
-            throw new IllegalStateException("variable name is too big (Name: " + name + ", Plugin: " + plugin.getName() + ")");
-        }
+        Utils.bG("variable", plugin, getBruteID());
+
         for (VariableCreator variable : getVariables()) {
             if (variable.getBruteID().equals(getBruteID())) {
                 if (variable.getTable().equals(table)) {
@@ -71,28 +70,25 @@ public class VariableCreator {
         }
 
         // Verify if the name contains illegal characters
-        String[] blocked = "-S,S=S[S]S.S/S*S-S+S;S:S(S)".split("S");
-        for (String block : blocked) {
-            if (name.contains(block)) {
-                broadcastColoredMessage("&cThat's variable name contains illegal characters (" + block + ")", messages);
-                return;
-            }
+        if (Utils.iS("variable", plugin, name)) {
+            return;
         }
 
         if (this.saveToDatabase) {
             String query = table.getDatabase().getConnectionType().getVariableCreationQuery(table.getBruteID(), getBruteID(), getVariableHashedValue(this.defaultValue), table.getDatabase().getBruteID());
             try (PreparedStatement pst = table.getDatabase().getConnection().prepareStatement(query)) {
                 pst.execute();
-                broadcastColoredMessage("&aVariable &2'" + name + "' &asuccessfully created.", messages);
+                broadcastColoredMessage("&a" + type.getName() + "&2 '" + name + "' (" + plugin.getName() + ") &asuccessfully created.", messages);
             } catch (SQLException e) {
                 if (e.getMessage().contains("uplicate column name")) {
-                    broadcastColoredMessage("&aVariable &2'" + name + "' &asuccessfully loaded.", messages);
+                    broadcastColoredMessage("&a" + type.getName() + "&2 '" + name + "' (" + plugin.getName() + ") &asuccessfully loaded.", messages);
                 } else {
                     e.printStackTrace();
+                    broadcastColoredMessage("&cException trying to create " + type.getName().toLowerCase() + "&c: " + getBruteID() + " of table: " + table.getBruteID() + " (Database: " + table.getDatabase().getBruteID() + ", type: " + table.getDatabase().getConnectionType() + "), full query: \"§5" + query + "§c\"");
                 }
             }
         } else {
-            broadcastColoredMessage("&aVariable &2'" + name + "' &asuccessfully loaded.", messages);
+            broadcastColoredMessage(VariablesType.TEMPORARY.getName() + " &a" + type.getName() + "&2 '" + name + "' (" + plugin.getName() + ") &asuccessfully loaded.", messages);
         }
 
         isSuccessfullyCreated = true;

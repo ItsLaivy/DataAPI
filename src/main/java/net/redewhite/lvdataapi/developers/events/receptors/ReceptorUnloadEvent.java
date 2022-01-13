@@ -6,9 +6,15 @@ import org.bukkit.event.Cancellable;
 public class ReceptorUnloadEvent extends ReceptorEvent implements Cancellable {
 
     private boolean cancelled = false;
+    private final boolean saving;
 
-    public ReceptorUnloadEvent(ReceptorCreator receptor) {
+    public ReceptorUnloadEvent(ReceptorCreator receptor, boolean isSaving) {
         super(receptor);
+        this.saving = isSaving;
+    }
+
+    public boolean isSaving() {
+        return saving;
     }
 
     @Override

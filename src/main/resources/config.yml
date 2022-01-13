@@ -7,3 +7,13 @@ check-updates: true
 
 # Values more than 600 seconds is not recommended.
 AutoSaver: 600 # seconds
+
+# Messages
+variables loading messages: true
+variables creating messages: true
+
+table loading messages: true
+table creating messages: true
+
+database loading messages: true
+database creating messages: true

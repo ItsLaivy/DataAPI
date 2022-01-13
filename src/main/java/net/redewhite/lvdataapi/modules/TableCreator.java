@@ -32,9 +32,7 @@ public class TableCreator {
         if (database == null) throw new NullPointerException("table database cannot be null");
         if (plugin == null) plugin = INSTANCE;
 
-        if (getBruteID().length() > 64) {
-            throw new IllegalStateException("table name is too big (Name: " + name + ", Plugin: " + plugin.getName() + ")");
-        }
+        Utils.bG("table", plugin, getBruteID());
 
         for (TableCreator table : getTables()) {
             if (table.getBruteID().equals(getBruteID())) {
@@ -49,23 +47,21 @@ public class TableCreator {
         }
 
         // Verify if the name contains illegal characters
-        String[] blocked = "-S,S=S[S]S.S/S*S-S+S;S:S(S)".split("S");
-        for (String block : blocked) {
-            if (name.contains(block)) {
-                broadcastColoredMessage("&cThat's table name contains illegal characters (" + block + ")");
-                return;
-            }
+        if (Utils.iS("table", plugin, name)) {
+            return;
         }
 
         // Try to create the table in the database
-        try (PreparedStatement pst = database.getConnection().prepareStatement(database.getConnectionType().getTableCreationQuery(getBruteID(), getDatabase().getBruteID()))) {
+        String query = database.getConnectionType().getTableCreationQuery(getBruteID(), getDatabase().getBruteID());
+        try (PreparedStatement pst = database.getConnection().prepareStatement(query)) {
             pst.execute();
-            broadcastColoredMessage("&aTable &2'" + name + "' &asucessfully created.");
+            broadcastColoredMessage("&aTable &2'" + name + "' (" + plugin.getName() + ") (" + plugin.getName() + ") &asucessfully created.");
         } catch (SQLException e) {
             if (e.getMessage().contains("already exists")) {
-               broadcastColoredMessage("&aTable &2'" + name + "' &asucessfully loaded.");
+               broadcastColoredMessage("&aTable &2'" + name + "' (" + plugin.getName() + ") &asucessfully loaded.");
             } else {
                 e.printStackTrace();
+                broadcastColoredMessage("&cException trying to create table: " + getBruteID() + " of database: " + getDatabase().getBruteID() + " (" + database.getConnectionType() + "), full query: \"§5" + query + "§c\"");
                 return;
             }
         }

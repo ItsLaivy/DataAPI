@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import static net.redewhite.lvdataapi.DataAPI.getVariableHashedValue;
 
@@ -56,7 +57,7 @@ public class VariableValue {
             return;
         }
 
-        if (variable.getVariable().getType() == VariablesType.ARRAY) {
+        if (variable.getVariable().getType() == VariablesType.LIST) {
             List<Object> newList = new ArrayList<>();
             List<Object> addToNewList = new ArrayList<>();
             if (value instanceof ArrayList<?>) {
@@ -111,7 +112,7 @@ public class VariableValue {
             return;
         }
 
-        if (variable.getVariable().getType() == VariablesType.ARRAY) {
+        if (variable.getVariable().getType() == VariablesType.LIST) {
             List<Object> newList = variable.getValueModule().asList();
             if (value instanceof ArrayList<?>) {
                 newList.addAll(Arrays.asList(((ArrayList<?>) value).toArray()));
@@ -135,7 +136,6 @@ public class VariableValue {
 
     public String asString() {
         if (value() == null) return null;
-
         return value().toString();
     }
 
@@ -145,16 +145,7 @@ public class VariableValue {
 
     public Integer asInt() {
         if (value() == null) return null;
-
-        try {
-            return Integer.parseInt(value().toString());
-        } catch (NumberFormatException ignore) {
-            try {
-                return ((int) Double.parseDouble(value().toString()));
-            } catch (NumberFormatException ignore2) {
-                throw new NumberFormatException("thats value cannot be cast to integer.");
-            }
-        }
+        return Integer.parseInt(value().toString());
     }
 
     public Long asLong() {
@@ -163,56 +154,43 @@ public class VariableValue {
         try {
             return Long.parseLong(value().toString());
         } catch (NumberFormatException ignore) {
-            try {
-                return ((long) Double.parseDouble(value().toString()));
-            } catch (NumberFormatException ignore2) {
-                throw new NumberFormatException("thats value cannot be cast to long.");
-            }
+            return ((long) Double.parseDouble(value().toString()));
         }
     }
 
     public Double asDouble() {
         if (value() == null) return null;
-
-        try {
-            return Double.parseDouble(value().toString());
-        } catch (NumberFormatException e) {
-            throw new NumberFormatException("thats value cannot be cast to double.");
-        }
+        return Double.parseDouble(value().toString());
     }
 
     public List<Object> asList() {
         if (value() == null) return new ArrayList<>();
-
         String[] split = value().toString().split("<SPLIT!>");
         return new ArrayList<>(Arrays.asList(split));
     }
-
-    public Object asList(int i) {
+    public Object asList(int index) {
         if (value() == null) return new ArrayList<>();
-
         String[] split = value().toString().split("<SPLIT!>");
-        return Arrays.asList(split).get(i);
+        return Arrays.asList(split).get(index);
     }
 
     public Byte asByte() {
         if (value() == null) return null;
-
-        try {
-            return Byte.parseByte(value().toString());
-        } catch (NumberFormatException e) {
-            throw new NumberFormatException("thats value cannot be cast to byte.");
-        }
+        return Byte.parseByte(value().toString());
     }
 
     public Boolean asBoolean() {
         if (value() == null) return null;
+        return Boolean.parseBoolean(value().toString());
+    }
 
-        try {
-            return Boolean.parseBoolean(value().toString());
-        } catch (NumberFormatException e) {
-            throw new NumberFormatException("thats value cannot be cast to boolean.");
-        }
+    public UUID asUUID() {
+        if (value() == null) return null;
+        return UUID.fromString(value().toString());
+    }
+
+    public Object get() {
+        return value();
     }
 
     @Override

@@ -7,6 +7,7 @@ import org.bukkit.plugin.Plugin;
 import static net.redewhite.lvdataapi.DataAPI.INSTANCE;
 
 @SuppressWarnings("unused")
+@Deprecated
 public class Table extends TableCreator {
 
     public Table(Database database) {

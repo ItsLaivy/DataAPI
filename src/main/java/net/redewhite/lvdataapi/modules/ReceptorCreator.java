@@ -9,6 +9,7 @@ import net.redewhite.lvdataapi.receptors.InactiveVariable;
 import net.redewhite.lvdataapi.receptors.ActiveVariable;
 import net.redewhite.lvdataapi.DataAPI;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.IllegalPluginAccessException;
 import org.bukkit.plugin.Plugin;
 
 import java.sql.PreparedStatement;
@@ -29,6 +30,8 @@ public class ReceptorCreator {
     private final String name;
     private final String bruteID;
 
+    private boolean aswsc = true;
+
     private final List<ActiveVariable> variables = new ArrayList<>();
 
     public ReceptorCreator(Plugin plugin, String name, String bruteID, TableCreator table) {
@@ -41,9 +44,8 @@ public class ReceptorCreator {
         if (table == null) throw new NullPointerException("variable table cannot be null");
         if (plugin == null) plugin = INSTANCE;
 
-        if (getBruteID().length() > 64) {
-            throw new IllegalStateException("receptor name is too big (Name: " + name + ", Plugin: " + plugin.getName() + ")");
-        }
+        Utils.bG("receptor", plugin, getBruteID());
+
         if (API.isVariableReceptorLoaded(plugin, bruteID, table)) {
             throw new IllegalStateException("a receptor with that name already exists at this plugin instance (Name: " + name + ", Plugin: " + plugin.getName() + ")");
         }
@@ -140,22 +142,33 @@ public class ReceptorCreator {
         String fQuery = table.getDatabase().getConnectionType().getUpdateQuery(table.getBruteID(), query.toString(), getBruteID(), table.getDatabase().getBruteID());
         table.getDatabase().executeQuery(fQuery);
 
-        ReceptorSaveEvent event = new ReceptorSaveEvent(this);
-        Bukkit.getPluginManager().callEvent(event);
+        try {
+            Bukkit.getScheduler().runTask(INSTANCE, () -> {
+                ReceptorSaveEvent event = new ReceptorSaveEvent(this);
+                Bukkit.getPluginManager().callEvent(event);
+            });
+        } catch (IllegalPluginAccessException ignore) {}
     }
+
     public void unload() {
+        unload(true);
+    }
+    public void unload(boolean save) {
         if (!getReceptors().contains(this)) {
             return;
         }
 
-        ReceptorUnloadEvent event = new ReceptorUnloadEvent(this);
+        ReceptorUnloadEvent event = new ReceptorUnloadEvent(this, save);
         Bukkit.getPluginManager().callEvent(event);
 
         if (event.isCancelled()) {
             return;
         }
 
-        save();
+        if (save) {
+            save();
+        }
+
         getReceptors().remove(this);
 
         getInactiveVariables().removeIf(in -> in.getOwnerBruteID().equals(bruteID));
@@ -163,7 +176,10 @@ public class ReceptorCreator {
     }
 
     public void delete() {
-        ReceptorDeleteEvent event = new ReceptorDeleteEvent(this);
+        delete(true);
+    }
+    public void delete(boolean save) {
+        ReceptorDeleteEvent event = new ReceptorDeleteEvent(this, save);
         Bukkit.getPluginManager().callEvent(event);
 
         if (event.isCancelled()) {
@@ -172,9 +188,17 @@ public class ReceptorCreator {
 
         try (PreparedStatement pst = table.getDatabase().getConnection().prepareStatement("DELETE FROM '" + table.getBruteID() +  "' WHERE bruteid = '" + bruteID + "';")) {
             pst.execute();
-            unload();
+            unload(save);
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean autoSaveWhenServerClose() {
+        return aswsc;
+    }
+
+    public void setAutoSaveWhenServerClose(boolean aswsc) {
+        this.aswsc = aswsc;
     }
 }

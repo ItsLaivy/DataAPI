@@ -4,32 +4,44 @@ import net.redewhite.lvdataapi.DataAPI;
 
 public enum ConnectionType {
     SQLITE(
+            "SQLite",
             "INSERT INTO '%1' (name, bruteid, last_update) VALUES ('%2', '%3', '%4');",
             "SELECT %1 FROM '%2' %3;",
-            "CREATE TABLE '%1' ('id' INT AUTO_INCREMENT PRIMARY KEY, 'name' TEXT, 'bruteid' TEXT, 'last_update' TEXT)",
+            "CREATE TABLE '%1' ('id' INT AUTO_INCREMENT PRIMARY KEY, 'name' TEXT, 'bruteid' TEXT, 'last_update' TEXT);",
             "ALTER TABLE '%1' ADD COLUMN '%2' TEXT DEFAULT '%3';",
-            "UPDATE '%1' SET %2 WHERE bruteid = '%3';"
+            "UPDATE '%1' SET %2 WHERE bruteid = '%3';",
+            ""
     ),
     MYSQL(
+            "MySQL",
             "INSERT INTO %5.%1 (id, name, bruteid, last_update) VALUES (DEFAULT, '%2', '%3', '%4');",
             "SELECT %2.%1 FROM %4.%2 %3;",
-            "CREATE TABLE %2.%1 (id INT AUTO_INCREMENT PRIMARY KEY, name TEXT, bruteid TEXT, last_update TEXT)",
+            "CREATE TABLE %2.%1 (id INT AUTO_INCREMENT PRIMARY KEY, name TEXT, bruteid TEXT, last_update TEXT);",
             "ALTER TABLE %4.%1 ADD COLUMN %2 TEXT DEFAULT '%3';",
-            "UPDATE %4.%1 SET %2 WHERE bruteid = '%3';"
+            "UPDATE %4.%1 SET %2 WHERE bruteid = '%3';",
+            "DROP DATABASE %1;"
     );
 
+    private final String NAME;
     private final String INSERT;
     private final String SELECT;
     private final String TABLECREATION;
     private final String VARIABLECREATION;
     private final String UPDATE;
+    private final String DELETEDATABASE;
 
-    ConnectionType(String insertQuery, String selectQuery, String creationTableQuery, String creationVariableQuery, String updateQuery) {
-        INSERT = insertQuery;
-        SELECT = selectQuery;
-        TABLECREATION = creationTableQuery;
-        VARIABLECREATION = creationVariableQuery;
-        UPDATE = updateQuery;
+    ConnectionType(String NAME, String INSERT, String SELECT, String TABLECREATION, String VARIABLECREATION, String UPDATE, String DELETEDATABASE) {
+        this.NAME = NAME;
+        this.INSERT = INSERT;
+        this.SELECT = SELECT;
+        this.TABLECREATION = TABLECREATION;
+        this.VARIABLECREATION = VARIABLECREATION;
+        this.UPDATE = UPDATE;
+        this.DELETEDATABASE = DELETEDATABASE;
+    }
+
+    public String getName() {
+        return NAME;
     }
 
     public String getInsertQuery(String table, String name, String bruteID, String database) {
@@ -46,6 +58,9 @@ public enum ConnectionType {
     }
     public String getUpdateQuery(String table, String query, String bruteID, String database) {
         return replace(UPDATE, table, query, bruteID, database);
+    }
+    public String getDeleteDatabaseQuery(String database) {
+        return replace(DELETEDATABASE, database);
     }
 
     public static String replace(String replaceFrom, String... to) {

@@ -1,5 +1,6 @@
 package net.redewhite.lvdataapi.modules;
 
+import net.redewhite.lvdataapi.DataAPI;
 import net.redewhite.lvdataapi.types.ConnectionType;
 import org.bukkit.plugin.Plugin;
 
@@ -23,6 +24,7 @@ public class Database {
     private final String address;
 
     private final String path;
+    private File file;
 
     private boolean isSuccessfullyCreated = false;
 
@@ -56,12 +58,6 @@ public class Database {
 
         this.connectionType = connectionType;
 
-        this.user = user;
-        this.port = port;
-        this.address = address;
-
-        this.path = path;
-
         if (name == null) throw new NullPointerException("database name cannot be null");
 
         if (connectionType == ConnectionType.MYSQL) {
@@ -72,57 +68,76 @@ public class Database {
             if (path == null) throw new NullPointerException("SQLite Database's path cannot be null");
         }
 
-        if (getBruteID().length() > 64) {
-            throw new IllegalStateException("database name is too big (Name: " + name + ", Plugin: " + plugin.getName() + ")");
-        }
-        for (Database database : getDatabases()) {
-            if (database.getBruteID().equals(getBruteID())) {
-                connection = database.connection;
+        Utils.bG("database", plugin, getBruteID());
 
-                isSuccessfullyCreated = true;
-                return;
+        for (Database database : getDatabases()) {
+            if (database.getConnectionType().equals(connectionType)) {
+                if (database.getBruteID().equals(getBruteID())) {
+                    connection = database.connection;
+                    this.user = database.user;
+                    this.port = database.port;
+                    this.address = database.address;
+                    this.path = database.path;
+
+                    isSuccessfullyCreated = true;
+                    return;
+                }
             }
         }
+
+        this.user = user;
+        this.port = port;
+        this.address = address;
+        this.path = path;
 
         // Verify if the name contains illegal characters
-        String[] blocked = "-S,S=S[S]S.S/S*S-S+S;S:S(S)".split("S");
-        for (String block : blocked) {
-            if (name.contains(block)) {
-                broadcastColoredMessage("&cThat's database name contains illegal characters (" + block + ")");
-                return;
-            }
+        if (Utils.iS("database", plugin, name)) {
+            return;
         }
 
-        if (connectionType == ConnectionType.MYSQL) {
-            try {
-                Class.forName("com.mysql.jdbc.Driver");
-                connection = DriverManager.getConnection("jdbc:mysql://localhost/?user=" + user + "&password=" + password);
-                connection.createStatement().executeUpdate("CREATE DATABASE " + bruteID);
-                broadcastColoredMessage("&aMySQL Database &2'" + name + "'&a successfully created.");
-            } catch (Exception e) {
-                if (!e.getMessage().contains("; database exists")) {
-                    e.printStackTrace();
-                    return;
-                } else {
-                    broadcastColoredMessage("&aMySQL Database &2'" + name + "'&a successfully loaded.");
-                }
-            }
-        } else if (connectionType == ConnectionType.SQLITE) {
-            try {
-                Class.forName("org.sqlite.JDBC");
-                File file;
+        try {
 
-                if (path.equals("")) {
-                    file = new File(INSTANCE.getDataFolder(), getBruteID() + ".db");
-                } else {
-                    file = new File(INSTANCE.getDataFolder() + File.separator + path, getBruteID() + ".db");
+            boolean created = false;
+            if (connectionType == ConnectionType.MYSQL) {
+                String query = "CREATE DATABASE " + bruteID;
+
+                try {
+                    Class.forName("com.mysql.jdbc.Driver");
+                    connection = DriverManager.getConnection("jdbc:mysql://localhost/?user=" + user + "&password=" + password);
+                    connection.createStatement().executeUpdate(query);
+                    created = true;
+                } catch (SQLException e) {
+                    if (!e.getMessage().contains("; database exists")) {
+                        e.printStackTrace();
+                        broadcastColoredMessage("&cException trying to create database: " + getBruteID() + ", type: " + connectionType + ". Full query: \"§5" + query + "§c\"");
+                        return;
+                    }
                 }
-                connection = DriverManager.getConnection("jdbc:sqlite:" + file);
-                broadcastColoredMessage("&aSQLite Database &2'" + name + "'&a successfully loaded.");
-            } catch (Exception e) {
-                e.printStackTrace();
-                return;
+            } else if (connectionType == ConnectionType.SQLITE) {
+                try {
+                    Class.forName("org.sqlite.JDBC");
+                    if (path.equals("")) {
+                        file = new File(INSTANCE.getDataFolder(), getBruteID() + ".db");
+                    } else {
+                        file = new File(INSTANCE.getDataFolder() + File.separator + path, getBruteID() + ".db");
+                    }
+
+                    created = !file.exists();
+                    connection = DriverManager.getConnection("jdbc:sqlite:" + file);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    broadcastColoredMessage("&cException trying to create database: " + getBruteID() + ", type: " + connectionType + ". Full query: \"§5" + "NONE" + "§c\"");
+                    return;
+                }
             }
+
+            boolean l = config.getBoolean("database loading messages");
+            boolean c = config.getBoolean("database creating messages");
+            broadcastColoredMessage("&a" + connectionType.getName() + " Database &2'" + name + "' (" + plugin.getName() + ")&a successfully " + (created ? "created" : "loaded") + ".", (created ? c : l));
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            broadcastColoredMessage("§cPlease, report this error at the plugin's github: §4https://github.com/LaivyTLife/DataAPI/issues");
+            return;
         }
 
         isSuccessfullyCreated = true;
@@ -131,6 +146,33 @@ public class Database {
 
     public boolean isSuccessfullyCreated() {
         return isSuccessfullyCreated;
+    }
+
+    public void delete() {
+        String exception = null;
+        if (connectionType.equals(ConnectionType.MYSQL)) {
+            String query = ConnectionType.MYSQL.getDeleteDatabaseQuery(bruteID);
+            
+            try {
+                createStatement().executeUpdate(query);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                exception = query;
+                return;
+            }
+        } else if (connectionType.equals(ConnectionType.SQLITE)) {
+            if (!file.delete()) {
+                exception = "NONE";
+                return;
+            }
+        }
+
+        //noinspection ConstantConditions
+        if (exception != null) {
+            broadcastColoredMessage("&cException trying to §ndelete§c database: " + getBruteID() + ", type: " + connectionType + ". Full query: \"§5" + exception + "§c\"");
+        } else {
+            broadcastColoredMessage("&c" + (connectionType == ConnectionType.MYSQL ? "MySQL" : "SQLite") + " Database &4'" + name + "' (" + plugin.getName() + ") &c successfully deleted.");
+        }
     }
 
     public Plugin getPlugin() {
@@ -179,6 +221,7 @@ public class Database {
             pst.execute();
         } catch (SQLException e) {
             e.printStackTrace();
+            broadcastColoredMessage("&cFull query: \"§5" + query + "§c\"");
         }
     }
 

@@ -4,24 +4,23 @@ import net.redewhite.lvdataapi.modules.TableCreator;
 import net.redewhite.lvdataapi.modules.VariableCreator;
 import org.bukkit.plugin.Plugin;
 
-import static net.redewhite.lvdataapi.types.VariablesType.LIST;
 import static net.redewhite.lvdataapi.DataAPI.INSTANCE;
+import static net.redewhite.lvdataapi.types.VariablesType.LIST;
 
 @SuppressWarnings("unused")
-@Deprecated
-public class ArrayVariable extends VariableCreator {
+public class ListVariable extends VariableCreator {
 
-    public ArrayVariable(String name, TableCreator table, Object defaultValue) {
+    public ListVariable(String name, TableCreator table, Object defaultValue) {
         super(INSTANCE, name, table, defaultValue, true, LIST, true);
     }
-    public ArrayVariable(Plugin plugin, String name, TableCreator table, Object defaultValue) {
+    public ListVariable(Plugin plugin, String name, TableCreator table, Object defaultValue) {
         super(plugin, name, table, defaultValue, true, LIST, true);
     }
 
-    public ArrayVariable(String name, TableCreator table, Object defaultValue, Boolean saveToDatabase) {
+    public ListVariable(String name, TableCreator table, Object defaultValue, Boolean saveToDatabase) {
         super(INSTANCE, name, table, defaultValue, saveToDatabase, LIST, true);
     }
-    public ArrayVariable(Plugin plugin, String name, TableCreator table, Object defaultValue, Boolean saveToDatabase) {
+    public ListVariable(Plugin plugin, String name, TableCreator table, Object defaultValue, Boolean saveToDatabase) {
         super(plugin, name, table, defaultValue, saveToDatabase, LIST, true);
     }
 

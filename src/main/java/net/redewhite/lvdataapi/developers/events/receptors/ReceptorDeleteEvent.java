@@ -1,23 +1,11 @@
 package net.redewhite.lvdataapi.developers.events.receptors;
 
 import net.redewhite.lvdataapi.modules.ReceptorCreator;
-import org.bukkit.event.Cancellable;
 
-public class ReceptorDeleteEvent extends ReceptorEvent implements Cancellable {
+public class ReceptorDeleteEvent extends ReceptorUnloadEvent {
 
-    private boolean cancelled = false;
-
-    public ReceptorDeleteEvent(ReceptorCreator receptor) {
-        super(receptor);
+    public ReceptorDeleteEvent(ReceptorCreator receptor, boolean isSaving) {
+        super(receptor, isSaving);
     }
 
-    @Override
-    public boolean isCancelled() {
-        return cancelled;
-    }
-
-    @Override
-    public void setCancelled(boolean b) {
-        cancelled = b;
-    }
 }
