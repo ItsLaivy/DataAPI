@@ -1,6 +1,7 @@
 package net.redewhite.lvdataapi.modules;
 
 import net.redewhite.lvdataapi.developers.API;
+import net.redewhite.lvdataapi.developers.creators.variables.Receptor;
 import net.redewhite.lvdataapi.developers.events.receptors.ReceptorDeleteEvent;
 import net.redewhite.lvdataapi.developers.events.receptors.ReceptorLoadEvent;
 import net.redewhite.lvdataapi.developers.events.receptors.ReceptorSaveEvent;
@@ -32,12 +33,13 @@ public class ReceptorCreator {
 
     private boolean aswsc = true;
 
-    private final List<ActiveVariable> variables = new ArrayList<>();
+    private ReceptorCreator thisReceptor = this;
+
+    private List<ActiveVariable> variables = new ArrayList<>();
 
     public ReceptorCreator(Plugin plugin, String name, String bruteID, TableCreator table) {
         this.plugin = plugin;
         this.table = table;
-        this.name = name;
         this.bruteID = bruteID;
 
         if (name == null) throw new NullPointerException("variable name cannot be null");
@@ -47,8 +49,17 @@ public class ReceptorCreator {
         Utils.bG("receptor", plugin, getBruteID());
 
         if (API.isVariableReceptorLoaded(plugin, bruteID, table)) {
-            throw new IllegalStateException("a receptor with that name already exists at this plugin instance (Name: " + name + ", Plugin: " + plugin.getName() + ")");
+            ReceptorCreator p = API.getVariableReceptor(plugin, bruteID, table);
+
+            variables = p.variables;
+            aswsc = p.aswsc;
+            this.name = p.name;
+            thisReceptor = p;
+
+            return;
         }
+
+        this.name = name;
 
         getReceptors().add(this);
 
@@ -107,7 +118,7 @@ public class ReceptorCreator {
     }
 
     public ActiveVariable getVariable(Plugin plugin, String name) {
-        return getVariableFromReceptor(plugin, name, this);
+        return getVariableFromReceptor(plugin, name, thisReceptor);
     }
     public ActiveVariable getVariable(String name) {
         return getVariableFromReceptor(INSTANCE, name, this);
@@ -144,7 +155,7 @@ public class ReceptorCreator {
 
         try {
             Bukkit.getScheduler().runTask(INSTANCE, () -> {
-                ReceptorSaveEvent event = new ReceptorSaveEvent(this);
+                ReceptorSaveEvent event = new ReceptorSaveEvent(thisReceptor);
                 Bukkit.getPluginManager().callEvent(event);
             });
         } catch (IllegalPluginAccessException ignore) {}
@@ -154,11 +165,11 @@ public class ReceptorCreator {
         unload(true);
     }
     public void unload(boolean save) {
-        if (!getReceptors().contains(this)) {
+        if (!getReceptors().contains(thisReceptor)) {
             return;
         }
 
-        ReceptorUnloadEvent event = new ReceptorUnloadEvent(this, save);
+        ReceptorUnloadEvent event = new ReceptorUnloadEvent(thisReceptor, save);
         Bukkit.getPluginManager().callEvent(event);
 
         if (event.isCancelled()) {
@@ -169,17 +180,17 @@ public class ReceptorCreator {
             save();
         }
 
-        getReceptors().remove(this);
+        getReceptors().remove(thisReceptor);
 
         getInactiveVariables().removeIf(in -> in.getOwnerBruteID().equals(bruteID));
-        getActiveVariables().removeIf(ac -> ac.getReceptor() == this);
+        getActiveVariables().removeIf(ac -> ac.getReceptor() == thisReceptor);
     }
 
     public void delete() {
         delete(true);
     }
     public void delete(boolean save) {
-        ReceptorDeleteEvent event = new ReceptorDeleteEvent(this, save);
+        ReceptorDeleteEvent event = new ReceptorDeleteEvent(thisReceptor, save);
         Bukkit.getPluginManager().callEvent(event);
 
         if (event.isCancelled()) {
@@ -199,6 +210,6 @@ public class ReceptorCreator {
     }
 
     public void setAutoSaveWhenServerClose(boolean aswsc) {
-        this.aswsc = aswsc;
+        thisReceptor.aswsc = aswsc;
     }
 }

@@ -5,10 +5,7 @@ import net.redewhite.lvdataapi.receptors.ActiveVariable;
 import net.redewhite.lvdataapi.types.VariablesType;
 import org.bukkit.Bukkit;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static net.redewhite.lvdataapi.DataAPI.getVariableHashedValue;
 

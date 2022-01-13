@@ -23,6 +23,12 @@ public class TableCreator {
 
     private boolean isSuccessfullyCreated = false;
 
+    public TableCreator(Database database) {
+        this(INSTANCE, "default", database);
+    }
+    public TableCreator(String name, Database database) {
+        this(INSTANCE, name, database);
+    }
     public TableCreator(Plugin plugin, String name, Database database) {
         this.database = database;
         this.plugin = plugin;
@@ -55,7 +61,7 @@ public class TableCreator {
         String query = database.getConnectionType().getTableCreationQuery(getBruteID(), getDatabase().getBruteID());
         try (PreparedStatement pst = database.getConnection().prepareStatement(query)) {
             pst.execute();
-            broadcastColoredMessage("&aTable &2'" + name + "' (" + plugin.getName() + ") (" + plugin.getName() + ") &asucessfully created.");
+            broadcastColoredMessage("&aTable &2'" + name + "' (" + plugin.getName() + ") &asucessfully created.");
         } catch (SQLException e) {
             if (e.getMessage().contains("already exists")) {
                broadcastColoredMessage("&aTable &2'" + name + "' (" + plugin.getName() + ") &asucessfully loaded.");
