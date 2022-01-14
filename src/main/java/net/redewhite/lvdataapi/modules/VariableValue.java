@@ -3,6 +3,7 @@ package net.redewhite.lvdataapi.modules;
 import net.redewhite.lvdataapi.developers.events.variables.ActiveVariableValueChangeEvent;
 import net.redewhite.lvdataapi.receptors.ActiveVariable;
 import net.redewhite.lvdataapi.types.VariablesType;
+import net.redewhite.lvdataapi.types.variables.Pair;
 import org.bukkit.Bukkit;
 
 import java.util.*;
@@ -47,6 +48,9 @@ public class VariableValue {
                 if (map.size() != 0) {
                     newValue = map.toString().replace(", ", "<SPLIT!>").replace("{", "").replace("}", "").replace("=", "<MAPSPLIT!>");
                 }
+            } else if (value instanceof Pair) {
+                Pair<?, ?> p = (Pair<?, ?>) value;
+                newValue = new Pair<>(getVariableHashedValue(p.getKey()), getVariableHashedValue(p.getValue())).toString().replace("=", "<PAIRSPLIT!>");
             } else {
                 newValue = getVariableHashedValue(value);
             }
@@ -61,6 +65,10 @@ public class VariableValue {
         if (variable.getValue() == null) {
             variable.setValue(value);
             return;
+        }
+
+        if (variable.getVariable().getType() == VariablesType.PAIR) {
+            throw new IllegalStateException("You cannot remove values from a Pair variable!");
         }
 
         if (variable.getVariable().getType() == VariablesType.LIST) {
@@ -137,6 +145,10 @@ public class VariableValue {
             return;
         }
 
+        if (variable.getVariable().getType() == VariablesType.PAIR) {
+            throw new IllegalStateException("You cannot add values into a Pair variable!");
+        }
+
         if (variable.getVariable().getType() == VariablesType.LIST) {
             List<Object> newList = asList();
             if (value instanceof List) {
@@ -179,6 +191,11 @@ public class VariableValue {
         return value().toString();
     }
 
+    public Pair<String, String> asPair() {
+        if (value() == null) return null;
+        String[] split = value().toString().split("<PAIRSPLIT!>");
+        return new Pair<>(split[0], split[1]);
+    }
     public Map<String, String> asMap() {
         if (value() == null) return null;
         Map<String, String> map = new HashMap<>();

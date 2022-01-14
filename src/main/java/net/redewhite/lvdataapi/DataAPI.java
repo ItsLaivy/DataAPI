@@ -1,5 +1,6 @@
 package net.redewhite.lvdataapi;
 
+import net.redewhite.lvdataapi.commands.GeneralCommands;
 import net.redewhite.lvdataapi.listeners.PluginEvents;
 import net.redewhite.lvdataapi.receptors.InactiveVariable;
 import net.redewhite.lvdataapi.receptors.ActiveVariable;
@@ -38,7 +39,9 @@ public class DataAPI extends JavaPlugin {
     public void onEnable() {
         INSTANCE = this;
         config = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "config.yml"));
-        
+
+        getCommand("dataapi").setExecutor(new GeneralCommands());
+
         if (hasWrongConfiguration(
                 "variables loading messages",
                 "variables creating messages",
@@ -167,6 +170,18 @@ public class DataAPI extends JavaPlugin {
         } catch (NullPointerException ignore) {
         }
         return null;
+    }
+
+    public static boolean isSnapshot() {
+        String version = INSTANCE.getDescription().getVersion();
+        int row = 0;
+        for (String s : version.split("")) {
+            if (s.equals(".")) {
+                if (row > 0) return true;
+                row++;
+            }
+        }
+        return false;
     }
 
     private boolean hasWrongConfiguration(String... strings) {

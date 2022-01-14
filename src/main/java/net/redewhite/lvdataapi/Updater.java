@@ -14,6 +14,9 @@ import java.io.*;
 import static net.redewhite.lvdataapi.DataAPI.*;
 
 public class Updater implements Runnable {
+
+    private static String updateAvailable = null;
+
     @Override
     public void run() {
         if (config.getBoolean("check-updates")) {
@@ -38,14 +41,25 @@ public class Updater implements Runnable {
             JsonArray dataJson = new JsonParser().parse(content.toString()).getAsJsonArray();
             for (JsonElement e : dataJson) {
                 JsonObject obj = e.getAsJsonObject();
-                releases.add(obj.get("tag_name").getAsString());
+                if (!obj.get("prerelease").getAsBoolean()) {
+                    releases.add(obj.get("tag_name").getAsString());
+                }
             }
 
             if (!releases.get(0).equals(INSTANCE.getDescription().getVersion())) {
                 broadcastColoredMessage("&cA new version of &6LvDataAPI &cis already available.");
                 broadcastColoredMessage("&cDownload Link: &6https://github.com/LaivyTLife/DataAPI/releases/" + releases.get(0) + "/");
                 broadcastColoredMessage("&cNew version: &6" + releases.get(0) + "&c, Your version: &6" + INSTANCE.getDescription().getVersion() + "&c.");
+
+                updateAvailable = releases.get(0);
             }
         }
+    }
+
+    public static boolean hasNewVersion() {
+        return updateAvailable != null;
+    }
+    public static String getNewVersion() {
+        return updateAvailable;
     }
 }

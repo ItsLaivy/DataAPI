@@ -3,6 +3,7 @@ package net.redewhite.lvdataapi.modules;
 import net.redewhite.lvdataapi.receptors.InactiveVariable;
 import net.redewhite.lvdataapi.receptors.ActiveVariable;
 import net.redewhite.lvdataapi.types.VariablesType;
+import net.redewhite.lvdataapi.types.variables.Pair;
 import org.bukkit.plugin.Plugin;
 
 import java.sql.PreparedStatement;
@@ -53,6 +54,8 @@ public class VariableCreator {
                 map.put(getVariableHashedValue(e.getKey()), getVariableHashedValue(e.getValue()));
             }
             newValue = map.toString().replace(", ", "<SPLIT!>").replace("{", "").replace("}", "").replace("=", "<MAPSPLIT!>");
+        } else if (defaultValue instanceof Pair) {
+            newValue = defaultValue.toString().replace("=", "<PAIRSPLIT!>");
         } else {
             newValue = defaultValue;
         }
