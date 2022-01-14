@@ -16,6 +16,7 @@ import java.util.Map;
 
 import static net.redewhite.lvdataapi.developers.API.getVariableReceptorByBruteID;
 import static net.redewhite.lvdataapi.DataAPI.*;
+import static net.redewhite.lvdataapi.types.VariablesType.*;
 
 @SuppressWarnings("unused")
 public class VariableCreator {
@@ -42,23 +43,28 @@ public class VariableCreator {
 
         Object newValue;
         if (defaultValue instanceof List) {
-            ArrayList<String> array = new ArrayList<>();
+            List<String> array = new ArrayList<>();
+
             for (Object e : ((ArrayList<?>) defaultValue).toArray()) {
                 array.add(getVariableHashedValue(e));
             }
-            newValue = array.toString().replace(", ", "<SPLIT!>").replace("[", "").replace("]", "");
+            newValue = replaceListVariable(array);
             if (newValue.equals("")) newValue = getVariableHashedValue(null);
         } else if (defaultValue instanceof Map) {
             Map<String, String> map = new HashMap<>();
+
             for (Map.Entry<?, ?> e : ((Map<?, ?>) defaultValue).entrySet()) {
                 map.put(getVariableHashedValue(e.getKey()), getVariableHashedValue(e.getValue()));
             }
-            newValue = map.toString().replace(", ", "<SPLIT!>").replace("{", "").replace("}", "").replace("=", "<MAPSPLIT!>");
+            newValue = replaceMapVariable(map);
+            if (newValue.equals("")) newValue = getVariableHashedValue(null);
         } else if (defaultValue instanceof Pair) {
-            newValue = defaultValue.toString().replace("=", "<PAIRSPLIT!>");
+            newValue = replacePairVariable((Pair<?, ?>) defaultValue);
+            if (newValue.equals("")) newValue = getVariableHashedValue(null);
         } else {
             newValue = defaultValue;
         }
+
         this.defaultValue = newValue;
 
         if (name == null) throw new NullPointerException("variable name cannot be null");
@@ -99,7 +105,7 @@ public class VariableCreator {
                 }
             }
         } else {
-            broadcastColoredMessage(VariablesType.TEMPORARY.getName() + " &a" + type.getName() + "&2 '" + name + "' (" + plugin.getName() + ") &asuccessfully loaded.", messages);
+            broadcastColoredMessage(TEMPORARY.getName() + " &a" + type.getName() + "&2 '" + name + "' (" + plugin.getName() + ") &asuccessfully loaded.", messages);
         }
 
         isSuccessfullyCreated = true;

@@ -9,14 +9,54 @@ import org.bukkit.Bukkit;
 import java.util.*;
 
 import static net.redewhite.lvdataapi.DataAPI.getVariableHashedValue;
+import static net.redewhite.lvdataapi.types.VariablesType.*;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public class VariableValue {
 
     private final ActiveVariable variable;
 
+    private final VariablesType t;
+
     public VariableValue(ActiveVariable variable) {
         this.variable = variable;
+        this.t = variable.getVariable().getType();
+    }
+
+    public void removeMapValue(String key) {
+        if (t == MAP) {
+            Map<String, String> map = asMap();
+            map.remove(key);
+
+            variable.setValue(replaceMapVariable(map));
+        } else {
+            throw new IllegalStateException("The variable needs to be a MapVariable");
+        }
+    }
+    public void addValue(String key, String value) {
+        if (t == MAP) {
+            Map<String, String> map = asMap();
+            map.put(getVariableHashedValue(key), getVariableHashedValue(value));
+
+            variable.setValue(replaceMapVariable(map));
+        } else {
+            throw new IllegalStateException("The variable needs to be a MapVariable");
+        }
+    }
+    public void setValue(String key, String value) {
+        if (t == MAP || t == PAIR) {
+            if (t == MAP) {
+                Map<String, String> map = new HashMap<>();
+                map.put(getVariableHashedValue(key), getVariableHashedValue(value));
+
+                variable.setValue(replaceMapVariable(map));
+            } else {
+                Pair<String, String> pair = new Pair<>(getVariableHashedValue(key), getVariableHashedValue(value));
+                variable.setValue(replacePairVariable(pair));
+            }
+        } else {
+            throw new IllegalStateException("The variable needs to be a MapVariable or a PairVariable");
+        }
     }
 
     public void setValue(Object value) {
@@ -25,6 +65,10 @@ public class VariableValue {
 
         if (event.isCancelled()) {
             return;
+        }
+
+        if (value instanceof Map || value instanceof Pair) {
+            throw new IllegalStateException("Use setValue(key, value) to change map/pair variable's values");
         }
 
         String newValue = null;
@@ -37,20 +81,8 @@ public class VariableValue {
                 }
 
                 if (array.size() != 0) {
-                    newValue = array.toString().replace(", ", "<SPLIT!>").replace("[", "").replace("]", "");
+                    newValue = replaceListVariable(array);
                 }
-            } else if (value instanceof Map) {
-                Map<String, String> map = new HashMap<>();
-                for (Map.Entry<?, ?> e : ((Map<?, ?>) value).entrySet()) {
-                    map.put(getVariableHashedValue(e.getKey()), getVariableHashedValue(e.getValue()));
-                }
-
-                if (map.size() != 0) {
-                    newValue = map.toString().replace(", ", "<SPLIT!>").replace("{", "").replace("}", "").replace("=", "<MAPSPLIT!>");
-                }
-            } else if (value instanceof Pair) {
-                Pair<?, ?> p = (Pair<?, ?>) value;
-                newValue = new Pair<>(getVariableHashedValue(p.getKey()), getVariableHashedValue(p.getValue())).toString().replace("=", "<PAIRSPLIT!>");
             } else {
                 newValue = getVariableHashedValue(value);
             }
@@ -67,11 +99,15 @@ public class VariableValue {
             return;
         }
 
-        if (variable.getVariable().getType() == VariablesType.PAIR) {
+        if (t == MAP) {
+            throw new IllegalStateException("Use removeMapValue() to remove map variable's values");
+        }
+
+        if (t == PAIR) {
             throw new IllegalStateException("You cannot remove values from a Pair variable!");
         }
 
-        if (variable.getVariable().getType() == VariablesType.LIST) {
+        if (t == LIST) {
             List<Object> newList = new ArrayList<>();
             List<Object> addToNewList = new ArrayList<>();
             if (value instanceof List) {
@@ -93,27 +129,8 @@ public class VariableValue {
                 }
             }
 
-            String e = newList.toString().replace(", ", "<SPLIT!>").replace("[", "").replace("]", "");
+            String e = replaceListVariable(newList);
             if (newList.size() == 0) variable.setValue(null);
-            else variable.setValue(e);
-        } else if (variable.getVariable().getType() == VariablesType.MAP) {
-            Map<String, String> newMap = asMap();
-            List<Object> keys = new ArrayList<>();
-
-            if (value instanceof Map) {
-                for (Object e : ((Map<?, ?>) value).keySet()) {
-                    keys.add(e.toString());
-                }
-            } else {
-                keys.add(value.toString());
-            }
-
-            for (Object a : keys) {
-                newMap.remove(a.toString());
-            }
-
-            String e = newMap.toString().replace(", ", "<SPLIT!>").replace("{", "").replace("}", "").replace("=", "<MAPSPLIT!>");
-            if (newMap.size() == 0) variable.setValue(null);
             else variable.setValue(e);
         } else {
             try {
@@ -145,11 +162,15 @@ public class VariableValue {
             return;
         }
 
-        if (variable.getVariable().getType() == VariablesType.PAIR) {
+        if (value instanceof Map) {
+            throw new IllegalStateException("Use addValue(key, value) to add map variable's values");
+        }
+
+        if (t == PAIR) {
             throw new IllegalStateException("You cannot add values into a Pair variable!");
         }
 
-        if (variable.getVariable().getType() == VariablesType.LIST) {
+        if (t == LIST) {
             List<Object> newList = asList();
             if (value instanceof List) {
                 newList.addAll((ArrayList<?>) value);
@@ -157,22 +178,7 @@ public class VariableValue {
                 newList.add(value);
             }
 
-            String e = newList.toString().replace(", ", "<SPLIT!>").replace("[", "").replace("]", "");
-            variable.setValue(e);
-        } else if (variable.getVariable().getType() == VariablesType.MAP) {
-            List<Object> keys = new ArrayList<>();
-            if (value instanceof Map) {
-                keys.addAll(((Map<?, ?>) value).keySet());
-            } else {
-                keys.add(value);
-            }
-
-            Map<String, String> map = asMap();
-            for (Object key : keys) {
-                map.remove(key.toString());
-            }
-
-            String e = map.toString().replace(", ", "<SPLIT!>").replace("{", "").replace("}", "").replace("=", "<MAPSPLIT!>");
+            String e = replaceListVariable(newList);
             variable.setValue(e);
         } else {
             if (value instanceof Number && variable.getValue() instanceof Number) {
@@ -192,12 +198,14 @@ public class VariableValue {
     }
 
     public Pair<String, String> asPair() {
-        if (value() == null) return null;
+        if (value() == null) return new Pair<>();
+
         String[] split = value().toString().split("<PAIRSPLIT!>");
         return new Pair<>(split[0], split[1]);
     }
     public Map<String, String> asMap() {
-        if (value() == null) return null;
+        if (value() == null) return new HashMap<>();
+
         Map<String, String> map = new HashMap<>();
         for (String e : value().toString().split("<SPLIT!>")) {
             String[] split = e.split("<MAPSPLIT!>");
@@ -205,6 +213,12 @@ public class VariableValue {
         }
 
         return map;
+    }
+    public List<Object> asList() {
+        if (value() == null) return new ArrayList<>();
+
+        String[] split = value().toString().split("<SPLIT!>");
+        return new ArrayList<>(Arrays.asList(split));
     }
 
     public boolean isNull() {
@@ -231,15 +245,8 @@ public class VariableValue {
         return Double.parseDouble(value().toString());
     }
 
-    public List<Object> asList() {
-        if (value() == null) return new ArrayList<>();
-        String[] split = value().toString().split("<SPLIT!>");
-        return new ArrayList<>(Arrays.asList(split));
-    }
     public Object asList(int index) {
-        if (value() == null) return new ArrayList<>();
-        String[] split = value().toString().split("<SPLIT!>");
-        return Arrays.asList(split).get(index);
+        return asList().get(index);
     }
 
     public Byte asByte() {

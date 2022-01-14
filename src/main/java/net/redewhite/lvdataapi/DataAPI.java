@@ -4,6 +4,7 @@ import net.redewhite.lvdataapi.commands.GeneralCommands;
 import net.redewhite.lvdataapi.listeners.PluginEvents;
 import net.redewhite.lvdataapi.receptors.InactiveVariable;
 import net.redewhite.lvdataapi.receptors.ActiveVariable;
+import net.redewhite.lvdataapi.types.variables.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -13,9 +14,7 @@ import org.bukkit.ChatColor;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @SuppressWarnings("unused")
 public class DataAPI extends JavaPlugin {
@@ -38,10 +37,11 @@ public class DataAPI extends JavaPlugin {
     @Override
     public void onEnable() {
         INSTANCE = this;
-        config = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "config.yml"));
+        saveDefaultConfig();
 
         getCommand("dataapi").setExecutor(new GeneralCommands());
 
+        config = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "config.yml"));
         if (hasWrongConfiguration(
                 "variables loading messages",
                 "variables creating messages",
@@ -55,13 +55,12 @@ public class DataAPI extends JavaPlugin {
         )) {
             if (new File(getDataFolder(), "config.yml").delete()) {
                 saveDefaultConfig();
+                config = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "config.yml"));
                 broadcastColoredMessage("§cYour configuration file is broken, reseted.");
             }
         }
 
         Bukkit.getPluginManager().registerEvents(new PluginEvents(), this);
-
-        saveDefaultConfig();
         new Thread(new Updater()).start();
 
         long interval = config.getLong("AutoSaver") * 20;
