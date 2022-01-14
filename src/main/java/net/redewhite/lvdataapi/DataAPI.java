@@ -126,7 +126,20 @@ public class DataAPI extends JavaPlugin {
     public static String getVariableHashedValue(Object value) {
         try {
             if (value != null) {
-                return value.toString().replace(",", "<!COMMA>").replace("[", "<!RIGHTBRACKET>").replace("]", "<!LEFTBRACKET>").replace("'", "<!SIMPLECOMMA>");
+                return value.toString()
+                        .replace(",", "<!COMMA>")
+
+                        .replace("[", "<!RIGHTBRACKET>")
+                        .replace("]", "<!LEFTBRACKET>")
+                        .replace("{", "<!RIGHTKEY>")
+                        .replace("}", "<!LEFTKEY>")
+                        .replace("(", "<!RIGHTPARENTHESIS>")
+                        .replace(")", "<!LEFTPARENTHESIS>")
+
+                        .replace("=", "<!EQUAL>")
+
+                        .replace("'", "<!SIMPLECOMMA>")
+                        .replace("\"", "<!QUOTE>");
             }
         } catch (NullPointerException ignore) {
         }
@@ -136,7 +149,20 @@ public class DataAPI extends JavaPlugin {
         try {
             boolean bool = value.toString().equals("<NULL!>");
             if (!bool) {
-                return value.toString().replace("<!COMMA>", ",").replace("<!RIGHTBRACKET>", "[").replace("<!LEFTBRACKET>", "]").replace("<!SIMPLECOMMA>", "'");
+                return value.toString()
+                        .replace("<!COMMA>", ",")
+
+                        .replace("<!RIGHTBRACKET>", "[")
+                        .replace("<!LEFTBRACKET>", "]")
+                        .replace("<!RIGHTKEY>", "{")
+                        .replace("<!LEFTKEY>", "}")
+                        .replace("<!RIGHTPARENTHESIS>", "(")
+                        .replace("<!LEFTPARENTHESIS>", ")")
+
+                        .replace("<!EQUAL>", "=")
+
+                        .replace("<!SIMPLECOMMA>", "'")
+                        .replace("<!QUOTE>", "\"");
             }
         } catch (NullPointerException ignore) {
         }

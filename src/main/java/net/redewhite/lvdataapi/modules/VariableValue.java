@@ -29,14 +29,23 @@ public class VariableValue {
         String newValue = null;
 
         if (value != null) {
-            if (value instanceof ArrayList<?>) {
+            if (value instanceof List) {
                 ArrayList<Object> array = new ArrayList<>();
-                for (Object e : new ArrayList<>(Arrays.asList(((ArrayList<?>) value).toArray()))) {
+                for (Object e : (ArrayList<?>) value) {
                     array.add(getVariableHashedValue(e));
                 }
 
                 if (array.size() != 0) {
                     newValue = array.toString().replace(", ", "<SPLIT!>").replace("[", "").replace("]", "");
+                }
+            } else if (value instanceof Map) {
+                Map<String, String> map = new HashMap<>();
+                for (Map.Entry<?, ?> e : ((Map<?, ?>) value).entrySet()) {
+                    map.put(getVariableHashedValue(e.getKey()), getVariableHashedValue(e.getValue()));
+                }
+
+                if (map.size() != 0) {
+                    newValue = map.toString().replace(", ", "<SPLIT!>").replace("{", "").replace("}", "").replace("=", "<MAPSPLIT!>");
                 }
             } else {
                 newValue = getVariableHashedValue(value);
@@ -57,8 +66,8 @@ public class VariableValue {
         if (variable.getVariable().getType() == VariablesType.LIST) {
             List<Object> newList = new ArrayList<>();
             List<Object> addToNewList = new ArrayList<>();
-            if (value instanceof ArrayList<?>) {
-                addToNewList.addAll(Arrays.asList(((ArrayList<?>) value).toArray()));
+            if (value instanceof List) {
+                addToNewList.addAll((ArrayList<?>) value);
             } else {
                 addToNewList.add(value);
             }
@@ -78,6 +87,25 @@ public class VariableValue {
 
             String e = newList.toString().replace(", ", "<SPLIT!>").replace("[", "").replace("]", "");
             if (newList.size() == 0) variable.setValue(null);
+            else variable.setValue(e);
+        } else if (variable.getVariable().getType() == VariablesType.MAP) {
+            Map<String, String> newMap = asMap();
+            List<Object> keys = new ArrayList<>();
+
+            if (value instanceof Map) {
+                for (Object e : ((Map<?, ?>) value).keySet()) {
+                    keys.add(e.toString());
+                }
+            } else {
+                keys.add(value.toString());
+            }
+
+            for (Object a : keys) {
+                newMap.remove(a.toString());
+            }
+
+            String e = newMap.toString().replace(", ", "<SPLIT!>").replace("{", "").replace("}", "").replace("=", "<MAPSPLIT!>");
+            if (newMap.size() == 0) variable.setValue(null);
             else variable.setValue(e);
         } else {
             try {
@@ -110,14 +138,29 @@ public class VariableValue {
         }
 
         if (variable.getVariable().getType() == VariablesType.LIST) {
-            List<Object> newList = variable.getValueModule().asList();
-            if (value instanceof ArrayList<?>) {
-                newList.addAll(Arrays.asList(((ArrayList<?>) value).toArray()));
+            List<Object> newList = asList();
+            if (value instanceof List) {
+                newList.addAll((ArrayList<?>) value);
             } else {
                 newList.add(value);
             }
 
             String e = newList.toString().replace(", ", "<SPLIT!>").replace("[", "").replace("]", "");
+            variable.setValue(e);
+        } else if (variable.getVariable().getType() == VariablesType.MAP) {
+            List<Object> keys = new ArrayList<>();
+            if (value instanceof Map) {
+                keys.addAll(((Map<?, ?>) value).keySet());
+            } else {
+                keys.add(value);
+            }
+
+            Map<String, String> map = asMap();
+            for (Object key : keys) {
+                map.remove(key.toString());
+            }
+
+            String e = map.toString().replace(", ", "<SPLIT!>").replace("{", "").replace("}", "").replace("=", "<MAPSPLIT!>");
             variable.setValue(e);
         } else {
             if (value instanceof Number && variable.getValue() instanceof Number) {
@@ -134,6 +177,17 @@ public class VariableValue {
     public String asString() {
         if (value() == null) return null;
         return value().toString();
+    }
+
+    public Map<String, String> asMap() {
+        if (value() == null) return null;
+        Map<String, String> map = new HashMap<>();
+        for (String e : value().toString().split("<SPLIT!>")) {
+            String[] split = e.split("<MAPSPLIT!>");
+            map.put(split[0], split[1]);
+        }
+
+        return map;
     }
 
     public boolean isNull() {

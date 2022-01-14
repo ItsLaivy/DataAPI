@@ -4,7 +4,8 @@ public enum VariablesType {
 
     NORMAL("Variable"),
     LIST("§6ListVariable"),
-    TEMPORARY("§bTemporary");
+    TEMPORARY("§bTemporary"),
+    MAP("§5MapVariable");
 
     private final String name;
 

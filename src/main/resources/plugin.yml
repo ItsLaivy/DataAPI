@@ -1,5 +1,5 @@
 name: LvDataAPI
-version: 3.04
+version: 3.041.0
 main: net.redewhite.lvdataapi.DataAPI
 author: DanielZinh#7616
 description: "Player's variable saving system."

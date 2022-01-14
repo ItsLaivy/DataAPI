@@ -9,7 +9,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static net.redewhite.lvdataapi.developers.API.getVariableReceptorByBruteID;
 import static net.redewhite.lvdataapi.DataAPI.*;
@@ -38,13 +40,19 @@ public class VariableCreator {
         this.saveToDatabase = saveToDatabase;
 
         Object newValue;
-        if (defaultValue instanceof ArrayList) {
+        if (defaultValue instanceof List) {
             ArrayList<String> array = new ArrayList<>();
             for (Object e : ((ArrayList<?>) defaultValue).toArray()) {
                 array.add(getVariableHashedValue(e));
             }
             newValue = array.toString().replace(", ", "<SPLIT!>").replace("[", "").replace("]", "");
             if (newValue.equals("")) newValue = getVariableHashedValue(null);
+        } else if (defaultValue instanceof Map) {
+            Map<String, String> map = new HashMap<>();
+            for (Map.Entry<?, ?> e : ((Map<?, ?>) defaultValue).entrySet()) {
+                map.put(getVariableHashedValue(e.getKey()), getVariableHashedValue(e.getValue()));
+            }
+            newValue = map.toString().replace(", ", "<SPLIT!>").replace("{", "").replace("}", "").replace("=", "<MAPSPLIT!>");
         } else {
             newValue = defaultValue;
         }
