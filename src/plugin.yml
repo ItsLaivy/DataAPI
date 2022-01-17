@@ -1,0 +1,20 @@
+name: LvDataAPI
+version: 3.05
+main: net.redewhite.lvdataapi.DataAPI
+author: DanielZinh#7616
+description: "Player's variable saving system."
+api-version: 1.18
+
+website: "https://github.com/LaivyTLife/DataAPI"
+
+load: STARTUP
+
+commands:
+  dataapi:
+    description: "General plugin' command"
+    aliasess: lvdataapi
+
+permissions:
+  lvdataapi.command.use:
+    description: "Access to the general command."
+    default: op
