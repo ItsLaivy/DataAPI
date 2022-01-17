@@ -7,6 +7,7 @@ check-updates: true
 
 # Values more than 600 seconds is not recommended.
 AutoSaver: 600 # seconds
+auto saver message: true
 
 # Messages
 variables loading messages: true

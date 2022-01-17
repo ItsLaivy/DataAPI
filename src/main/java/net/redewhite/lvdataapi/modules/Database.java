@@ -1,6 +1,5 @@
 package net.redewhite.lvdataapi.modules;
 
-import net.redewhite.lvdataapi.DataAPI;
 import net.redewhite.lvdataapi.types.ConnectionType;
 import org.bukkit.plugin.Plugin;
 
@@ -158,16 +157,13 @@ public class Database {
             } catch (SQLException e) {
                 e.printStackTrace();
                 exception = query;
-                return;
             }
         } else if (connectionType.equals(ConnectionType.SQLITE)) {
             if (!file.delete()) {
                 exception = "NONE";
-                return;
             }
         }
 
-        //noinspection ConstantConditions
         if (exception != null) {
             broadcastColoredMessage("&cException trying to §ndelete§c database: " + getBruteID() + ", type: " + connectionType + ". Full query: \"§5" + exception + "§c\"");
         } else {

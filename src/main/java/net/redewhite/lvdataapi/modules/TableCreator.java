@@ -75,7 +75,7 @@ public class TableCreator {
         isSuccessfullyCreated = true;
         getTables().add(this);
 
-        TableLoadEvent event = new TableLoadEvent(this);
+        TableLoadEvent event = new TableLoadEvent(!Bukkit.isPrimaryThread(), this);
         Bukkit.getPluginManager().callEvent(event);
     }
 

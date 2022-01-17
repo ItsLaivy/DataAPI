@@ -10,15 +10,30 @@ public class ActiveVariableValueChangeEvent extends Event implements Cancellable
     private static final HandlerList handlers = new HandlerList();
     private final ActiveVariable variable;
     private final Object newValue;
+    private final String key;
+
     private boolean cancelled = false;
 
-    public ActiveVariableValueChangeEvent(ActiveVariable variable, Object newValue) {
+    public ActiveVariableValueChangeEvent(boolean isAsync, ActiveVariable variable, Object newValue, String key) {
+        super(isAsync);
         this.variable = variable;
         this.newValue = newValue;
+        this.key = key;
+    }
+
+    public ActiveVariableValueChangeEvent(boolean isAsync, ActiveVariable variable, Object newValue) {
+        super(isAsync);
+        this.variable = variable;
+        this.newValue = newValue;
+        this.key = null;
     }
 
     public ActiveVariable getVariable() {
         return variable;
+    }
+
+    public String getKey() {
+        return key;
     }
 
     public Object getNewValue() {

@@ -25,6 +25,10 @@ public class VariableValue {
 
     public void removeMapValue(String key) {
         if (t == MAP) {
+            if (c(key, null)) {
+                return;
+            }
+
             Map<String, String> map = asMap();
             map.remove(key);
 
@@ -35,6 +39,10 @@ public class VariableValue {
     }
     public void addValue(String key, String value) {
         if (t == MAP) {
+            if (c(key, value)) {
+                return;
+            }
+
             Map<String, String> map = asMap();
             map.put(getVariableHashedValue(key), getVariableHashedValue(value));
 
@@ -45,6 +53,10 @@ public class VariableValue {
     }
     public void setValue(String key, String value) {
         if (t == MAP || t == PAIR) {
+            if (c(key, value)) {
+                return;
+            }
+
             if (t == MAP) {
                 Map<String, String> map = new HashMap<>();
                 map.put(getVariableHashedValue(key), getVariableHashedValue(value));
@@ -60,10 +72,7 @@ public class VariableValue {
     }
 
     public void setValue(Object value) {
-        ActiveVariableValueChangeEvent event = new ActiveVariableValueChangeEvent(this.variable, value);
-        Bukkit.getServer().getPluginManager().callEvent(event);
-
-        if (event.isCancelled()) {
+        if (c(null, value)) {
             return;
         }
 
@@ -92,6 +101,10 @@ public class VariableValue {
         variable.setValue(newValue);
     }
     public void removeValue(Object value) {
+        if (c(null, value)) {
+            return;
+        }
+
         if (value == null) return;
 
         if (variable.getValue() == null) {
@@ -155,6 +168,10 @@ public class VariableValue {
         }
     }
     public void addValue(Object value) {
+        if (c(null, value)) {
+            return;
+        }
+
         if (value == null) return;
 
         if (variable.getValue() == null) {
@@ -171,7 +188,7 @@ public class VariableValue {
         }
 
         if (t == LIST) {
-            List<Object> newList = asList();
+            List<Object> newList = a();
             if (value instanceof List) {
                 newList.addAll((ArrayList<?>) value);
             } else {
@@ -191,6 +208,14 @@ public class VariableValue {
             variable.setValue(num1 + num2);
         }
     }
+    private boolean c(String key, Object value) {
+        ActiveVariableValueChangeEvent event;
+
+        event = new ActiveVariableValueChangeEvent(!Bukkit.isPrimaryThread(), this.variable, value, key);
+        Bukkit.getServer().getPluginManager().callEvent(event);
+
+        return event.isCancelled();
+    }
 
     public String asString() {
         if (value() == null) return null;
@@ -209,12 +234,22 @@ public class VariableValue {
         Map<String, String> map = new HashMap<>();
         for (String e : value().toString().split("<SPLIT!>")) {
             String[] split = e.split("<MAPSPLIT!>");
-            map.put(split[0], split[1]);
+            if (split.length == 2) {
+                map.put(split[0], split[1]);
+            }
         }
 
         return map;
     }
-    public List<Object> asList() {
+
+    private List<Object> a() {
+        if (value() == null) return new ArrayList<>();
+
+        String[] split = value().toString().split("<SPLIT!>");
+        return new ArrayList<>(Arrays.asList(split));
+    }
+
+    public List<String> asList() {
         if (value() == null) return new ArrayList<>();
 
         String[] split = value().toString().split("<SPLIT!>");
@@ -245,7 +280,7 @@ public class VariableValue {
         return Double.parseDouble(value().toString());
     }
 
-    public Object asList(int index) {
+    public String asList(int index) {
         return asList().get(index);
     }
 

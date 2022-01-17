@@ -1,7 +1,6 @@
 package net.redewhite.lvdataapi.modules;
 
 import net.redewhite.lvdataapi.developers.API;
-import net.redewhite.lvdataapi.developers.creators.variables.Receptor;
 import net.redewhite.lvdataapi.developers.events.receptors.ReceptorDeleteEvent;
 import net.redewhite.lvdataapi.developers.events.receptors.ReceptorLoadEvent;
 import net.redewhite.lvdataapi.developers.events.receptors.ReceptorSaveEvent;
@@ -31,7 +30,8 @@ public class ReceptorCreator {
     private final String name;
     private final String bruteID;
 
-    private boolean aswsc = true;
+    private boolean isAlreadyLoaded = false;
+    private boolean autoSaveOnServerClose = true;
 
     private ReceptorCreator thisReceptor = this;
 
@@ -52,10 +52,11 @@ public class ReceptorCreator {
             ReceptorCreator p = API.getVariableReceptor(plugin, bruteID, table);
 
             variables = p.variables;
-            aswsc = p.aswsc;
+            autoSaveOnServerClose = p.autoSaveOnServerClose;
             this.name = p.name;
             thisReceptor = p;
 
+            isAlreadyLoaded = true;
             return;
         }
 
@@ -96,7 +97,7 @@ public class ReceptorCreator {
             getReceptors().remove(this);
         }
 
-        ReceptorLoadEvent event = new ReceptorLoadEvent(this);
+        ReceptorLoadEvent event = new ReceptorLoadEvent(!Bukkit.isPrimaryThread(), this);
         Bukkit.getPluginManager().callEvent(event);
     }
 
@@ -139,6 +140,9 @@ public class ReceptorCreator {
     public void deleteIfHasntLoadedBefore() {
         if (!hasLoadedBefore()) delete();
     }
+    public boolean isAlreadyLoaded() {
+        return isAlreadyLoaded;
+    }
 
     public void save() {
         StringBuilder query = new StringBuilder();
@@ -155,7 +159,7 @@ public class ReceptorCreator {
 
         try {
             Bukkit.getScheduler().runTask(INSTANCE, () -> {
-                ReceptorSaveEvent event = new ReceptorSaveEvent(thisReceptor);
+                ReceptorSaveEvent event = new ReceptorSaveEvent(!Bukkit.isPrimaryThread(), thisReceptor);
                 Bukkit.getPluginManager().callEvent(event);
             });
         } catch (IllegalPluginAccessException ignore) {}
@@ -169,7 +173,7 @@ public class ReceptorCreator {
             return;
         }
 
-        ReceptorUnloadEvent event = new ReceptorUnloadEvent(thisReceptor, save);
+        ReceptorUnloadEvent event = new ReceptorUnloadEvent(!Bukkit.isPrimaryThread(), thisReceptor, save);
         Bukkit.getPluginManager().callEvent(event);
 
         if (event.isCancelled()) {
@@ -190,7 +194,7 @@ public class ReceptorCreator {
         delete(true);
     }
     public void delete(boolean save) {
-        ReceptorDeleteEvent event = new ReceptorDeleteEvent(thisReceptor, save);
+        ReceptorDeleteEvent event = new ReceptorDeleteEvent(!Bukkit.isPrimaryThread(), thisReceptor, save);
         Bukkit.getPluginManager().callEvent(event);
 
         if (event.isCancelled()) {
@@ -206,10 +210,10 @@ public class ReceptorCreator {
     }
 
     public boolean autoSaveWhenServerClose() {
-        return aswsc;
+        return autoSaveOnServerClose;
     }
 
     public void setAutoSaveWhenServerClose(boolean aswsc) {
-        thisReceptor.aswsc = aswsc;
+        thisReceptor.autoSaveOnServerClose = aswsc;
     }
 }

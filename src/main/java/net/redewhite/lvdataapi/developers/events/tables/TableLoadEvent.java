@@ -9,7 +9,8 @@ public class TableLoadEvent extends Event {
     private static final HandlerList handlers = new HandlerList();
     private final TableCreator table;
 
-    public TableLoadEvent(TableCreator table) {
+    public TableLoadEvent(boolean isAsync, TableCreator table) {
+        super(isAsync);
         this.table = table;
     }
 

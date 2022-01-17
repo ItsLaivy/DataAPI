@@ -1,10 +1,11 @@
+
+
 package net.redewhite.lvdataapi;
 
 import net.redewhite.lvdataapi.commands.GeneralCommands;
 import net.redewhite.lvdataapi.listeners.PluginEvents;
 import net.redewhite.lvdataapi.receptors.InactiveVariable;
 import net.redewhite.lvdataapi.receptors.ActiveVariable;
-import net.redewhite.lvdataapi.types.variables.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -51,7 +52,9 @@ public class DataAPI extends JavaPlugin {
                 "database creating messages",
 
                 "check-updates",
-                "AutoSaver"
+
+                "AutoSaver",
+                "auto saver message"
         )) {
             if (new File(getDataFolder(), "config.yml").delete()) {
                 saveDefaultConfig();
@@ -74,7 +77,9 @@ public class DataAPI extends JavaPlugin {
                     save = true;
                 }
                 if (save) {
-                    broadcastColoredMessage("&aSuccessfully saved all receptors.");
+                    if (config.getBoolean("auto saver message")) {
+                        broadcastColoredMessage("&aSuccessfully saved all receptors.");
+                    }
                 }
             }
         }.runTaskTimerAsynchronously(this, (interval / 2), interval);

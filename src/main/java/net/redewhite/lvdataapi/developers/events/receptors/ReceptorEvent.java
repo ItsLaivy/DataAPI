@@ -9,7 +9,8 @@ public class ReceptorEvent extends Event {
     private static final HandlerList handlers = new HandlerList();
     private final ReceptorCreator receptor;
 
-    public ReceptorEvent(ReceptorCreator receptor) {
+    public ReceptorEvent(boolean isAsync, ReceptorCreator receptor) {
+        super(isAsync);
         this.receptor = receptor;
     }
 

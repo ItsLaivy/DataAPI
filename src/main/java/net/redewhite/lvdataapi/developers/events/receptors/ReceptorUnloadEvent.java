@@ -8,9 +8,9 @@ public class ReceptorUnloadEvent extends ReceptorEvent implements Cancellable {
     private boolean cancelled = false;
     private final boolean saving;
 
-    public ReceptorUnloadEvent(ReceptorCreator receptor, boolean isSaving) {
-        super(receptor);
-        this.saving = isSaving;
+    public ReceptorUnloadEvent(boolean isAsync, ReceptorCreator receptor, boolean saving) {
+        super(isAsync, receptor);
+        this.saving = saving;
     }
 
     public boolean isSaving() {
