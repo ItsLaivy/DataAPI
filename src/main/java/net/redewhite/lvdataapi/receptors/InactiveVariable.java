@@ -23,7 +23,7 @@ public class InactiveVariable {
         if (table == null) throw new NullPointerException("inactive variable's table cannot be null");
 
         for (VariableCreator var : DataAPI.getVariables()) {
-            if (var.getTable() == table && var.getBruteID().equals(variableBruteID)) {
+            if (var.getTable() == table && var.getBruteId().equals(variableBruteID)) {
                 new ActiveVariable(var, API.getVariableReceptorByBruteID(ownerBruteID, table), value);
                 return;
             }

@@ -20,6 +20,8 @@ import java.util.*;
 @SuppressWarnings("unused")
 public class DataAPI extends JavaPlugin {
 
+    private final Metrics metrics = new Metrics(this, 14425);
+    
     public static DataAPI INSTANCE;
     
     public static YamlConfiguration config;
@@ -34,7 +36,7 @@ public class DataAPI extends JavaPlugin {
 
     private static final List<ActiveVariable> activeVariables = new ArrayList<>();
     private static final List<InactiveVariable> inactiveVariables = new ArrayList<>();
-
+    
     @Override
     public void onEnable() {
         INSTANCE = this;
@@ -87,11 +89,14 @@ public class DataAPI extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        for (ReceptorCreator receptor : getReceptors()) {
-            if (receptor.autoSaveWhenServerClose()) {
-                receptor.save();
-            }
+        for (ReceptorCreator receptor : new ArrayList<>(getReceptors())) {
+            receptor.unload(receptor.autoSaveWhenServerClose());
         }
+
+        metrics.addCustomChart(new Metrics.SingleLineChart("databases", PluginEvents::getDatabasesRecord));
+        metrics.addCustomChart(new Metrics.SingleLineChart("tables", PluginEvents::getTablesRecord));
+        metrics.addCustomChart(new Metrics.SingleLineChart("variables", PluginEvents::getVariablesRecord));
+        metrics.addCustomChart(new Metrics.SingleLineChart("receptors", PluginEvents::getReceptorsRecord));
     }
 
     public static void broadcastColoredMessage(String message, boolean reallySend) {
@@ -123,7 +128,6 @@ public class DataAPI extends JavaPlugin {
     public static BukkitRunnable getSaveTask() {
         return saveTask;
     }
-
     public static String getDate() {
         return new SimpleDateFormat("dd/MM/yyyy - hh:mm").format(new Date());
     }

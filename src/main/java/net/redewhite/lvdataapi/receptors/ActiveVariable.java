@@ -28,7 +28,7 @@ public class ActiveVariable {
 
         //noinspection Java8CollectionRemoveIf
         for (InactiveVariable iv : new ArrayList<>(getInactiveVariables())) {
-            if (iv.getTable() == variable.getTable() && iv.getVariableBruteID().equals(variable.getBruteID())) {
+            if (iv.getTable() == variable.getTable() && iv.getVariableBruteID().equals(variable.getBruteId())) {
                 getInactiveVariables().remove(iv);
             }
         }

@@ -1,6 +1,7 @@
 package net.redewhite.lvdataapi.modules;
 
 import net.redewhite.lvdataapi.developers.events.tables.TableLoadEvent;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
@@ -12,16 +13,13 @@ import java.util.List;
 import static net.redewhite.lvdataapi.DataAPI.*;
 
 @SuppressWarnings("unused")
-public class TableCreator {
+public class TableCreator extends Creator {
 
     private final Database database;
 
-    private final Plugin plugin;
-    private final String name;
-
     private final List<VariableCreator> variables = new ArrayList<>();
 
-    private boolean isSuccessfullyCreated = false;
+    private boolean isSuccessfullyCreated;
 
     public TableCreator(Database database) {
         this(INSTANCE, "default", database);
@@ -30,18 +28,13 @@ public class TableCreator {
         this(INSTANCE, name, database);
     }
     public TableCreator(Plugin plugin, String name, Database database) {
+        super(plugin, name, CreatorType.TABLE_CREATOR);
+
+        Validate.notNull(database);
         this.database = database;
-        this.plugin = plugin;
-        this.name = name;
-
-        if (name == null) throw new NullPointerException("table name cannot be null");
-        if (database == null) throw new NullPointerException("table database cannot be null");
-        if (plugin == null) plugin = INSTANCE;
-
-        Utils.bG("table", plugin, getBruteID());
 
         for (TableCreator table : getTables()) {
-            if (table.getBruteID().equals(getBruteID())) {
+            if (table.getBruteId().equals(getBruteId())) {
                 if (table.getDatabase().equals(database)) {
                     throw new IllegalStateException("a table with that name already exists in plugin " + table.getPlugin() + ". Use API.getTable() to get a table.");
                 }
@@ -52,13 +45,9 @@ public class TableCreator {
             throw new IllegalStateException("this database was not created correctly");
         }
 
-        // Verify if the name contains illegal characters
-        if (Utils.iS("table", plugin, name)) {
-            return;
-        }
-
         // Try to create the table in the database
-        String query = database.getConnectionType().getTableCreationQuery(getBruteID(), getDatabase().getBruteID());
+        isSuccessfullyCreated = true;
+        String query = database.getConnectionType().getTableCreationQuery(getBruteId(), getDatabase().getBruteId());
         try (PreparedStatement pst = database.getConnection().prepareStatement(query)) {
             pst.execute();
             broadcastColoredMessage("&aTable &2'" + name + "' (" + plugin.getName() + ") &asucessfully created.");
@@ -67,16 +56,14 @@ public class TableCreator {
                broadcastColoredMessage("&aTable &2'" + name + "' (" + plugin.getName() + ") &asucessfully loaded.");
             } else {
                 e.printStackTrace();
-                broadcastColoredMessage("&cException trying to create table: " + getBruteID() + " of database: " + getDatabase().getBruteID() + " (" + database.getConnectionType() + "), full query: \"§5" + query + "§c\"");
+                broadcastColoredMessage("&cException trying to create table: " + getBruteId() + " of database: " + getDatabase().getBruteId() + " (" + database.getConnectionType() + "), full query: \"§5" + query + "§c\"");
+                isSuccessfullyCreated = false;
                 return;
             }
         }
 
-        isSuccessfullyCreated = true;
         getTables().add(this);
-
-        TableLoadEvent event = new TableLoadEvent(!Bukkit.isPrimaryThread(), this);
-        Bukkit.getPluginManager().callEvent(event);
+        Bukkit.getPluginManager().callEvent(new TableLoadEvent(!Bukkit.isPrimaryThread(), this));
     }
 
     public boolean isSuccessfullyCreated() {
@@ -85,16 +72,6 @@ public class TableCreator {
 
     public Database getDatabase() {
         return database;
-    }
-
-    public Plugin getPlugin() {
-        return plugin;
-    }
-    public String getName() {
-        return name;
-    }
-    public String getBruteID() {
-        return plugin.getName() + "_" + name;
     }
 
     public List<VariableCreator> getVariables() {

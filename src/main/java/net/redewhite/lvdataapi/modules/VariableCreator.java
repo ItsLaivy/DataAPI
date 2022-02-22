@@ -1,9 +1,14 @@
 package net.redewhite.lvdataapi.modules;
 
+import net.redewhite.lvdataapi.developers.events.variables.VariableCreateEvent;
+import net.redewhite.lvdataapi.developers.events.variables.VariableLoadEvent;
 import net.redewhite.lvdataapi.receptors.InactiveVariable;
 import net.redewhite.lvdataapi.receptors.ActiveVariable;
 import net.redewhite.lvdataapi.types.VariablesType;
 import net.redewhite.lvdataapi.types.variables.Pair;
+import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
+import org.bukkit.event.Event;
 import org.bukkit.plugin.Plugin;
 
 import java.sql.PreparedStatement;
@@ -19,26 +24,23 @@ import static net.redewhite.lvdataapi.DataAPI.*;
 import static net.redewhite.lvdataapi.types.VariablesType.*;
 
 @SuppressWarnings("unused")
-public class VariableCreator {
+public class VariableCreator extends Creator {
 
     private final TableCreator table;
 
-    private final Plugin plugin;
-    private final String name;
     private final Object defaultValue;
 
     private final VariablesType type;
 
     private final boolean saveToDatabase;
-    private boolean isSuccessfullyCreated = false;
+    private boolean isSuccessfullyCreated;
 
     public VariableCreator(Plugin plugin, String name, TableCreator table, Object defaultValue, Boolean saveToDatabase, VariablesType type, boolean messages) {
-        this.plugin = plugin;
+        super(plugin, name, CreatorType.VARIABLE_CREATOR);
+        Validate.notNull(table);
+
         this.table = table;
-        this.name = name;
-
         this.type = type;
-
         this.saveToDatabase = saveToDatabase;
 
         Object newValue;
@@ -67,48 +69,42 @@ public class VariableCreator {
 
         this.defaultValue = newValue;
 
-        if (name == null) throw new NullPointerException("variable name cannot be null");
-        if (table == null) throw new NullPointerException("variable table cannot be null");
-        if (plugin == null) plugin = INSTANCE;
-
         if (!table.isSuccessfullyCreated()) {
             throw new IllegalStateException("this table was not created correctly.");
         }
 
-        Utils.bG("variable", plugin, getBruteID());
-
+        isSuccessfullyCreated = true;
         for (VariableCreator variable : getVariables()) {
-            if (variable.getBruteID().equals(getBruteID())) {
+            if (variable.getBruteId().equals(getBruteId())) {
                 if (variable.getTable().equals(table)) {
-                    isSuccessfullyCreated = true;
                     return;
                 }
             }
         }
 
-        // Verify if the name contains illegal characters
-        if (Utils.iS("variable", plugin, name)) {
-            return;
-        }
-
+        Event event = new VariableLoadEvent(!Bukkit.isPrimaryThread(), this);
         if (this.saveToDatabase) {
-            String query = table.getDatabase().getConnectionType().getVariableCreationQuery(table.getBruteID(), getBruteID(), getVariableHashedValue(this.defaultValue), table.getDatabase().getBruteID());
+            String query = table.getDatabase().getConnectionType().getVariableCreationQuery(table.getBruteId(), getBruteId(), getVariableHashedValue(this.defaultValue), table.getDatabase().getBruteId());
             try (PreparedStatement pst = table.getDatabase().getConnection().prepareStatement(query)) {
                 pst.execute();
                 broadcastColoredMessage("&a" + type.getName() + "&2 '" + name + "' (" + plugin.getName() + ") &asuccessfully created.", messages);
+                event = new VariableCreateEvent(!Bukkit.isPrimaryThread(), this);
             } catch (SQLException e) {
                 if (e.getMessage().contains("uplicate column name")) {
                     broadcastColoredMessage("&a" + type.getName() + "&2 '" + name + "' (" + plugin.getName() + ") &asuccessfully loaded.", messages);
                 } else {
                     e.printStackTrace();
-                    broadcastColoredMessage("&cException trying to create " + type.getName().toLowerCase() + "&c: " + getBruteID() + " of table: " + table.getBruteID() + " (Database: " + table.getDatabase().getBruteID() + ", type: " + table.getDatabase().getConnectionType() + "), full query: \"§5" + query + "§c\"");
+                    broadcastColoredMessage("&cException trying to create " + type.getName().toLowerCase() + "&c: " + getBruteId() + " of table: " + table.getBruteId() + " (Database: " + table.getDatabase().getBruteId() + ", type: " + table.getDatabase().getConnectionType() + "), full query: \"§5" + query + "§c\"");
+                    isSuccessfullyCreated = false;
+                    return;
                 }
             }
         } else {
             broadcastColoredMessage(TEMPORARY.getName() + " &a" + type.getName() + "&2 '" + name + "' (" + plugin.getName() + ") &asuccessfully loaded.", messages);
         }
 
-        isSuccessfullyCreated = true;
+        Bukkit.getPluginManager().callEvent(event);
+
         table.getVariables().add(this);
         getVariables().add(this);
 
@@ -118,7 +114,7 @@ public class VariableCreator {
         }
 
         for (InactiveVariable var : new ArrayList<>(getInactiveVariables())) {
-            if (var.getTable() == table) if (var.getVariableBruteID().equals(getBruteID())) {
+            if (var.getTable() == table) if (var.getVariableBruteID().equals(getBruteId())) {
                 new ActiveVariable(this, getVariableReceptorByBruteID(var.getOwnerBruteID(), table), var.getValue());
                 getInactiveVariables().remove(var);
                 receptors.remove(getVariableReceptorByBruteID(var.getOwnerBruteID(), var.getTable()));
@@ -127,10 +123,10 @@ public class VariableCreator {
 
         for (ReceptorCreator receptor : receptors) {
             if (this.saveToDatabase) {
-                String query = receptor.getTable().getDatabase().getConnectionType().getSelectQuery("*", table.getBruteID(), "WHERE bruteid = '" + receptor.getBruteID() + "'", table.getDatabase().getBruteID());
+                String query = receptor.getTable().getDatabase().getConnectionType().getSelectQuery("*", table.getBruteId(), "WHERE bruteid = '" + receptor.getBruteId() + "'", table.getDatabase().getBruteId());
                 try (ResultSet result = table.getDatabase().createStatement().executeQuery(query)) {
                     while (result.next()) {
-                        new ActiveVariable(this, receptor, getVariableHashedValue(result.getObject(getBruteID())));
+                        new ActiveVariable(this, receptor, getVariableHashedValue(result.getObject(getBruteId())));
                     }
                 } catch (SQLException e) {
                     e.printStackTrace();
@@ -166,7 +162,7 @@ public class VariableCreator {
     public String getName() {
         return name;
     }
-    public String getBruteID() {
+    public String getBruteId() {
         return plugin.getName() + "_" + name;
     }
 }

@@ -1,4 +1,4 @@
-package net.redewhite.lvdataapi.developers.events.variables;
+package net.redewhite.lvdataapi.developers.events.variables.receptors;
 
 import net.redewhite.lvdataapi.receptors.ActiveVariable;
 import org.bukkit.event.Cancellable;

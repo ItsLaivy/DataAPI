@@ -48,7 +48,7 @@ public class Updater implements Runnable {
 
             if (!releases.get(0).equals(INSTANCE.getDescription().getVersion())) {
                 broadcastColoredMessage("&cA new version of &6LvDataAPI &cis already available.");
-                broadcastColoredMessage("&cDownload Link: &6https://github.com/LaivyTLife/DataAPI/releases/" + releases.get(0) + "/");
+                broadcastColoredMessage("&cDownload Link: &6https://github.com/ItsLaivy/DataAPI/releases/" + releases.get(0) + "/");
                 broadcastColoredMessage("&cNew version: &6" + releases.get(0) + "&c, Your version: &6" + INSTANCE.getDescription().getVersion() + "&c.");
 
                 updateAvailable = releases.get(0);

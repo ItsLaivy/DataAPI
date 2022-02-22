@@ -1,5 +1,6 @@
 package net.redewhite.lvdataapi.modules;
 
+import com.sun.istack.internal.Nullable;
 import net.redewhite.lvdataapi.developers.API;
 import net.redewhite.lvdataapi.developers.events.receptors.ReceptorDeleteEvent;
 import net.redewhite.lvdataapi.developers.events.receptors.ReceptorLoadEvent;
@@ -8,6 +9,7 @@ import net.redewhite.lvdataapi.developers.events.receptors.ReceptorUnloadEvent;
 import net.redewhite.lvdataapi.receptors.InactiveVariable;
 import net.redewhite.lvdataapi.receptors.ActiveVariable;
 import net.redewhite.lvdataapi.DataAPI;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.IllegalPluginAccessException;
 import org.bukkit.plugin.Plugin;
@@ -23,12 +25,9 @@ import static net.redewhite.lvdataapi.DataAPI.*;
 import static net.redewhite.lvdataapi.developers.API.getVariableFromReceptor;
 
 @SuppressWarnings("unused")
-public class ReceptorCreator {
+public class ReceptorCreator extends Creator {
 
     private final TableCreator table;
-    private final Plugin plugin;
-    private final String name;
-    private final String bruteID;
 
     private boolean isAlreadyLoaded = false;
     private boolean autoSaveOnServerClose = true;
@@ -37,19 +36,17 @@ public class ReceptorCreator {
 
     private List<ActiveVariable> variables = new ArrayList<>();
 
-    public ReceptorCreator(Plugin plugin, String name, String bruteID, TableCreator table) {
-        this.plugin = plugin;
+    public ReceptorCreator(Plugin plugin, @Nullable String name, String bruteId, TableCreator table) {
+        super(plugin, name, CreatorType.RECEPTOR_CREATOR, bruteId);
+        
+        Validate.notNull(table);
         this.table = table;
-        this.bruteID = bruteID;
 
-        if (name == null) throw new NullPointerException("variable name cannot be null");
-        if (table == null) throw new NullPointerException("variable table cannot be null");
+        Validate.notNull(table);
         if (plugin == null) plugin = INSTANCE;
-
-        Utils.bG("receptor", plugin, getBruteID());
-
-        if (API.isVariableReceptorLoaded(plugin, bruteID, table)) {
-            ReceptorCreator p = API.getVariableReceptor(plugin, bruteID, table);
+        
+        if (API.isVariableReceptorLoaded(plugin, getBruteId(), table)) {
+            ReceptorCreator p = API.getVariableReceptor(plugin, getBruteId(), table);
 
             variables = p.variables;
             autoSaveOnServerClose = p.autoSaveOnServerClose;
@@ -70,8 +67,8 @@ public class ReceptorCreator {
             }
         }
 
-        String query = table.getDatabase().getConnectionType().getInsertQuery(table.getBruteID(), name, getBruteID(), table.getDatabase().getBruteID());
-        String query2 = table.getDatabase().getConnectionType().getSelectQuery("id", table.getBruteID(), "WHERE bruteid = '" + bruteID + "'", table.getDatabase().getBruteID());
+        String query = table.getDatabase().getConnectionType().getInsertQuery(table.getBruteId(), name, getBruteId(), table.getDatabase().getBruteId());
+        String query2 = table.getDatabase().getConnectionType().getSelectQuery("id", table.getBruteId(), "WHERE bruteid = '" + getBruteId() + "'", table.getDatabase().getBruteId());
         try {
             try (ResultSet result2 = table.getDatabase().createStatement().executeQuery(query2)) {
                 if (!result2.next()) {
@@ -80,13 +77,13 @@ public class ReceptorCreator {
                     }
                 }
 
-                query = table.getDatabase().getConnectionType().getSelectQuery("*", table.getBruteID(),  "WHERE bruteid = '" + bruteID + "'", table.getDatabase().getBruteID());
+                query = table.getDatabase().getConnectionType().getSelectQuery("*", table.getBruteId(),  "WHERE bruteid = '" + getBruteId() + "'", table.getDatabase().getBruteId());
                 try (ResultSet result = table.getDatabase().createStatement().executeQuery(query)) {
                     if (result.next()) {
                         ResultSetMetaData rmtd = result.getMetaData();
                         for (int row = 1; row <= rmtd.getColumnCount(); row++) {
                             if (row > 4) {
-                                new InactiveVariable(bruteID, rmtd.getColumnName(row), table, result.getObject(row));
+                                new InactiveVariable(getBruteId(), rmtd.getColumnName(row), table, result.getObject(row));
                             }
                         }
                     }
@@ -97,21 +94,11 @@ public class ReceptorCreator {
             getReceptors().remove(this);
         }
 
-        ReceptorLoadEvent event = new ReceptorLoadEvent(!Bukkit.isPrimaryThread(), this);
-        Bukkit.getPluginManager().callEvent(event);
+        Bukkit.getPluginManager().callEvent(new ReceptorLoadEvent(!Bukkit.isPrimaryThread(), this));
     }
 
     public TableCreator getTable() {
         return table;
-    }
-    public Plugin getPlugin() {
-        return plugin;
-    }
-    public String getName() {
-        return name;
-    }
-    public String getBruteID() {
-        return bruteID;
     }
 
     public List<ActiveVariable> getVariables() {
@@ -132,9 +119,9 @@ public class ReceptorCreator {
     }
 
     public boolean hasLoadedBefore() {
-        return getVariableValue("hasLoadedBefore").asBoolean();
+        return getTimesLoaded() >= 2;
     }
-    public long timesLoaded() {
+    public long getTimesLoaded() {
         return getVariableValue("timesLoaded").asLong();
     }
     public void deleteIfHasntLoadedBefore() {
@@ -149,12 +136,12 @@ public class ReceptorCreator {
 
         for (ActiveVariable var : variables) {
             if (var.getVariable().isSaveToDatabase()) {
-                query.append(var.getVariable().getBruteID()).append(" = '").append(getVariableHashedValue(var.getValue())).append("',");
+                query.append(var.getVariable().getBruteId()).append(" = '").append(getVariableHashedValue(var.getValue())).append("',");
             }
         }
 
         query.append("last_update = '").append(getDate()).append("'");
-        String fQuery = table.getDatabase().getConnectionType().getUpdateQuery(table.getBruteID(), query.toString(), getBruteID(), table.getDatabase().getBruteID());
+        String fQuery = table.getDatabase().getConnectionType().getUpdateQuery(table.getBruteId(), query.toString(), getBruteId(), table.getDatabase().getBruteId());
         table.getDatabase().executeQuery(fQuery);
 
         try {
@@ -186,7 +173,7 @@ public class ReceptorCreator {
 
         getReceptors().remove(thisReceptor);
 
-        getInactiveVariables().removeIf(in -> in.getOwnerBruteID().equals(bruteID));
+        getInactiveVariables().removeIf(in -> in.getOwnerBruteID().equals(getBruteId()));
         getActiveVariables().removeIf(ac -> ac.getReceptor() == thisReceptor);
     }
 
@@ -201,7 +188,7 @@ public class ReceptorCreator {
             return;
         }
 
-        try (PreparedStatement pst = table.getDatabase().getConnection().prepareStatement("DELETE FROM '" + table.getBruteID() +  "' WHERE bruteid = '" + bruteID + "';")) {
+        try (PreparedStatement pst = table.getDatabase().getConnection().prepareStatement("DELETE FROM '" + table.getBruteId() +  "' WHERE bruteid = '" + getBruteId() + "';")) {
             pst.execute();
             unload(save);
         } catch (SQLException e) {
@@ -212,7 +199,9 @@ public class ReceptorCreator {
     public boolean autoSaveWhenServerClose() {
         return autoSaveOnServerClose;
     }
-
+    public boolean isNew() {
+        return getTimesLoaded() == 1;
+    }
     public void setAutoSaveWhenServerClose(boolean aswsc) {
         thisReceptor.autoSaveOnServerClose = aswsc;
     }

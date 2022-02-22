@@ -7,6 +7,8 @@ import org.bukkit.plugin.Plugin;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static net.redewhite.lvdataapi.DataAPI.*;
 
@@ -15,7 +17,7 @@ public class API {
 
     public static ReceptorCreator getVariableReceptor(Plugin plugin, String bruteID, TableCreator table) {
         for (ReceptorCreator receptor : getReceptors()) {
-            if (receptor.getTable() == table && receptor.getPlugin() == plugin && receptor.getBruteID().equals(bruteID)) {
+            if (receptor.getTable() == table && receptor.getPlugin() == plugin && receptor.getBruteId().equals(bruteID)) {
                 return receptor;
             }
         }
@@ -51,7 +53,7 @@ public class API {
 
     public static boolean isVariableLoaded(Plugin plugin, String name, TableCreator table) {
         for (VariableCreator variable : getVariables()) {
-            if (variable.getBruteID().equals(plugin.getName() + "_" + name)) {
+            if (variable.getBruteId().equals(plugin.getName() + "_" + name)) {
                 return true;
             }
         }
@@ -63,7 +65,7 @@ public class API {
 
     public static ReceptorCreator getVariableReceptorByBruteID(String bruteID, TableCreator table) {
         for (ReceptorCreator receptor : getReceptors()) {
-            if (receptor.getTable() == table && receptor.getBruteID().equals(bruteID)) {
+            if (receptor.getTable() == table && receptor.getBruteId().equals(bruteID)) {
                 return receptor;
             }
         }
@@ -81,7 +83,7 @@ public class API {
                 return var;
             }
         }
-        throw new NullPointerException("Couldn't find any variable with this parameters (Plugin: " + plugin +  ", Name: " + name + ", Receptor (BruteID): " + receptor.getBruteID() + ")");
+        throw new NullPointerException("Couldn't find any variable with this parameters (Plugin: " + plugin +  ", Name: " + name + ", Receptor (BruteID): " + receptor.getBruteId() + ")");
     }
 
     public static VariableValue getVariableValue(Plugin plugin, String name, ReceptorCreator receptor) {
@@ -149,17 +151,22 @@ public class API {
         return isVariableValueNull(name, getVariableReceptorByBruteID(player.getUniqueId().toString(), table));
     }
 
-    public static int getValuesAmountInTable(TableCreator table) {
-        String query = table.getDatabase().getConnectionType().getSelectQuery("*", table.getBruteID(), "", table.getDatabase().getBruteID());
-        int returnValue = 0;
+    public static List<String> getAllValuesInTable(TableCreator table) {
+        List<String> list = new ArrayList<>();
 
+        String query = table.getDatabase().getConnectionType().getSelectQuery("*", table.getBruteId(), "", table.getDatabase().getBruteId());
         try (ResultSet result2 = table.getDatabase().createStatement().executeQuery(query)) {
-            while (result2.next()) returnValue++;
+            while (result2.next()) {
+                list.add(result2.getString("bruteid"));
+            }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
 
-        return returnValue;
+        return list;
+    }
+    public static long getValuesAmountInTable(TableCreator table) {
+        return getAllValuesInTable(table).size();
     }
 
     public static TableCreator getDefaultTable(Database database) {
@@ -174,7 +181,7 @@ public class API {
     }
     public static TableCreator getTable(Plugin plugin, Database database, String name) {
         for (TableCreator table : getTables()) {
-            if (table.getDatabase().getBruteID().equals(database.getBruteID())) {
+            if (table.getDatabase().getBruteId().equals(database.getBruteId())) {
                 if (table.getName().equals(name)) {
                     if (table.getPlugin() == plugin) {
                         return table;

@@ -13,7 +13,7 @@ public class GeneralCommands implements CommandExecutor {
             sender.sendMessage("§7DataAPI's version: §f" + DataAPI.INSTANCE.getDescription().getVersion());
 
             if (Updater.hasNewVersion()) {
-                sender.sendMessage("§7A new version has released §f" + Updater.getNewVersion() + "§7. Download here: §ahttps://github.com/LaivyTLife/DataAPI/releases/" + Updater.getNewVersion() + "/");
+                sender.sendMessage("§7A new version has released §f" + Updater.getNewVersion() + "§7. Download here: §ahttps://github.com/ItsLaivy/DataAPI/releases/" + Updater.getNewVersion() + "/");
             }
         }
 

@@ -1,14 +1,16 @@
 package net.redewhite.lvdataapi.modules;
 
-import net.redewhite.lvdataapi.developers.events.variables.ActiveVariableValueChangeEvent;
+import net.redewhite.lvdataapi.developers.events.variables.receptors.ActiveVariableValueChangeEvent;
 import net.redewhite.lvdataapi.receptors.ActiveVariable;
 import net.redewhite.lvdataapi.types.VariablesType;
 import net.redewhite.lvdataapi.types.variables.Pair;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 
 import java.util.*;
 
 import static net.redewhite.lvdataapi.DataAPI.getVariableHashedValue;
+import static net.redewhite.lvdataapi.DataAPI.getVariableUnhashedValue;
 import static net.redewhite.lvdataapi.types.VariablesType.*;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
@@ -23,43 +25,25 @@ public class VariableValue {
         this.t = variable.getVariable().getType();
     }
 
-    public void removeMapValue(String key) {
-        if (t == MAP) {
-            if (c(key, null)) {
-                return;
-            }
-
-            Map<String, String> map = asMap();
-            map.remove(key);
-
-            variable.setValue(replaceMapVariable(map));
-        } else {
-            throw new IllegalStateException("The variable needs to be a MapVariable");
-        }
+    public VariableValue removeMapValue(String key) {
+        return put(key, null);
     }
-    public void addValue(String key, String value) {
-        if (t == MAP) {
-            if (c(key, value)) {
-                return;
-            }
+    public VariableValue put(String key, Object value) {
+        Validate.notNull(key, "Key cannot be null");
 
-            Map<String, String> map = asMap();
-            map.put(getVariableHashedValue(key), getVariableHashedValue(value));
-
-            variable.setValue(replaceMapVariable(map));
-        } else {
-            throw new IllegalStateException("The variable needs to be a MapVariable");
-        }
-    }
-    public void setValue(String key, String value) {
         if (t == MAP || t == PAIR) {
             if (c(key, value)) {
-                return;
+                return this;
             }
 
             if (t == MAP) {
-                Map<String, String> map = new HashMap<>();
-                map.put(getVariableHashedValue(key), getVariableHashedValue(value));
+                Map<String, String> map = asMapHashed();
+
+                if (value == null) {
+                    map.remove(getVariableHashedValue(key));
+                } else {
+                    map.put(getVariableHashedValue(key), getVariableHashedValue(value));
+                }
 
                 variable.setValue(replaceMapVariable(map));
             } else {
@@ -69,11 +53,16 @@ public class VariableValue {
         } else {
             throw new IllegalStateException("The variable needs to be a MapVariable or a PairVariable");
         }
+
+        return this;
+    }
+    public VariableValue setValue(String key, Object value) {
+        return put(key, value);
     }
 
-    public void setValue(Object value) {
+    public VariableValue setValue(Object value) {
         if (c(null, value)) {
-            return;
+            return this;
         }
 
         if (value instanceof Map || value instanceof Pair) {
@@ -97,19 +86,21 @@ public class VariableValue {
             }
         }
 
-        if (getVariableHashedValue(variable.getValue()).equals(newValue)) return;
+        if (getVariableHashedValue(variable.getValue()).equals(newValue)) return this;
         variable.setValue(newValue);
+
+        return this;
     }
-    public void removeValue(Object value) {
+    public VariableValue removeValue(Object value) {
         if (c(null, value)) {
-            return;
+            return this;
         }
 
-        if (value == null) return;
+        if (value == null) return this;
 
         if (variable.getValue() == null) {
             variable.setValue(value);
-            return;
+            return this;
         }
 
         if (t == MAP) {
@@ -166,17 +157,19 @@ public class VariableValue {
 
             variable.setValue(num1 - num2);
         }
+
+        return this;
     }
-    public void addValue(Object value) {
+    public VariableValue addValue(Object value) {
         if (c(null, value)) {
-            return;
+            return this;
         }
 
-        if (value == null) return;
+        if (value == null) return this;
 
         if (variable.getValue() == null) {
             variable.setValue(value);
-            return;
+            return this;
         }
 
         if (value instanceof Map) {
@@ -207,6 +200,8 @@ public class VariableValue {
 
             variable.setValue(num1 + num2);
         }
+
+        return this;
     }
     private boolean c(String key, Object value) {
         ActiveVariableValueChangeEvent event;
@@ -216,6 +211,33 @@ public class VariableValue {
 
         return event.isCancelled();
     }
+
+    public String getByKeyAsString(String key) {
+        mapCheck(key);
+        return asMap().get(key);
+    }
+    public Integer getByKeyAsInt(String key) {
+        mapCheck(key);
+        return Integer.parseInt(asMap().get(key));
+    }
+    public Long getByKeyAsLong(String key) {
+        mapCheck(key);
+        return Long.parseLong(asMap().get(key));
+    }
+    public Double getByKeyAsDouble(String key) {
+        mapCheck(key);
+        return Double.parseDouble(asMap().get(key));
+    }
+    private void mapCheck(String key) {
+        if (t != MAP) {
+            throw new IllegalStateException("To use that method the variable type needs to be map");
+        }
+
+        if (!asMap().containsKey(key)) {
+            throw new NullPointerException("This map doesn't contains that key");
+        }
+    }
+
 
     public String asString() {
         if (value() == null) return null;
@@ -228,7 +250,8 @@ public class VariableValue {
         String[] split = value().toString().split("<PAIRSPLIT!>");
         return new Pair<>(split[0], split[1]);
     }
-    public Map<String, String> asMap() {
+
+    private Map<String, String> asMapHashed() {
         if (value() == null) return new HashMap<>();
 
         Map<String, String> map = new HashMap<>();
@@ -236,6 +259,19 @@ public class VariableValue {
             String[] split = e.split("<MAPSPLIT!>");
             if (split.length == 2) {
                 map.put(split[0], split[1]);
+            }
+        }
+
+        return map;
+    }
+    public Map<String, String> asMap() {
+        if (value() == null) return new HashMap<>();
+
+        Map<String, String> map = new HashMap<>();
+        for (String e : value().toString().split("<SPLIT!>")) {
+            String[] split = e.split("<MAPSPLIT!>");
+            if (split.length == 2) {
+                map.put(getVariableUnhashedValue(split[0]), getVariableUnhashedValue(split[1]));
             }
         }
 
