@@ -18,17 +18,18 @@
 </h3>
 
 ```java
-new SQLiteDatabase();
+new SQLiteDatabase(); // Usa o nome padrão e o plugin do DataAPI
 new SQLiteDatabase(String name);
 new SQLiteDatabase(String name, String path);
-new SQLiteDatabase(Plugin plugin, String name);
+new SQLiteDatabase(String name, String path, boolean messages);
 new SQLiteDatabase(Plugin plugin, String name, String path);
+new SQLiteDatabase(Plugin plugin, String name, String path, boolean messages);
 ```
 
 <p align="center">Exemplo de uso</p>
 
 ```java
-SQLiteDatabase database = new SQLiteDatabase("Nome");
+SQLiteDatabase database = new SQLiteDatabase("nome");
 Table tabela = new Table(database);
 ```
 
@@ -48,16 +49,17 @@ Table tabela = new Table(database);
 </h3>
 
 ```java
-new MySQLDatabase(String address, Integer port, String user, String password);
-new MySQLDatabase(String name, String address, Integer port, String user, String password);
-new MySQLDatabase(Plugin plugin, String name, String address, Integer port, String user, String password);
+new MySQLDatabase(String user, String password, Integer port, String address);
+new MySQLDatabase(String name, String user, String password, Integer port, String address);
+new MySQLDatabase(String name, String user, String password, Integer port, String address, boolean messages);
+new MySQLDatabase(Plugin plugin, String name, String user, String password, Integer port, String address);
+new MySQLDatabase(Plugin plugin, String name, String user, String password, Integer port, String address, boolean messages);
 ```
 
 
 <p align="center">Exemplo de uso</p>
 
 ```java
-// Observação: Porta null = 3306
-MySQLDatabase database = new MySQLDatabase("localhost", null, "root", "senha");
+MySQLDatabase database = new MySQLDatabase("root", "senha", 3306, "localhost");
 Table tabela = new Table(database);
 ```

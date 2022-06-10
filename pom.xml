@@ -4,9 +4,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>net.redewhite</groupId>
-    <artifactId>LvDataAPI</artifactId>
-    <version>3.0</version>
+    <groupId>codes.laivy</groupId>
+    <artifactId>DataAPI</artifactId>
+    <version>4.0</version>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+    </properties>
 
     <repositories>
         <repository>
@@ -24,8 +29,4 @@
         </dependency>
     </dependencies>
 
-    <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-    </properties>
 </project>

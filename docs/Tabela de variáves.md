@@ -9,7 +9,7 @@
 </h2>
 
 <p align="center">
- Após esse, é necessários aprender sobre receptores ([clique](https://github.com/LaivyTLife/DataAPI/edit/updates/docs/Receptores%20de%20variáveis.md)).
+ Após esse, é necessários aprender sobre receptores ([clique](https://github.com/ItsLaivy/DataAPI/edit/updates/docs/Receptores%20de%20variáveis.md)).
 </p><br>
 
 <h2 align="center">
@@ -18,9 +18,9 @@
 <p align="center">Para criar uma tabela de variáveis, utilize o método</p>
 
 ```java
-new Table(DatabaseCreationModule database);
-new Table(String name, DatabaseCreationModule database);
-new Table(Plugin plugin, String name, DatabaseCreationModule database);
+new Table(Database database);
+new Table(String name, Database database);
+new Table(Plugin plugin, String name, Database database);
 ```
 
 <p align="center">Exemplo</p>

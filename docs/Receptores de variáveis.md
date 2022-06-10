@@ -10,36 +10,19 @@
 <p align="center">Para criar um receptor de variáveis, utilize o método</p>
 
 ```java
+new Receptor(OfflinePlayer player, Table table);
+new Receptor(String name, String bruteId, Table table);
 new Receptor(Plugin plugin, String name, String bruteId, Table table);
-// ou
-new Receptor(Plugin plugin, Player player, Table table);
 ```
 
 <p align="center">Exemplo</p>
 
 ```java
-Table tablePlayers = new Table(this, "players_data");
-
-new Receptor(this, player, tablePlayers);
+new Receptor(player, tablePlayers);
 new Receptor(this, "textName", "textBruteId", tablePlayers);
-
-new Variable(this, "coins", tablePlayers, 0);
 ```
 
 <h2 align="center">
    Observe
 </h3>
-<p align="center">O parâmetro "bruteId" pode ser o UUID de um jogador, ou identificador de um receptor não-jogador, você usará o bruteId para pegar aquele receptor no banco de dados. </p>
-
-```java
-getVariableReceptor(Plugin plugin, String bruteid, Table table);
-// ou
-getVariableReceptor(Plugin plugin, Player player, Table table);
-```
-<p align="center">Exemplo</p>
-
-```java
-Bukkit.broadcastMessage(getVariableValue("coins", getVariableReceptor(plugin, player, tablePlayers)).toString());
-// Também funciona:
-Bukkit.broadcastMessage(getVariableValue("coins", getVariableReceptor(plugin, player.getUniqueId.toString(), tablePlayers)).toString());
-```
+<p align="center">O parâmetro "bruteId" pode ser o UUID de um jogador, ou identificador de um receptor não-jogador, você usará o bruteId para pegar aquele receptor no banco de dados.</p>
