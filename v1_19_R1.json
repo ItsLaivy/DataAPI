@@ -1,0 +1,490 @@
+{
+  "VERSION_CODE":19,
+
+  "PROFILE_PUBLIC_KEY":"net.minecraft.world.entity.player.ProfilePublicKey",
+
+  "ENTITY_CREEPER":"net.minecraft.world.entity.monster.EntityCreeper",
+  "ENTITY_CREEPER_TYPES_FIELD":"q",
+
+  "ENTITY_COW":"net.minecraft.world.entity.animal.EntityCow",
+  "ENTITY_COW_TYPES_FIELD":"p",
+  "ENTITY_MUSHROOM_COW":"net.minecraft.world.entity.animal.EntityMushroomCow",
+  "ENTITY_MUSHROOM_COW_TYPES_FIELD":"ak",
+
+  "ENTITY_DOLPHIN":"net.minecraft.world.entity.animal.EntityDolphin",
+  "ENTITY_DOLPHIN_TYPES_FIELD":"r",
+
+  "ENTITY_ENDER_SIGNAL":"net.minecraft.world.entity.projectile.EntityEnderSignal",
+  "ENTITY_ENDER_SIGNAL_TYPES_FIELD":"D",
+  "ENTITY_ENDER_CRYSTAL":"net.minecraft.world.entity.boss.enderdragon.EntityEnderCrystal",
+  "ENTITY_ENDER_CRYSTAL_TYPES_FIELD":"w",
+  "ENTITY_ENDER_DRAGON":"net.minecraft.world.entity.boss.enderdragon.EntityEnderDragon",
+  "ENTITY_ENDER_DRAGON_TYPES_FIELD":"X",
+
+  "ENTITY_ENDERMAN":"net.minecraft.world.entity.monster.EntityEnderman",
+  "ENTITY_ENDERMAN_TYPES_FIELD":"y",
+  "ENTITY_ENDERMITE":"net.minecraft.world.entity.monster.EntityEndermite",
+  "ENTITY_ENDERMITE_TYPES_FIELD":"z",
+
+  "ENTITY_EVOKER":"net.minecraft.world.entity.monster.EntityEvoker",
+  "ENTITY_EVOKER_TYPES_FIELD":"A",
+
+  "ENTITY_EVOKER_FANGS":"net.minecraft.world.entity.projectile.EntityEvokerFangs",
+  "ENTITY_EVOKER_FANGS_TYPES_FIELD":"B",
+
+  "ENTITY_EXPERIENCE_ORB":"net.minecraft.world.entity.EntityExperienceOrb",
+  "ENTITY_EXPERIENCE_ORB_TYPES_FIELD":"C",
+
+  "ENTITY_FALLING_BLOCK":"net.minecraft.world.entity.item.EntityFallingBlock",
+  "ENTITY_FALLING_BLOCK_TYPES_FIELD":"E",
+
+  "ENTITY_FIREWORKS":"net.minecraft.world.entity.projectile.EntityFireworks",
+  "ENTITY_FIREWORKS_TYPES_FIELD":"F",
+
+  "ENTITY_FOX":"net.minecraft.world.entity.animal.EntityFox",
+  "ENTITY_FOX_TYPES_FIELD":"G",
+
+  "ENTITY_FROG":"net.minecraft.world.entity.animal.frog.Frog",
+  "ENTITY_FROG_TYPES_FIELD":"H",
+
+  "ENTITY_GHAST":"net.minecraft.world.entity.monster.EntityGhast",
+  "ENTITY_GHAST_TYPES_FIELD":"I",
+
+  "ENTITY_GOAT":"net.minecraft.world.entity.animal.goat.Goat",
+  "ENTITY_GOAT_TYPES_FIELD":"M",
+
+  "ENTITY_GUARDIAN":"net.minecraft.world.entity.monster.EntityGuardian",
+  "ENTITY_GUARDIAN_TYPES_FIELD":"N",
+  "ENTITY_GUARDIAN_ELDER":"net.minecraft.world.entity.monster.EntityGuardianElder",
+  "ENTITY_GUARDIAN_ELDER_TYPES_FIELD":"v",
+
+  "ENTITY_HOGLIN":"net.minecraft.world.entity.monster.hoglin.EntityHoglin",
+  "ENTITY_HOGLIN_TYPES_FIELD":"O",
+
+  "ENTITY_ILLAGER_ILLUSIONER":"net.minecraft.world.entity.monster.EntityIllagerIllusioner",
+  "ENTITY_ILLAGER_ILLUSIONER_TYPES_FIELD":"R",
+
+  "ENTITY_IRON_GOLEM":"net.minecraft.world.entity.animal.EntityIronGolem",
+  "ENTITY_IRON_GOLEM_TYPES_FIELD":"S",
+
+  "ENTITY_ITEM":"net.minecraft.world.entity.item.EntityItem",
+  "ENTITY_ITEM_TYPES_FIELD":"T",
+
+  "ENTITY_ITEM_FRAME":"net.minecraft.world.entity.decoration.EntityItemFrame",
+  "ENTITY_ITEM_FRAME_TYPES_FIELD":"U",
+  "ENTITY_GLOW_ITEM_FRAME":"net.minecraft.world.entity.decoration.GlowItemFrame",
+  "ENTITY_GLOW_ITEM_FRAME_TYPES_FIELD":"K",
+
+  "ENTITY_LEASH":"net.minecraft.world.entity.decoration.EntityLeash",
+  "ENTITY_LEASH_TYPES_FIELD":"W",
+
+  "ENTITY_LIGHTNING":"net.minecraft.world.entity.decoration.EntityLeash",
+  "ENTITY_LIGHTNING_TYPES_FIELD":"X",
+
+  "ENTITY_MINECART_RIDEABLE":"net.minecraft.world.entity.vehicle.EntityMinecartRideable",
+  "ENTITY_MINECART_RIDEABLE_TYPES_FIELD":"ac",
+  "ENTITY_MINECART_CHEST":"net.minecraft.world.entity.vehicle.EntityMinecartChest",
+  "ENTITY_MINECART_CHEST_TYPES_FIELD":"AD",
+  "ENTITY_MINECART_COMMAND_BLOCK":"net.minecraft.world.entity.vehicle.EntityMinecartCommandBlock",
+  "ENTITY_MINECART_COMMAND_BLOCK_TYPES_FIELD":"AE",
+  "ENTITY_MINECART_FURNACE":"net.minecraft.world.entity.vehicle.EntityMinecartFurnace",
+  "ENTITY_MINECART_FURNACE_TYPES_FIELD":"af",
+  "ENTITY_MINECART_HOPPER":"net.minecraft.world.entity.vehicle.EntityMinecartHopper",
+  "ENTITY_MINECART_HOPPER_TYPES_FIELD":"ag",
+  "ENTITY_MINECART_MOB_SPAWNER":"net.minecraft.world.entity.vehicle.EntityMinecartMobSpawner",
+  "ENTITY_MINECART_MOB_SPAWNER_TYPES_FIELD":"ah",
+  "ENTITY_MINECART_TNT":"net.minecraft.world.entity.vehicle.EntityMinecartTNT",
+  "ENTITY_MINECART_TNT_TYPES_FIELD":"ai",
+
+  "ENTITY_OCELOT":"net.minecraft.world.entity.animal.EntityOcelot",
+  "ENTITY_OCELOT_TYPES_FIELD":"al",
+
+  "ENTITY_PAINTING":"net.minecraft.world.entity.decoration.EntityPainting",
+  "ENTITY_PAINTING_TYPES_FIELD":"am",
+
+  "ENTITY_PANDA":"net.minecraft.world.entity.animal.EntityPanda",
+  "ENTITY_PANDA_TYPES_FIELD":"an",
+
+  "ENTITY_PHANTOM":"net.minecraft.world.entity.monster.EntityPhantom",
+  "ENTITY_PHANTOM_TYPES_FIELD":"ap",
+
+  "ENTITY_PIG":"net.minecraft.world.entity.animal.EntityPig",
+  "ENTITY_PIG_TYPES_FIELD":"aq",
+
+  "ENTITY_PIGLIN":"net.minecraft.world.entity.monster.piglin.EntityPiglin",
+  "ENTITY_PIGLIN_TYPES_FIELD":"ar",
+
+  "ENTITY_PIGLIN_BRUTE":"net.minecraft.world.entity.monster.piglin.EntityPiglinBrute",
+  "ENTITY_PIGLIN_BRUTE_TYPES_FIELD":"AS",
+
+  "ENTITY_PILLAGER":"net.minecraft.world.entity.monster.EntityPillager",
+  "ENTITY_PILLAGER_TYPES_FIELD":"at",
+
+  "ENTITY_POLAR_BEAR":"net.minecraft.world.entity.animal.EntityPolarBear",
+  "ENTITY_POLAR_BEAR_TYPES_FIELD":"au",
+
+  "ENTITY_TNT_PRIMED":"net.minecraft.world.entity.item.EntityTNTPrimed",
+  "ENTITY_TNT_PRIMED_TYPES_FIELD":"av",
+
+  "ENTITY_RABBIT":"net.minecraft.world.entity.animal.EntityRabbit",
+  "ENTITY_RABBIT_TYPES_FIELD":"ax",
+
+  "ENTITY_RAVAGER":"net.minecraft.world.entity.monster.EntityRavager",
+  "ENTITY_RAVAGER_TYPES_FIELD":"ay",
+
+  "ENTITY_SHEEP":"net.minecraft.world.entity.animal.EntitySheep",
+  "ENTITY_SHEEP_TYPES_FIELD":"aA",
+
+  "ENTITY_SHULKER":"net.minecraft.world.entity.monster.EntityShulker",
+  "ENTITY_SHULKER_TYPES_FIELD":"aB",
+  "ENTITY_SHULKER_BULLET":"net.minecraft.world.entity.projectile.EntityShulkerBullet",
+  "ENTITY_SHULKER_BULLET_TYPES_FIELD":"aC",
+
+  "ENTITY_SILVERFISH":"net.minecraft.world.entity.monster.EntitySilverfish",
+  "ENTITY_SILVERFISH_TYPES_FIELD":"aD",
+
+  "ENTITY_SALMON_FISH":"net.minecraft.world.entity.animal.EntitySalmon",
+  "ENTITY_SALMON_FISH_TYPES_FIELD":"az",
+  "ENTITY_PUFFER_FISH":"net.minecraft.world.entity.animal.EntityPufferFish",
+  "ENTITY_PUFFER_FISH_TYPES_FIELD":"aw",
+  "ENTITY_TROPICAL_FISH":"net.minecraft.world.entity.animal.EntityTropicalFish",
+  "ENTITY_TROPICAL_FISH_TYPES_FIELD":"aW",
+  "ENTITY_COD_FISH":"net.minecraft.world.entity.animal.EntityCod",
+  "ENTITY_COD_FISH_TYPES_FIELD":"o",
+  "ENTITY_FISHING_HOOK":"net.minecraft.world.entity.projectile.EntityFishingHook",
+  "ENTITY_FISHING_HOOK_TYPES_FIELD":"ba",
+
+  "ENTITY_SLIME":"net.minecraft.world.entity.monster.EntitySlime",
+  "ENTITY_SLIME_TYPES_FIELD":"aG",
+  "ENTITY_MAGMA_CUBE":"net.minecraft.world.entity.monster.EntityMagmaCube",
+  "ENTITY_MAGMA_CUBE_TYPES_FIELD":"aa",
+
+  "ENTITY_SMALL_FIREBALL":"net.minecraft.world.entity.projectile.EntitySmallFireball",
+  "ENTITY_SMALL_FIREBALL_TYPES_FIELD":"aH",
+  "ENTITY_SNOWBALL":"net.minecraft.world.entity.projectile.EntitySnowball",
+  "ENTITY_SNOWBALL_TYPES_FIELD":"aJ",
+  "ENTITY_SPECTRAL_ARROW":"net.minecraft.world.entity.projectile.EntitySpectralArrow",
+  "ENTITY_SPECTRAL_ARROW_TYPES_FIELD":"aK",
+  "ENTITY_LARGE_FIREBALL":"net.minecraft.world.entity.projectile.EntityLargeFireball",
+  "ENTITY_LARGE_FIREBALL_TYPES_FIELD":"V",
+  "ENTITY_DRAGON_FIREBALL":"net.minecraft.world.entity.projectile.EntityDragonFireball",
+  "ENTITY_DRAGON_FIREBALL_TYPES_FIELD":"t",
+
+  "ENTITY_SNOWMAN":"net.minecraft.world.entity.animal.EntitySnowman",
+  "ENTITY_SNOWMAN_TYPES_FIELD":"aI",
+
+  "ENTITY_SPIDER":"net.minecraft.world.entity.monster.EntitySpider",
+  "ENTITY_SPIDER_TYPES_FIELD":"aL",
+  "ENTITY_CAVE_SPIDER":"net.minecraft.world.entity.monster.EntityCaveSpider",
+  "ENTITY_CAVE_SPIDER_TYPES_FIELD":"m",
+
+  "ENTITY_SQUID":"net.minecraft.world.entity.animal.EntitySquid",
+  "ENTITY_SQUID_TYPES_FIELD":"aM",
+  "ENTITY_GLOW_SQUID":"net.minecraft.world.entity.GlowSquid",
+  "ENTITY_GLOW_SQUID_TYPES_FIELD":"L",
+
+  "ENTITY_STRIDER":"net.minecraft.world.entity.monster.EntityStrider",
+  "ENTITY_STRIDER_TYPES_FIELD":"aO",
+
+  "ENTITY_TADPOLE":"net.minecraft.world.entity.animal.frog.Tadpole",
+  "ENTITY_TADPOLE_TYPES_FIELD":"aP",
+
+  "ENTITY_EGG":"net.minecraft.world.entity.projectile.EntityEgg",
+  "ENTITY_EGG_TYPES_FIELD":"aQ",
+
+  "ENTITY_ENDER_PEARL":"net.minecraft.world.entity.projectile.EntityEnderPearl",
+  "ENTITY_ENDER_PEARL_TYPES_FIELD":"aR",
+
+  "ENTITY_THROWN_EXPERIENCE_BOTTLE":"net.minecraft.world.entity.projectile.EntityThrownExpBottle",
+  "ENTITY_THROWN_EXPERIENCE_BOTTLE_TYPES_FIELD":"aS",
+
+  "ENTITY_POTION":"net.minecraft.world.entity.projectile.EntityPotion",
+  "ENTITY_POTION_TYPES_FIELD":"aT",
+
+  "ENTITY_THROWN_TRIDENT":"net.minecraft.world.entity.projectile.EntityThrownTrident",
+  "ENTITY_THROWN_TRIDENT_TYPES_FIELD":"aU",
+
+  "ENTITY_TURTLE":"net.minecraft.world.entity.animal.EntityTurtle",
+  "ENTITY_TURTLE_TYPES_FIELD":"aX",
+
+  "ENTITY_VEX":"net.minecraft.world.entity.monster.EntityVex",
+  "ENTITY_VEX_TYPES_FIELD":"aY",
+
+  "ENTITY_VILLAGER":"net.minecraft.world.entity.npc.EntityVillager",
+  "ENTITY_VILLAGER_TYPES_FIELD":"aZ",
+  "ENTITY_VILLAGER_TRADER":"net.minecraft.world.entity.npc.EntityVillagerTrader",
+  "ENTITY_VILLAGER_TRADER_TYPES_FIELD":"bb",
+
+  "ENTITY_VINDICATOR":"net.minecraft.world.entity.monster.EntityVindicator",
+  "ENTITY_VINDICATOR_TYPES_FIELD":"ba",
+
+  "ENTITY_WARDEN":"net.minecraft.world.entity.monster.warden.Warden",
+  "ENTITY_WARDEN_TYPES_FIELD":"bc",
+
+  "ENTITY_WITCH":"net.minecraft.world.entity.monster.EntityWitch",
+  "ENTITY_WITCH_TYPES_FIELD":"bd",
+
+  "ENTITY_WITHER":"net.minecraft.world.entity.boss.wither.EntityWither",
+  "ENTITY_WITHER_TYPES_FIELD":"be",
+  "ENTITY_WITHER_SKULL":"net.minecraft.world.entity.projectile.EntityWitherSkull",
+  "ENTITY_WITHER_SKULL_TYPES_FIELD":"bg",
+
+  "ENTITY_WOLF":"net.minecraft.world.entity.animal.EntityWolf",
+  "ENTITY_WOLF_TYPES_FIELD":"bh",
+
+  "ENTITY_ZOGLIN":"net.minecraft.world.entity.monster.EntityZoglin",
+  "ENTITY_ZOGLIN_TYPES_FIELD":"bi",
+
+  "ENTITY_CHICKEN":"net.minecraft.world.entity.animal.EntityChicken",
+  "ENTITY_CHICKEN_TYPES_FIELD":"n",
+
+  "ENTITY_CAT":"net.minecraft.world.entity.animal.EntityCat",
+  "ENTITY_CAT_TYPES_FIELD":"l",
+  "ENTITY_CAT_setCatVariant":"a",
+  "ENTITY_CAT_getCatVariant":"fT",
+  "ENTITY_CAT_setLying":"z",
+  "ENTITY_CAT_isLying":"fU",
+  "ENTITY_CAT_setRelaxStateOne":"a",
+  "ENTITY_CAT_isRelaxStateOne":"fV",
+  "ENTITY_CAT_setCollarColor":"a",
+  "ENTITY_CAT_getCollarColor":"fW",
+  "ENTITY_CAT_CATVARIANT":"net.minecraft.world.entity.animal.CatVariant",
+  "ENTITY_CAT_CATVARIANT_TABBY":"a",
+  "ENTITY_CAT_CATVARIANT_BLACK":"b",
+  "ENTITY_CAT_CATVARIANT_RED":"c",
+  "ENTITY_CAT_CATVARIANT_SIAMESE":"d",
+  "ENTITY_CAT_CATVARIANT_BRITISH_SHORTHAIR":"e",
+  "ENTITY_CAT_CATVARIANT_CALICO":"f",
+  "ENTITY_CAT_CATVARIANT_PERSIAN":"g",
+  "ENTITY_CAT_CATVARIANT_RAGDOLL":"h",
+  "ENTITY_CAT_CATVARIANT_WHITE":"i",
+  "ENTITY_CAT_CATVARIANT_JELLIE":"j",
+  "ENTITY_CAT_CATVARIANT_ALL_BLACK":"k",
+
+  "ENTITY_BLAZE":"net.minecraft.world.entity.monster.EntityBlaze",
+  "ENTITY_BLAZE_TYPES_FIELD":"i",
+
+  "ENTITY_BEE":"net.minecraft.world.entity.animal.EntityBee",
+  "ENTITY_BEE_TYPES_FIELD":"h",
+  "ENTITY_BEE_setHasNectar":"v",
+  "ENTITY_BEE_setHasStung":"w",
+  "ENTITY_BEE_setPersistentAngerTarget":"a",
+  "ENTITY_BEE_setRemainingPersistentAngerTime":"a",
+  "ENTITY_BEE_setSavedFlowerPos":"g",
+  "ENTITY_BEE_hasNectar":"fV",
+  "ENTITY_BEE_hasStung":"fW",
+  "ENTITY_BEE_getPersistentAngerTarget":"b",
+  "ENTITY_BEE_getRemainingPersistentAngerTime":"a",
+  "ENTITY_BEE_getSavedFlowerPos":"q",
+
+  "ENTITY_BAT":"net.minecraft.world.entity.ambient.EntityBat",
+  "ENTITY_BAT_TYPES_FIELD":"g",
+  "ENTITY_BAT_setResting":"v",
+  "ENTITY_BAT_isResting":"q",
+
+  "ENTITY_AXOLOTL":"net.minecraft.world.entity.animal.axolotl.Axolotl",
+  "ENTITY_AXOLOTL_TYPES_FIELD":"f",
+  "ENTITY_AXOLOTL_setVariant":"a",
+  "ENTITY_AXOLOTL_VARIANT":"net.minecraft.world.entity.animal.axolotl.Axolotl$Variant",
+  "ENTITY_AXOLOTL_VARIANT_LUCY":"LUCY",
+  "ENTITY_AXOLOTL_VARIANT_WILD":"WILD",
+  "ENTITY_AXOLOTL_VARIANT_GOLD":"GOLD",
+  "ENTITY_AXOLOTL_VARIANT_CYAN":"CYAN",
+  "ENTITY_AXOLOTL_VARIANT_BLUE":"BLUE",
+
+  "ENTITY_HORSE_ZOMBIE":"net.minecraft.world.entity.monster.EntityHorseZombie",
+  "ENTITY_HORSE_ZOMBIE_TYPES_FIELD":"bk",
+  "ENTITY_HORSE_DONKEY":"net.minecraft.world.entity.animal.horse.EntityHorseDonkey",
+  "ENTITY_HORSE_DONKEY_TYPES_FIELD":"s",
+  "ENTITY_HORSE_SKELETON":"net.minecraft.world.entity.animal.horse.EntityHorseSkeleton",
+  "ENTITY_HORSE_SKELETON_TYPES_FIELD":"aF",
+  "ENTITY_HORSE_MULE":"net.minecraft.world.entity.animal.horse.EntityHorseMule",
+  "ENTITY_HORSE_MULE_TYPES_FIELD":"aj",
+  "ENTITY_HORSE":"net.minecraft.world.entity.animal.horse.EntityHorse",
+  "ENTITY_HORSE_TYPES_FIELD":"P",
+
+  "ENTITY_LLAMA":"net.minecraft.world.entity.animal.horse.EntityLlama",
+  "ENTITY_LLAMA_TYPES_FIELD":"Y",
+  "ENTITY_LLAMA_TRADER":"net.minecraft.world.entity.animal.horse.EntityLlamaTrader",
+  "ENTITY_LLAMA_TRADER_TYPES_FIELD":"aV",
+  "ENTITY_LLAMA_SPIT":"net.minecraft.world.entity.projectile.EntityLlamaSpit",
+  "ENTITY_LLAMA_SPIT_TYPES_FIELD":"Z",
+
+  "ENTITY_ZOMBIE_VILLAGER":"net.minecraft.world.entity.monster.EntityZombieVillager",
+  "ENTITY_ZOMBIE_VILLAGER_TYPES_FIELD":"bl",
+  "ENTITY_ZOMBIE_PIG":"net.minecraft.world.entity.monster.EntityPigZombie",
+  "ENTITY_ZOMBIE_PIG_TYPES_FIELD":"bm",
+  "ENTITY_ZOMBIE_HUSK":"net.minecraft.world.entity.monster.EntityZombieHusk",
+  "ENTITY_ZOMBIE_HUSK_TYPES_FIELD":"Q",
+  "ENTITY_ZOMBIE":"net.minecraft.world.entity.monster.EntityZombie",
+  "ENTITY_ZOMBIE_TYPES_FIELD":"bj",
+  "ENTITY_ZOMBIE_GIANT":"net.minecraft.world.entity.monster.EntityGiantZombie",
+  "ENTITY_ZOMBIE_GIANT_TYPES_FIELD":"J",
+  "ENTITY_DROWNED":"net.minecraft.world.entity.monster.EntityDrowned",
+  "ENTITY_DROWNED_TYPES_FIELD":"u",
+
+  "ENTITY_SKELETON":"net.minecraft.world.entity.monster.EntitySkeleton",
+  "ENTITY_SKELETON_TYPES_FIELD":"aE",
+  "ENTITY_SKELETON_WITHER":"net.minecraft.world.entity.monster.EntitySkeletonWither",
+  "ENTITY_SKELETON_WITHER_TYPES_FIELD":"bf",
+  "ENTITY_SKELETON_STRAY":"net.minecraft.world.entity.monster.EntitySkeletonStray",
+  "ENTITY_SKELETON_STRAY_TYPES_FIELD":"aN",
+
+  "ENTITY_ARMOR_STAND":"net.minecraft.world.entity.decoration.EntityArmorStand",
+  "ENTITY_ARMOR_STAND_TYPES_FIELD":"d",
+  "ENTITY_ARMOR_STAND_setSmall":"a",
+  "ENTITY_ARMOR_STAND_setHeadPose":"a",
+  "ENTITY_ARMOR_STAND_setBodyPose":"b",
+  "ENTITY_ARMOR_STAND_setLeftArmPose":"c",
+  "ENTITY_ARMOR_STAND_setRightArmPose":"d",
+  "ENTITY_ARMOR_STAND_setLeftLegPose":"e",
+  "ENTITY_ARMOR_STAND_setRightLegPose":"f",
+
+  "ENTITY_PARROT":"net.minecraft.world.entity.animal.EntityParrot",
+  "ENTITY_PARROT_TYPES_FIELD":"ao",
+  "ENTITY_PARROT_setVariant":"t",
+
+  "ENTITY_TYPES":"net.minecraft.world.entity.EntityTypes",
+  "BLOCK_POS":"net.minecraft.core.BlockPos",
+  "VECTOR3F":"net.minecraft.core.Vector3f",
+
+  "ENTITY_PLAYER_getProfile":"fz",
+  "ENTITY_PLAYER_METADATA_SkinParts":17,
+  "ENTITY_PLAYER_METADATA_LeftShoulderEntityData":19,
+  "ENTITY_PLAYER_METADATA_RightShoulderEntityData":20,
+
+  "NBTTAGCOMPOUND":"net.minecraft.nbt.NBTTagCompound",
+
+  "ENTITY_POSE":"net.minecraft.world.entity.EntityPose",
+  "ENTITY_POSE_STANDING":"STANDING",
+  "ENTITY_POSE_FALL_FLYING":"FALL_FLYING",
+  "ENTITY_POSE_SLEEPING":"SLEEPING",
+  "ENTITY_POSE_SWIMMING":"SWIMMING",
+  "ENTITY_POSE_CROUCHING":"CROUCHING",
+  
+  "PROPERTYMAP":"com.mojang.authlib.properties.PropertyMap",
+  "PROPERTYMAP_PUT":"put",
+
+  "ENUMITEMSLOT":"net.minecraft.world.entity.EnumItemSlot",
+  "ENUMITEMSLOT_MAINHAND":"MAINHAND",
+  "ENUMITEMSLOT_OFFHAND":"OFFHAND",
+  "ENUMITEMSLOT_FEET":"FEET",
+  "ENUMITEMSLOT_LEGS":"LEGS",
+  "ENUMITEMSLOT_CHEST":"CHEST",
+  "ENUMITEMSLOT_HEAD":"HEAD",
+
+  "ITEMSTACK":"net.minecraft.world.item.ItemStack",
+  "CRAFTITEMSTACK":"org.bukkit.craftbukkit.v1_19_R1.inventory.CraftItemStack",
+
+  "PACKET":"net.minecraft.network.protocol.Packet",
+  "PACKETPLAYOUTSCOREBOARDTEAM":"net.minecraft.network.protocol.game.PacketPlayOutScoreboardTeam",
+  "PACKETPLAYOUTNAMEDENTITYSPAWN":"net.minecraft.network.protocol.game.PacketPlayOutNamedEntitySpawn",
+  "PACKETPLAYOUTENTITYDESTROY":"net.minecraft.network.protocol.game.PacketPlayOutEntityDestroy",
+
+  "PACKETPLAYINUSEENTITY":"net.minecraft.network.protocol.game.PacketPlayInUseEntity",
+  "PACKETPLAYINUSEENTITY_getEntityId":"a",
+  "PACKETPLAYINUSEENTITY_getClickAction":"b",
+  "PACKETPLAYINUSEENTITY_getClickAction_name":"a",
+
+  "PACKETPLAYOUTSPAWNENTITY":"net.minecraft.network.protocol.game.PacketPlayOutSpawnEntity",
+  "PACKETPLAYOUTENTITYEQUIPMENT":"net.minecraft.network.protocol.game.PacketPlayOutEntityEquipment",
+
+  "SCOREBOARDTEAMBASE_ENUMTEAMPUSH":"net.minecraft.world.scores.ScoreboardTeamBase$EnumTeamPush",
+  "SCOREBOARDTEAMBASE_ENUMTEAMPUSH_ALWAYS":"ALWAYS",
+  "SCOREBOARDTEAMBASE_ENUMTEAMPUSH_NEVER":"NEVER",
+
+  "PACKETPLAYOUTENTITY_PACKETPLAYOUTENTITYLOOK":"net.minecraft.network.protocol.game.PacketPlayOutEntity$PacketPlayOutEntityLook",
+  "PACKETPLAYOUTENTITYHEADROTATION":"net.minecraft.network.protocol.game.PacketPlayOutEntityHeadRotation",
+  "PACKETPLAYOUTENTITYMETADATA":"net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata",
+  "PACKETPLAYOUTPLAYERINFO":"net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo",
+  "PACKETPLAYOUTPLAYERINFO_ENUMPLAYERINFOACTION":"net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo$EnumPlayerInfoAction",
+  "PACKETPLAYOUTPLAYERINFO_ENUMPLAYERINFOACTION_ADD_PLAYER":"ADD_PLAYER",
+  "PACKETPLAYOUTPLAYERINFO_ENUMPLAYERINFOACTION_REMOVE_PLAYER":"REMOVE_PLAYER",
+
+  "PAIR":"com.mojang.datafixers.util.Pair",
+
+  "SCOREBOARDTEAM_setCollisionRule":"a",
+  "SCOREBOARDTEAM_setPlayerPrefix":"b",
+
+  "ICHATBASECOMPONENT":"net.minecraft.network.chat.IChatBaseComponent",
+  "ICHATBASECOMPONENT_nullToEmpty":"a",
+
+  "PLAYERCONNECTION":"net.minecraft.server.network.PlayerConnection",
+
+  "ENTITY_PLAYER":"net.minecraft.server.level.EntityPlayer",
+  "ENTITY_PLAYER_PlayerInteractManager":null,
+  "ENTITY_PLAYER_getPlayerConnection":"b",
+  "ENTITY_PLAYER_getNetworkManagerChannel":"m",
+
+  "PLAYERCONNECTION_sendPacket":"a",
+
+  "ENTITY_HUMAN":"net.minecraft.world.entity.player.EntityHuman",
+  "ENTITY":"net.minecraft.world.entity.Entity",
+  "ENTITY_save":"e",
+  "ENTITY_setGlowingTag":"i",
+  "ENTITY_getEntityData":"ai",
+  "ENTITY_getEntityId":"ae",
+  "ENTITY_absMoveTo":"a",
+  "ENTITY_getPose":"ak",
+  "ENTITY_setPose":"b",
+  "ENTITY_setInvisible":"j",
+  "ENTITY_setCustomName":"b",
+  "ENTITY_setCustomNameVisible":"n",
+
+  "ENTITY_METADATA_ENTITY_FLAGS":0,
+
+  "DATAWATCHERSERIALIZER":"net.minecraft.network.syncher.DataWatcherSerializer",
+  "PROPERTY":"com.mojang.authlib.properties.Property",
+  "DATAWATCHEROBJECT":"net.minecraft.network.syncher.DataWatcherObject",
+  "DATAWATCHERREGISTRY":"net.minecraft.network.syncher.DataWatcherRegistry",
+  "DATAWATCHER":"net.minecraft.network.syncher.DataWatcher",
+  "DATAWATCHER_itemsById":"f",
+  "DATAWATCHER_itemsById_alternative":null,
+  "DATAWATCHER_Item":"net.minecraft.network.syncher.DataWatcher$Item",
+  "DATAWATCHERREGISTRY_BYTE":"a",
+  "DATAWATCHERSERIALIZER_write":"a",
+  "DATAWATCHER_set":"b",
+
+  "CRAFTSERVER":"org.bukkit.craftbukkit.v1_19_R1.CraftServer",
+  "MINECRAFTSERVER":"net.minecraft.server.MinecraftServer",
+  "WORLDSERVER":"net.minecraft.server.level.WorldServer",
+  "WORLD":"net.minecraft.world.level.World",
+  "CRAFTWORLD":"org.bukkit.craftbukkit.v1_19_R1.CraftWorld",
+  "CRAFTPLAYER":"org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer",
+  "GAMEPROFILE":"com.mojang.authlib.GameProfile",
+  "GAMEPROFILE_getProperties":"getProperties",
+  "SCOREBOARD":"net.minecraft.world.scores.Scoreboard",
+  "SCOREBOARDTEAM":"net.minecraft.world.scores.ScoreboardTeam",
+  "CRAFTSCOREBOARD":"org.bukkit.craftbukkit.v1_19_R1.scoreboard.CraftScoreboard",
+  "SCOREBOARDTEAMBASE_ENUMNAMETAGVISIBILITY":"net.minecraft.world.scores.ScoreboardTeamBase$EnumNameTagVisibility",
+
+
+  "SCOREBOARD_addPlayerToTeam":"a",
+  "SCOREBOARD_getTeam":"f",
+
+  "SCOREBOARDTEAM_getPlayerNameSet":"g",
+  "SCOREBOARDTEAM_setNameTagVisibity":"a",
+  "SCOREBOARDTEAM_setColor":"a",
+
+  "SCOREBOARDTEAMBASE_ENUMNAMETAGVISIBILITY_NEVER":"NEVER",
+
+  "ENUMCHATFORMAT":"net.minecraft.EnumChatFormat",
+  "ENUMCHATFORMAT_BLACK":"BLACK",
+  "ENUMCHATFORMAT_DARK_BLUE":"DARK_BLUE",
+  "ENUMCHATFORMAT_DARK_GREEN":"DARK_GREEN",
+  "ENUMCHATFORMAT_DARK_AQUA":"DARK_AQUA",
+  "ENUMCHATFORMAT_DARK_RED":"DARK_RED",
+  "ENUMCHATFORMAT_DARK_PURPLE":"DARK_PURPLE",
+  "ENUMCHATFORMAT_GOLD":"GOLD",
+  "ENUMCHATFORMAT_GRAY":"GRAY",
+  "ENUMCHATFORMAT_DARK_GRAY":"DARK_GRAY",
+  "ENUMCHATFORMAT_BLUE":"BLUE",
+  "ENUMCHATFORMAT_GREEN":"GREEN",
+  "ENUMCHATFORMAT_AQUA":"AQUA",
+  "ENUMCHATFORMAT_RED":"RED",
+  "ENUMCHATFORMAT_LIGHT_PURPLE":"LIGHT_PURPLE",
+  "ENUMCHATFORMAT_YELLOW":"YELLOW",
+  "ENUMCHATFORMAT_WHITE":"WHITE",
+
+  "ENUMCOLOR":"net.minecraft.world.item.EnumColor"
+}
