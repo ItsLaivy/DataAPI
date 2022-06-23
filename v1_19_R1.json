@@ -1,4 +1,5 @@
 {
+  "VERSION_NAME":"v1_19_R1",
   "VERSION_CODE":19,
 
   "PROFILE_PUBLIC_KEY":"net.minecraft.world.entity.player.ProfilePublicKey",
